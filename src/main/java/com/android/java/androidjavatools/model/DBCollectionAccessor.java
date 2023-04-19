@@ -100,7 +100,7 @@ public class DBCollectionAccessor {
     public boolean readDBFieldsForCurrentKey(String[] fields, TaskCompletionManager... cbManager) {
 
         if (mKey == null || mKey.toString().equals("")) {
-            Log.w("BeautyAndroid", "Try to read with no valid key the fields from the DB collection: "
+            Log.w("AJT", "Try to read with no valid key the fields from the DB collection: "
                 + mCollectionName);
             return false;
         }
@@ -117,7 +117,7 @@ public class DBCollectionAccessor {
                         cbManager[0].onSuccess();
                     }
                 } else {
-                    Log.e("BeautyAndroid", "Error reading documents: ", task.getException());
+                    Log.e("AJT", "Error reading documents: ", task.getException());
 
                     if (cbManager.length >= 1) {
                         cbManager[0].onFailure();
@@ -131,7 +131,7 @@ public class DBCollectionAccessor {
     public boolean readDBFieldsForCurrentFilter(String[] fields, TaskCompletionManager... cbManager) {
 
         if (mFilter == null && mFilter.getRanges() < 1) {
-            Log.w("BeautyAndroid", "Try to read with no valid filter the fields from the DB collection: "
+            Log.w("AJT", "Try to read with no valid filter the fields from the DB collection: "
                 + mCollectionName);
             return false;
         }
@@ -151,7 +151,7 @@ public class DBCollectionAccessor {
                         cbManager[0].onSuccess();
                     }
                 } else {
-                    Log.e("BeautyAndroid", "Error reading documents: ", task.getException());
+                    Log.e("AJT", "Error reading documents: ", task.getException());
 
                     if (cbManager.length >= 1) {
                         cbManager[0].onFailure();
@@ -176,7 +176,7 @@ public class DBCollectionAccessor {
                 continue;
             }
 
-            //Log.v("BeautyAndroid", document.getId() + " => " + document.getData());
+            //Log.v("AJT", document.getId() + " => " + document.getData());
 
             var dataItem = new HashMap<String, String>();
             var dataChangeItem = new HashMap<String, Boolean>();
