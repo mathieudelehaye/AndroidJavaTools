@@ -52,7 +52,7 @@ public class FragmentSuggestion extends FragmentWithSearch {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.v("BeautyAndroid", "Suggestion view created at timestamp: "
+        Log.v("AndroidJavaTools", "Suggestion view created at timestamp: "
             + Helpers.getTimestamp());
 
         super.onViewCreated(view, savedInstanceState);
@@ -68,7 +68,7 @@ public class FragmentSuggestion extends FragmentWithSearch {
     public void setListAdapter(BaseAdapter adapter) {
         final var suggestionsList = (ListView) getView().findViewById(R.id.suggestion_list);
         if(suggestionsList == null) {
-            Log.e("BeautyAndroid", "Cannot set the Suggestions adapter, as no suggestions list view");
+            Log.e("AndroidJavaTools", "Cannot set the Suggestions adapter, as no suggestions list view");
         }
 
         suggestionsList.setAdapter(adapter);
@@ -76,7 +76,7 @@ public class FragmentSuggestion extends FragmentWithSearch {
         suggestionsList.setOnItemClickListener((adapterView, view, position, l) -> {
             final String query = ((Cursor)adapter.getItem(position)).getString(1);
             mSearchQuery.setText(query);
-            Log.v("BeautyAndroid", "Search query set from tapped suggestion to: " + query);
+            Log.v("AndroidJavaTools", "Search query set from tapped suggestion to: " + query);
 
             // Start the search
             runSearch(query);
@@ -88,16 +88,16 @@ public class FragmentSuggestion extends FragmentWithSearch {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
-            Log.d("BeautyAndroid", "Suggestions page becomes visible");
+            Log.d("AndroidJavaTools", "Suggestions page becomes visible");
 
             if (mContext == null) {
-                Log.w("BeautyAndroid", "Cannot prepare the edit text view, as no context");
+                Log.w("AndroidJavaTools", "Cannot prepare the edit text view, as no context");
                 return;
             }
 
             // When the view is displayed, the keyboard is visible. So, give the focus to the edit text view
-            Log.v("BeautyAndroid", "Focus requested on the edit text view");
-            mSearchQuery.requestFocus();
+            Log.v("AndroidJavaTools", "Focus requested on the edit text view");
+            mSearchQuery.AndroidJavaTools();
 
             // Show the keyboard
             final var inputManager = (InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);

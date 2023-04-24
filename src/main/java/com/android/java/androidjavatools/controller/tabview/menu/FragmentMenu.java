@@ -45,7 +45,7 @@ public abstract class FragmentMenu extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.v("BeautyAndroid", "Menu view created at timestamp: "
+        Log.v("AndroidJavaTools", "Menu view created at timestamp: "
             + Helpers.getTimestamp());
 
         super.onViewCreated(view, savedInstanceState);
@@ -58,7 +58,7 @@ public abstract class FragmentMenu extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
-            Log.d("BeautyAndroid", "Menu view becomes visible");
+            Log.d("AndroidJavaTools", "Menu view becomes visible");
             switchLogoutButtonVisibility();
         }
     }

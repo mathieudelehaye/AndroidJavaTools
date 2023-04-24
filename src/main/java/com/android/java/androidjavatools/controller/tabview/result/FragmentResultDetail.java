@@ -53,7 +53,7 @@ public abstract class FragmentResultDetail extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.v("BeautyAndroid", "Result detail view created at timestamp: "
+        Log.v("AndroidJavaTools", "Result detail view created at timestamp: "
             + Helpers.getTimestamp());
 
         super.onViewCreated(view, savedInstanceState);
@@ -73,7 +73,7 @@ public abstract class FragmentResultDetail extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
-            Log.d("BeautyAndroid", "Result detail view becomes visible");
+            Log.d("AndroidJavaTools", "Result detail view becomes visible");
 
             updateDetails();
         }

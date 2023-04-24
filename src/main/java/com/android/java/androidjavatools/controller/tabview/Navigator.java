@@ -147,14 +147,14 @@ public class Navigator {
 
     public void back() {
         if (mPrevFragments.empty()) {
-            Log.w("BeautyAndroid", "Cannot navigate back, as previous fragment stack empty");
+            Log.w("AndroidJavaTools", "Cannot navigate back, as previous fragment stack empty");
             return;
         }
 
         final String prevFragmentKey = mPrevFragments.pop();
 
-        Log.v("BeautyAndroid", "Fragment popped from the previous fragment stack: " + prevFragmentKey);
-        Log.d("BeautyAndroid", "Navigating back to the fragment of type " + prevFragmentKey);
+        Log.v("AndroidJavaTools", "Fragment popped from the previous fragment stack: " + prevFragmentKey);
+        Log.d("AndroidJavaTools", "Navigating back to the fragment of type " + prevFragmentKey);
 
         mManager.onNavigation(prevFragmentKey, mShownFragment);
 

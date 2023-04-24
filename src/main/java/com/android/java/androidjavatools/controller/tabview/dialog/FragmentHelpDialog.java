@@ -68,14 +68,14 @@ public class FragmentHelpDialog extends DialogFragment {
         // Configure the dialog
         Button closeHelpDialog = rootView.findViewById(R.id.close_help_dialog);
         if (closeHelpDialog == null) {
-            Log.e("BeautyAndroid", "No view found for the close button on help dialog");
+            Log.e("AndroidJavaTools", "No view found for the close button on help dialog");
             return null;
         }
         closeHelpDialog.setOnClickListener(view -> dialog.dismiss());
 
         TextView dialogDescription = rootView.findViewById(R.id.description_help_dialog);
         if (dialogDescription == null) {
-            Log.e("BeautyAndroid", "No view found for the description text on help dialog");
+            Log.e("AndroidJavaTools", "No view found for the description text on help dialog");
             return null;
         }
         dialogDescription.setText(mTextToDisplay);

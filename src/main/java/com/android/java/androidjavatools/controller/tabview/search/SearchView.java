@@ -107,20 +107,20 @@ public abstract class SearchView extends LinearLayoutCompat implements Filter.Fi
 
     private void init() {
         if (mContext == null) {
-            Log.e("BeautyAndroid", "Error with search view layout, as no context");
+            Log.e("AndroidJavaTools", "Error with search view layout, as no context");
             return;
         }
 
         mActivity = (Activity)mContext;
         if (mActivity == null) {
-            Log.e("BeautyAndroid", "Error with search view layout, as no activity");
+            Log.e("AndroidJavaTools", "Error with search view layout, as no activity");
             return;
         }
 
         // Set up the Back button
         final var back = (Button)mContainerView.findViewById(R.id.search_view_back_button);
         if (back == null) {
-            Log.e("BeautyAndroid", "Error with search view layout, as no Back button");
+            Log.e("AndroidJavaTools", "Error with search view layout, as no Back button");
             return;
         }
         back.setOnClickListener(v -> {
@@ -135,7 +135,7 @@ public abstract class SearchView extends LinearLayoutCompat implements Filter.Fi
         // Set up the Clear button
         final var clear = (ImageButton)mContainerView.findViewById(R.id.search_view_clear_button);
         if (clear == null) {
-            Log.e("BeautyAndroid", "Error with search view layout, as no Clear button");
+            Log.e("AndroidJavaTools", "Error with search view layout, as no Clear button");
             return;
         }
         clear.setVisibility(GONE);
@@ -144,7 +144,7 @@ public abstract class SearchView extends LinearLayoutCompat implements Filter.Fi
         // Set up the Query edit text
         mQuery = mContainerView.findViewById(R.id.search_view_query);
         if (mQuery == null) {
-            Log.e("BeautyAndroid", "Error with search view layout, as no Query edit text");
+            Log.e("AndroidJavaTools", "Error with search view layout, as no Query edit text");
             return;
         }
         mQuery.addTextChangedListener(new TextWatcher() {

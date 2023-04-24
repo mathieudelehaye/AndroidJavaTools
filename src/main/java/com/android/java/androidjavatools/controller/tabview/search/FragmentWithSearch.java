@@ -87,7 +87,7 @@ public abstract class FragmentWithSearch extends Fragment {
     private void setupSearchBox(@NonNull View view) {
         final Activity activity = getActivity();
         if (activity == null || mContext == null) {
-            Log.e("BeautyAndroid", "Cannot set up the search box, as no activity or no context");
+            Log.e("AndroidJavaTools", "Cannot set up the search box, as no activity or no context");
             return;
         }
 
@@ -98,7 +98,7 @@ public abstract class FragmentWithSearch extends Fragment {
 
         mSearchQuery = mSearchView.findViewById(R.id.search_view_query);
         if (mSearchQuery == null) {
-            Log.e("BeautyAndroid", "Error with fragment with search, as no query edit text");
+            Log.e("AndroidJavaTools", "Error with fragment with search, as no query edit text");
             return;
         }
 
@@ -106,7 +106,7 @@ public abstract class FragmentWithSearch extends Fragment {
             if (!hasFocus) {
                 return;
             }
-            Log.v("BeautyAndroid", "View " + v + " has focus");
+            Log.v("AndroidJavaTools", "View " + v + " has focus");
 
             if (isSuggestionFragment) {
                 return;
@@ -121,7 +121,7 @@ public abstract class FragmentWithSearch extends Fragment {
                 && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
             {
                 final String query = mSearchQuery.getText().toString();
-                Log.v("BeautyAndroid", "Search query validated by pressing enter: " + query);
+                Log.v("AndroidJavaTools", "Search query validated by pressing enter: " + query);
 
                 // Start the search
                 runSearch(query);
@@ -146,7 +146,7 @@ public abstract class FragmentWithSearch extends Fragment {
         // Show the Back button from the search box
         ViewGroup searchBackLayout = mSearchView.findViewById(R.id.search_view_back_button_layout);
         if (searchBackLayout == null) {
-            Log.e("BeautyAndroid", "No view found when showing the search Back button");
+            Log.e("AndroidJavaTools", "No view found when showing the search Back button");
             return;
         }
         searchBackLayout.setVisibility(View.VISIBLE);
@@ -159,7 +159,7 @@ public abstract class FragmentWithSearch extends Fragment {
 
     protected void showResult(ResultItemInfo item) {
         final String title = item.getTitle();
-        Log.d("BeautyAndroid", "Result to show: " + title);
+        Log.d("AndroidJavaTools", "Result to show: " + title);
         mResultProvider.setSelectedResultItem(item);
         mNavigatorManager.navigator().showFragment("detail");
     }

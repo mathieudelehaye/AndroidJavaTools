@@ -83,7 +83,7 @@ public class FragmentMap extends FragmentResult {
 
     @SuppressLint("ResourceAsColor")
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.v("BeautyAndroid", "Map view created at timestamp: "
+        Log.v("AndroidJavaTools", "Map view created at timestamp: "
             + Helpers.getTimestamp());
 
         super.onViewCreated(view, savedInstanceState);
@@ -117,7 +117,7 @@ public class FragmentMap extends FragmentResult {
                 // if more than 25% of the screen, it's probably a keyboard
                 if (!mKeyboardDisplayed) {
                     mKeyboardDisplayed = true;
-                    Log.v("BeautyAndroid", "Keyboard displayed");
+                    Log.v("AndroidJavaTools", "Keyboard displayed");
 
                     ViewGroup.LayoutParams mapLayoutParams = mapLayout.getLayoutParams();
                     mapLayoutParams.height = mMapReducedHeight;
@@ -126,7 +126,7 @@ public class FragmentMap extends FragmentResult {
             } else {
                 if (mKeyboardDisplayed) {
                     mKeyboardDisplayed = false;
-                    Log.v("BeautyAndroid", "Keyboard hidden");
+                    Log.v("AndroidJavaTools", "Keyboard hidden");
 
                     ViewGroup.LayoutParams params = mapLayout.getLayoutParams();
                     params.height = mMapInitialHeight;
@@ -138,7 +138,7 @@ public class FragmentMap extends FragmentResult {
         mBinding.mapUserLocation.setOnClickListener(view1 -> {
 
             if(mUserLocation != null) {
-                Log.d("BeautyAndroid", "Change map focus to user location");
+                Log.d("AndroidJavaTools", "Change map focus to user location");
 
                 mMapController.animateTo(mUserLocation);
                 setZoomLevel(14);
@@ -173,8 +173,8 @@ public class FragmentMap extends FragmentResult {
         if (isVisibleToUser) {
             mIsViewVisible = true;
 
-            Log.d("BeautyAndroid", "Map view becomes visible");
-            Log.v("BeautyAndroid", "Map view becomes visible at timestamp: "
+            Log.d("AndroidJavaTools", "Map view becomes visible");
+            Log.v("AndroidJavaTools", "Map view becomes visible at timestamp: "
                 + Helpers.getTimestamp());
 
             changeSearchSwitch(ResultPageType.LIST);
@@ -200,7 +200,7 @@ public class FragmentMap extends FragmentResult {
         View rootView = getView();
 
         if (rootView == null) {
-            Log.w("BeautyAndroid", "Cannot toggle the details view, as no root view available");
+            Log.w("AndroidJavaTools", "Cannot toggle the details view, as no root view available");
         }
 
         View detailLayout = rootView.findViewById(R.id.detail_map_layout);
@@ -247,7 +247,7 @@ public class FragmentMap extends FragmentResult {
                     new ItemizedIconOverlay.OnItemGestureListener<>() {
                         @Override
                         public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                            Log.i("BeautyAndroid", "Single tap");
+                            Log.i("AndroidJavaTools", "Single tap");
                             mMapController.animateTo(item.getPoint());
 
                             showDetails(result.get(index));
@@ -286,13 +286,13 @@ public class FragmentMap extends FragmentResult {
 
     private void setZoomInKilometer(double radiusInKilometer) {
         final int zoomLevel = computeZoomLevelForRadius(radiusInKilometer * 1000);
-        Log.v("BeautyAndroid", "Map zoom set to level " + String.valueOf(zoomLevel)
+        Log.v("AndroidJavaTools", "Map zoom set to level " + String.valueOf(zoomLevel)
             + " for radius of " + String.valueOf(radiusInKilometer) + " km");
         mMapController.setZoom(zoomLevel);
     }
 
     private void setZoomLevel(int level) {
-        Log.v("BeautyAndroid", "Map zoom set to level " + String.valueOf(level));
+        Log.v("AndroidJavaTools", "Map zoom set to level " + String.valueOf(level));
         mMapController.setZoom(level);
     }
 

@@ -115,9 +115,9 @@ public abstract class FragmentResult extends FragmentWithSearch {
                 if(!firstLocationReceived[0]) {
                     firstLocationReceived[0] = true;
 
-                    Log.d("BeautyAndroid", "First received location for the user: " + location.toString());
+                    Log.d("AndroidJavaTools", "First received location for the user: " + location.toString());
                     mUserLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
-                    Log.v("BeautyAndroid", "First received location at timestamp: "
+                    Log.v("AndroidJavaTools", "First received location at timestamp: "
                         + Helpers.getTimestamp());
 
                     writeCachedUserLocation();
@@ -145,11 +145,11 @@ public abstract class FragmentResult extends FragmentWithSearch {
             if (!searchQuery.equals("") && !searchQuery.equals("usr")) {
                 // If a query has been received by the searchable activity, use it
                 // to find the search start
-                Log.v("BeautyAndroid", "Searching for the query: " + searchQuery);
+                Log.v("AndroidJavaTools", "Searching for the query: " + searchQuery);
                 setSearchStart(getCoordinatesFromAddress(searchQuery));
             } else if (userLocationReadFromCache) {
                 // Otherwise, if the user location was cached, search around it
-                Log.v("BeautyAndroid", "Searching around the user location from the cache");
+                Log.v("AndroidJavaTools", "Searching around the user location from the cache");
                 setSearchStart(mUserLocation);
             } else {
                 String dialogText = "Please wait until the app has found your position"
@@ -168,7 +168,7 @@ public abstract class FragmentResult extends FragmentWithSearch {
     protected GeoPoint getCoordinatesFromAddress(@NotNull String locationName) {
 
         if (mGeocoder == null || locationName.equals("")) {
-            Log.w("BeautyAndroid", "Cannot get coordinates, as no geocoder or empty address");
+            Log.w("AndroidJavaTools", "Cannot get coordinates, as no geocoder or empty address");
             return null;
         }
 
@@ -180,13 +180,13 @@ public abstract class FragmentResult extends FragmentWithSearch {
                 var location = new GeoPoint(addr.getLatitude(), addr.getLongitude());
                 return location;
             } else {
-                Log.w("BeautyAndroid", "No coordinate found for the address: " + locationName);
+                Log.w("AndroidJavaTools", "No coordinate found for the address: " + locationName);
                 Toast toast = Toast.makeText(requireContext(),"Location Not Found",Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
                 toast.show();
             }
         } catch (IOException e) {
-            Log.e("BeautyAndroid", "Error getting a location: " + e);
+            Log.e("AndroidJavaTools", "Error getting a location: " + e);
         }
 
         return null;
@@ -196,8 +196,8 @@ public abstract class FragmentResult extends FragmentWithSearch {
         String cacheLocation = mSharedPref.getString("user_location", "");
 
         if (cacheLocation != "") {
-            Log.d("BeautyAndroid", "User location read from cache: " + cacheLocation);
-            Log.v("BeautyAndroid", "User location read from cache at timestamp: "
+            Log.d("AndroidJavaTools", "User location read from cache: " + cacheLocation);
+            Log.v("AndroidJavaTools", "User location read from cache at timestamp: "
                 + Helpers.getTimestamp());
 
             mUserLocation = GeoPoint.fromDoubleString(cacheLocation, ',');
@@ -219,19 +219,19 @@ public abstract class FragmentResult extends FragmentWithSearch {
         mSharedPref.edit().putString("user_location", cacheLocation)
             .commit();
 
-        Log.d("BeautyAndroid", "User location cached: " + cacheLocation);
-        Log.v("BeautyAndroid", "User location cached at timestamp: "
+        Log.d("AndroidJavaTools", "User location cached: " + cacheLocation);
+        Log.v("AndroidJavaTools", "User location cached at timestamp: "
             + Helpers.getTimestamp());
     }
 
     protected void setSearchStart(GeoPoint value) {
-        Log.v("BeautyAndroid", "Search start set to: " + value);
+        Log.v("AndroidJavaTools", "Search start set to: " + value);
         mSearchStart = value;
     }
 
     protected void searchResults(TaskCompletionManager... cbManager) {
         if (mSearchStart == null) {
-            Log.w("BeautyAndroid", "Cannot search the results because no search start");
+            Log.w("AndroidJavaTools", "Cannot search the results because no search start");
             return;
         }
 
@@ -242,22 +242,22 @@ public abstract class FragmentResult extends FragmentWithSearch {
     protected void changeSearchSwitch(ResultPageType destination) {
         var containerView = getView();
         if (containerView == null) {
-            Log.w("BeautyAndroid", "No container view found when changing the search switch");
+            Log.w("AndroidJavaTools", "No container view found when changing the search switch");
             return;
         }
 
         Button viewSwitch = containerView.findViewById(R.id.search_box_switch_button);
         if (viewSwitch == null) {
-            Log.w("BeautyAndroid", "No view found when changing the search switch");
+            Log.w("AndroidJavaTools", "No view found when changing the search switch");
             return;
         }
 
-        Log.v("BeautyAndroid", "Changing the search switch to the page: " + destination.toString());
+        Log.v("AndroidJavaTools", "Changing the search switch to the page: " + destination.toString());
 
         final int icon = (destination == ResultPageType.LIST) ? R.drawable.bullet_list : R.drawable.map;
 
         viewSwitch.setOnClickListener(view -> {
-            Log.d("BeautyAndroid", "Switch button pressed, navigate to: " + destination);
+            Log.d("AndroidJavaTools", "Switch button pressed, navigate to: " + destination);
 
             final String dest = (destination == ResultPageType.LIST) ?
                 "list" :
@@ -271,7 +271,7 @@ public abstract class FragmentResult extends FragmentWithSearch {
 
     protected boolean mustShowBrand() {
         if (mContext == null) {
-            Log.w("BeautyAndroid", "Cannot check if brand must be shown, as no context");
+            Log.w("AndroidJavaTools", "Cannot check if brand must be shown, as no context");
             return false;
         }
 

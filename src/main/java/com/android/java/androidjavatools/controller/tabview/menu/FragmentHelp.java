@@ -44,7 +44,7 @@ public abstract class FragmentHelp extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.v("BeautyAndroid", "Help view created at timestamp: "
+        Log.v("AndroidJavaTools", "Help view created at timestamp: "
             + Helpers.getTimestamp());
 
         super.onViewCreated(view, savedInstanceState);
