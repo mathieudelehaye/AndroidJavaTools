@@ -28,4 +28,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="Blue">#0077ff</color>
     <color name="Transparent">#00000000</color>
+    <color name="SignInGray">#E6E6E6</color>
+    <color name="SignInGreen">#90B954</color>
+    <color name="SignInGrayBlue">#E9F0FD</color>
+    <color name="SignInBlue">#3A4F8D</color>
+    <color name="ButtonGray">#BFBFBF</color>
 </resources>

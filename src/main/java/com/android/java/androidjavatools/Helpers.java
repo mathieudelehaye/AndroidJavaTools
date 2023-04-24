@@ -58,7 +58,7 @@ public class Helpers {
             return format.parse(time);
         } catch (ParseException e) {
             Log.e("AJT", "Error while parsing the time from database: "
-                + e.toString());
+                + e);
 
             return new Date();
         }

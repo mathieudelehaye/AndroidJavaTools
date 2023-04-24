@@ -21,9 +21,17 @@
 -->
 
 <resources>
+    <string name="lib_name">AndroidJavaTools</string>
+
     <!-- Strings used for fragments for navigation -->
     <string name="back_button">Back</string>
     <string name="logout_button">Log out</string>
+
+    <!-- Map Fragment -->
+    <string name="map_help">This is a placeholder for the map fragment text</string>
+
+    <!-- List Fragment -->
+    <string name="list_help">This is a placeholder for the help fragment text</string>
 
     <string name="filler_text">Lorem ipsum dolor sit amet. Ut enim corporis ea labore esse ea illum consequatur. Et
         reiciendis ducimus et repellat magni id ducimus nesciunt. Aut natus nihil est ipsum error est consequatur

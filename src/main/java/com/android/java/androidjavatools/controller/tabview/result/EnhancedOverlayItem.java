@@ -25,7 +25,6 @@ import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.views.overlay.OverlayItem;
 
 public class EnhancedOverlayItem extends OverlayItem {
-
     private String mKey;
     private String mImage;
 

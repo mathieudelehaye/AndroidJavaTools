@@ -21,17 +21,23 @@
 
 package com.android.java.androidjavatools.model;
 
+import org.osmdroid.util.GeoPoint;
+
 public class ResultItemInfo {
     private String mkey;
     private String mTitle;
     private String mDescription;
+    private GeoPoint mLocation;
     private byte[] mImage;
-    private boolean mShowImage = false;
+    private boolean mShowImage;
 
-    public ResultItemInfo(String key, String title, String description, byte[] image, boolean displayBrand) {
+    public ResultItemInfo(String key, String title, String description, GeoPoint location, byte[] image,
+        boolean displayBrand) {
+
         mkey = key;
         mTitle = title;
         mDescription = description;
+        mLocation = location;
         mImage = image;
         mShowImage = displayBrand;
     }
@@ -54,6 +60,10 @@ public class ResultItemInfo {
 
     public void setDescription(String description) {
         mDescription = description;
+    }
+
+    public GeoPoint getLocation() {
+        return mLocation;
     }
 
     public byte[] getImage() {
