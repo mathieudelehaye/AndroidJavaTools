@@ -97,7 +97,7 @@ public class FragmentSuggestion extends FragmentWithSearch {
 
             // When the view is displayed, the keyboard is visible. So, give the focus to the edit text view
             Log.v("AndroidJavaTools", "Focus requested on the edit text view");
-            mSearchQuery.AndroidJavaTools();
+            mSearchQuery.requestFocus();
 
             // Show the keyboard
             final var inputManager = (InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
