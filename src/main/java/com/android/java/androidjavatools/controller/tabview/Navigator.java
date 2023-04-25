@@ -52,13 +52,14 @@ public class Navigator {
     }
 
     public void createFragment(Class<?> fragmentType) {
-        if (!(fragmentType.isAssignableFrom(Fragment.class))) {
+        if (fragmentType == Fragment.class) {
             Log.e("AndroidJavaTools", "Navigator cannot create a fragment of a type "
                 + "not extending Fragment");
             return;
         }
 
-        final String key = fragmentType.getTypeName();
+        final String fragmentTypeName = fragmentType.getTypeName();
+        final String key = fragmentTypeName.substring(fragmentTypeName.lastIndexOf(".") + 1);
         Log.v("AndroidJavaTools", "Try to create a navigable fragment with the key: " + key);
 
         if (!mFragments.containsKey(key)) {

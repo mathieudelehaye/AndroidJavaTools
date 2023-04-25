@@ -37,7 +37,7 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.controller.tabview.Navigator;
 
-public abstract class SearchView extends LinearLayoutCompat implements Filter.FilterListener {
+public class SearchView extends LinearLayoutCompat implements Filter.FilterListener {
     private Activity mActivity;
     private Context mContext;
     private View mContainerView;

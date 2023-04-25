@@ -36,8 +36,8 @@ import com.android.java.androidjavatools.model.ResultItemInfo;
 import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.android.java.androidjavatools.R;
 
-public class FragmentResultList extends FragmentResult {
-    private FragmentResultListBinding mBinding;
+public abstract class FragmentResultList extends FragmentResult {
+    protected FragmentResultListBinding mBinding;
     private boolean mIsViewVisible = false;
 
     public FragmentResultList(SearchProvider provider) {

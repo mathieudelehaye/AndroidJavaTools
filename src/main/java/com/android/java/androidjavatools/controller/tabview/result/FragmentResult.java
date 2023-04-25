@@ -69,11 +69,11 @@ public abstract class FragmentResult extends FragmentWithSearch {
     protected GeoPoint mUserLocation;
     protected GeoPoint mSearchStart;
     protected MyLocationNewOverlay mLocationOverlay;
-    protected SearchResult mFoundResult;
+    protected SearchResult mFoundResult = new SearchResult();
     protected final double mSearchRadiusInCoordinate = 0.045;
     protected abstract void searchAndDisplayItems();
     private SearchProvider mSearchProvider;
-    private static String sResultQuery;
+    private static String sResultQuery = "";
     private Geocoder mGeocoder;
 
     public static String getResultQuery() {
@@ -135,7 +135,6 @@ public abstract class FragmentResult extends FragmentWithSearch {
     }
 
     protected void updateSearchResults() {
-
         // If there is no search start yet, find it and get the items to display
         if (mSearchStart == null && getContext() != null) {
             final String searchQuery = sResultQuery;

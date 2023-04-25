@@ -28,7 +28,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="56dp"
-    tools:context="com.beautyorder.androidclient.com.android.java.androidjavatools.controller.tabview.result.map.FragmentMap"
+    tools:context="com.android.java.androidjavatools.controller.tabview.result.map.FragmentMap"
 >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -59,8 +59,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
         >
-
-            <include layout="@layout/fragment_score"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

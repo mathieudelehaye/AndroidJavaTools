@@ -26,6 +26,7 @@
     <!-- Strings used for fragments for navigation -->
     <string name="back_button">Back</string>
     <string name="logout_button">Log out</string>
+    <string name="tab_bar_readable_label">Choose your screen</string>
 
     <!-- Map Fragment -->
     <string name="map_help">This is a placeholder for the map fragment text</string>
