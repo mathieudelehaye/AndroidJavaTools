@@ -33,6 +33,7 @@ public class Navigator {
     public interface NavigatorManager {
         Navigator navigator();
         void onNavigation(String dest, String orig);
+        void toggleTabSwiping(boolean enable);
     }
 
     final private NavigatorManager mManager;
@@ -161,6 +162,22 @@ public class Navigator {
         ((AppCompatActivity)mManager).getSupportFragmentManager().beginTransaction()
             .show(mFragments.get(prevFragmentKey))
             .commit();
+    }
+
+    public void toggleTabSwiping(boolean enable) {
+        if (!mFragments.containsKey("tab")) {
+            Log.w("AndroidJavaTools", "Cannot toggle tab swiping, as no Tab fragment registered in the "
+                + "navigator");
+            return;
+        }
+        var tabFragment = (FragmentTabView)mFragments.get("tab");
+
+        // Enable or disable swiping gesture for the view pager
+        if (enable) {
+            tabFragment.enableTabSwiping();
+        } else {
+            tabFragment.disableTabSwiping();
+        }
     }
 
     private void hideFragment(String key) {
