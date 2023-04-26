@@ -25,18 +25,19 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
 import java.util.HashMap;
 import java.util.Stack;
 
 public class Navigator {
     public interface NavigatorManager {
         Navigator navigator();
-        void onNavigation(String dest, String orig);
+        void onNavigation(@NonNull String dest, @NonNull String orig);
         void toggleTabSwiping(boolean enable);
     }
 
     final private NavigatorManager mManager;
+    final private FragmentManager mFragmentManager;
     final private int mContentLayoutId;
     private HashMap<String, Fragment> mFragments = new HashMap<>();
     private String mShownFragment;
@@ -48,18 +49,15 @@ public class Navigator {
         }
 
         mManager = manager;
+        mFragmentManager = ((AppCompatActivity)mManager).getSupportFragmentManager();
         mContentLayoutId = contentLayoutId;
     }
 
-    public void createFragment(Class<?> fragmentType) {
-        if (fragmentType == Fragment.class) {
-            Log.e("AndroidJavaTools", "Navigator cannot create a fragment of a type "
-                + "not extending Fragment");
+    public void createFragment(String key, Class<?> fragmentType) {
+        if (key.equals("")) {
             return;
         }
 
-        final String fragmentTypeName = fragmentType.getTypeName();
-        final String key = fragmentTypeName.substring(fragmentTypeName.lastIndexOf(".") + 1);
         Log.v("AndroidJavaTools", "Try to create a navigable fragment with the key: " + key);
 
         if (!mFragments.containsKey(key)) {
@@ -69,7 +67,8 @@ public class Navigator {
                 mFragments.put(key, fragment);
                 Log.v("AndroidJavaTools", "Fragment created and added to the navigator registry");
 
-                ((AppCompatActivity)mManager).getSupportFragmentManager().beginTransaction()
+                mFragmentManager
+                    .beginTransaction()
                     .add(mContentLayoutId, fragment)
                     .hide(fragment)
                     .commit();
@@ -86,25 +85,21 @@ public class Navigator {
     }
 
     // TODO: find automatically the fragment type from its instance.
-    public void updateFragment(Class<?> fragmentType, Fragment newFragment) {
-        if (!(fragmentType.isAssignableFrom(Fragment.class))) {
-            Log.e("AndroidJavaTools", "Navigator cannot create a fragment of a type not extending Fragment");
+    public void updateFragment(String key, Fragment newFragment) {
+        if (key.equals("")) {
             return;
         }
 
-        final String key = fragmentType.getTypeName();
         Log.v("AndroidJavaTools", "Try to update a navigable fragment with the key: " + key);
 
         if (mFragments.containsKey(key)) {
             final Fragment oldFragment = mFragments.get(key);
 
-            final FragmentTransaction transaction =
-                ((AppCompatActivity)mManager).getSupportFragmentManager().beginTransaction();
-
             mFragments.put(key, newFragment);
             Log.v("AndroidJavaTools", "Fragment updated into the navigator registry");
 
-            transaction
+            mFragmentManager
+                .beginTransaction()
                 .remove(oldFragment)
                 .replace(mContentLayoutId, newFragment)
                 .hide(newFragment)
@@ -120,31 +115,35 @@ public class Navigator {
         return mFragments.get(mShownFragment);
     }
 
-    public void showFragment(@NonNull String key) {
-        if (!mFragments.containsKey(key)) {
-            Log.w("AndroidJavaTools", "Cannot show fragment, as none created for the provided key: " + key);
+    public void showFragment(String key) {
+        if (key.equals("")) {
             return;
         }
-        Fragment frag = mFragments.get(key);
+
+        Fragment fragmentToShow = mFragments.get(key);
+
+        if (fragmentToShow == null) {
+            Log.w("AndroidJavaTools", "No registered fragment to show for the key: " + key);
+            return;
+        }
 
         if (mShownFragment != null) {
-            hideFragment(mShownFragment);
-
-            mPrevFragments.push(mShownFragment);
-            Log.v("AndroidJavaTools", "Fragment pushed to the previous fragment stack: "
-                + mPrevFragments.peek());
-
             mManager.onNavigation(key, mShownFragment);
         }
 
-        mShownFragment = key;
-        Log.v("AndroidJavaTools", "Shown fragment updated to " + mShownFragment);
+        mPrevFragments.push(mShownFragment);
+        Log.v("AndroidJavaTools", "Fragment pushed to the previous fragment stack: "
+            + mPrevFragments.peek());
 
-        ((AppCompatActivity)mManager).getSupportFragmentManager().beginTransaction()
-            .show(frag)
+        mFragmentManager
+            .beginTransaction()
+            .show(fragmentToShow)
             .commit();
+        hideFragment(mShownFragment);
 
-        frag.setUserVisibleHint(true);
+        mShownFragment = key;
+        fragmentToShow.setUserVisibleHint(true);
+        Log.v("AndroidJavaTools", "Shown fragment updated to " + mShownFragment);
     }
 
     public void back() {
@@ -154,15 +153,32 @@ public class Navigator {
         }
 
         final String prevFragmentKey = mPrevFragments.pop();
-
         Log.v("AndroidJavaTools", "Fragment popped from the previous fragment stack: " + prevFragmentKey);
-        Log.d("AndroidJavaTools", "Navigating back to the fragment of type " + prevFragmentKey);
 
-        mManager.onNavigation(prevFragmentKey, mShownFragment);
+        if (prevFragmentKey == null || prevFragmentKey.equals("")) {
+            Log.w("AndroidJavaTools", "Cannot navigate back, as previous fragment null or empty");
+        }
 
-        ((AppCompatActivity)mManager).getSupportFragmentManager().beginTransaction()
+        Fragment fragmentToShow = mFragments.get(prevFragmentKey);
+        if (fragmentToShow == null) {
+            Log.w("AndroidJavaTools", "No registered fragment to show for the key: " + prevFragmentKey);
+            return;
+        }
+
+
+        if (mShownFragment != null) {
+            mManager.onNavigation(prevFragmentKey, mShownFragment);
+        }
+
+        mFragmentManager
+            .beginTransaction()
             .show(mFragments.get(prevFragmentKey))
             .commit();
+        hideFragment(mShownFragment);
+
+        mShownFragment = prevFragmentKey;
+        fragmentToShow.setUserVisibleHint(true);
+        Log.d("AndroidJavaTools", "Navigated back to the fragment of type " + prevFragmentKey);
     }
 
     public void toggleTabSwiping(boolean enable) {
@@ -181,19 +197,19 @@ public class Navigator {
         }
     }
 
-    private void hideFragment(String key) {
-        if (!mFragments.containsKey(key)) {
-            Log.w("AndroidJavaTools", "Cannot hide fragment, as none created for the provided key: " + key);
+    private void hideFragment(String fragment) {
+        if (!mFragments.containsKey(fragment)) {
+            Log.w("AndroidJavaTools", "Cannot hide fragment, as none created for the provided key: "
+                + fragment);
             return;
         }
-        Fragment frag = mFragments.get(key);
+        Fragment fragmentToHide = mFragments.get(fragment);
 
-        ((AppCompatActivity)mManager).getSupportFragmentManager().beginTransaction()
-            .hide(frag)
+        mFragmentManager
+            .beginTransaction()
+            .hide(fragmentToHide)
             .commit();
 
-        mShownFragment = null;
-
-        frag.setUserVisibleHint(false);
+        fragmentToHide.setUserVisibleHint(false);
     }
 }

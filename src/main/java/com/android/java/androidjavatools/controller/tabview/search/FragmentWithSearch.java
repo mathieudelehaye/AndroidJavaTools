@@ -43,8 +43,6 @@ import com.android.java.androidjavatools.model.SearchResult;
 import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.google.firebase.firestore.FirebaseFirestore;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.overlay.OverlayItem;
-import java.util.ArrayList;
 
 public abstract class FragmentWithSearch extends Fragment {
     public interface HistoryManager {

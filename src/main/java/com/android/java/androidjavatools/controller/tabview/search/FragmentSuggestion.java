@@ -36,8 +36,8 @@ import com.android.java.androidjavatools.databinding.FragmentSuggestionBinding;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.R;
 
-public class FragmentSuggestion extends FragmentWithSearch {
-    private FragmentSuggestionBinding mBinding;
+public abstract class FragmentSuggestion extends FragmentWithSearch {
+    protected FragmentSuggestionBinding mBinding;
     private Context mContext;
     private View mContainerView;
 
