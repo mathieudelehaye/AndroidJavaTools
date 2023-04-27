@@ -34,11 +34,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
-import com.android.java.androidjavatools.controller.tabview.result.EnhancedOverlayItem;
 import com.android.java.androidjavatools.databinding.FragmentMapBinding;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.model.ResultItemInfo;
-import com.android.java.androidjavatools.model.SearchResult;
 import com.android.java.androidjavatools.controller.tabview.dialog.FragmentHelpDialog;
 import com.android.java.androidjavatools.R;
 import org.osmdroid.api.IMapController;
@@ -210,7 +208,7 @@ public class FragmentMap extends FragmentResult {
     @Override
     protected void searchAndDisplayItems() {
 
-        searchResults(new TaskCompletionManager() {
+        searchForResults(new TaskCompletionManager() {
             @Override
             public void onSuccess() {
                 // Prepare the search results and download the images

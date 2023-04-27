@@ -51,8 +51,9 @@ public abstract class FragmentWithSearch extends Fragment {
     }
 
     public interface SearchProvider {
+        SearchResult getSearchResults();
         void searchGeoPointResults(GeoPoint searchStart, double searchRadiusInCoordinate,
-            FirebaseFirestore database, SearchResult outputResult, TaskCompletionManager... cbManager);
+            FirebaseFirestore database, TaskCompletionManager... cbManager);
     }
 
     protected FirebaseFirestore mDatabase;

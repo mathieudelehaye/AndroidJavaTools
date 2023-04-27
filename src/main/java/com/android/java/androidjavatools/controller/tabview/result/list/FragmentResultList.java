@@ -69,7 +69,7 @@ public abstract class FragmentResultList extends FragmentResult {
     protected void searchAndDisplayItems() {
 
         // Search for the RP around the user
-        searchResults(new TaskCompletionManager() {
+        searchForResults(new TaskCompletionManager() {
             @Override
             public void onSuccess() {
                 Log.v("AndroidJavaTools", "Results received from database at timestamp: "
@@ -77,7 +77,7 @@ public abstract class FragmentResultList extends FragmentResult {
 
                 var resultList = (ListView) getView().findViewById(R.id.result_list_view);
 
-                var adapter = new ResultListAdapter(getContext(), mFoundResult.getResultItems());
+                var adapter = new ResultListAdapter(getContext(), mFoundResult);
                 resultList.setAdapter(adapter);
 
                 resultList.setOnItemClickListener((adapterView, view, position, l) -> {
@@ -117,7 +117,7 @@ public abstract class FragmentResultList extends FragmentResult {
 
             changeSearchSwitch(ResultPageType.MAP);
 
-            //updateSearchResults();
+            updateSearchResults();
 
             showHelp();
         } else {

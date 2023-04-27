@@ -31,15 +31,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.java.androidjavatools.model.ResultItemInfo;
 import com.android.java.androidjavatools.R;
-import java.util.HashMap;
+import com.android.java.androidjavatools.model.SearchResult;
 
 public class ResultListAdapter extends BaseAdapter {
-    private HashMap<String, ResultItemInfo> mResultItems;
+    private SearchResult mResultItems;
     private Context mContext;
 
-    public ResultListAdapter(Context ctxt, HashMap<String, ResultItemInfo> items) {
+    public ResultListAdapter(Context ctxt, SearchResult result) {
         mContext=ctxt;
-        mResultItems = items;
+        mResultItems = result;
     }
 
     @Override

@@ -34,10 +34,6 @@ public class SearchResult {
     private int mReceivedImageNumber = 0;
     private final Object mImageUpdateLock = new Object();
 
-    public HashMap<String, ResultItemInfo> getResultItems() {
-        return mResultItems;
-    }
-
     public ResultItemInfo get(String key) {
         return mResultItems.get(key);
     }

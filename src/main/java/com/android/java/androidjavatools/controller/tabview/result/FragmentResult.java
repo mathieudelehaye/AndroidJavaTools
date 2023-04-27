@@ -228,14 +228,30 @@ public abstract class FragmentResult extends FragmentWithSearch {
         mSearchStart = value;
     }
 
-    protected void searchResults(TaskCompletionManager... cbManager) {
+    protected void searchForResults(TaskCompletionManager... cbManager) {
         if (mSearchStart == null) {
-            Log.w("AndroidJavaTools", "Cannot search the results because no search start");
+            Log.w("AndroidJavaTools", "Cannot search for the results because no search start");
             return;
         }
 
         mSearchProvider.searchGeoPointResults(mSearchStart, mSearchRadiusInCoordinate, mDatabase,
-                mFoundResult, cbManager);
+            new TaskCompletionManager() {
+                @Override
+                public void onSuccess() {
+                    mFoundResult = mSearchProvider.getSearchResults();
+
+                    if (cbManager.length >= 1) {
+                        cbManager[0].onSuccess();
+                    }
+                }
+
+                @Override
+                public void onFailure() {
+                    if (cbManager.length >= 1) {
+                        cbManager[0].onFailure();
+                    }
+                }
+            });
     }
 
     protected void changeSearchSwitch(ResultPageType destination) {
