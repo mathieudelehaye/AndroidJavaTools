@@ -54,8 +54,8 @@ public class SearchResult {
 
     public void downloadImages(TaskCompletionManager... cbManager) {
         // Asynchronously download the images then update the view adapter
-        for (int i = 0; i < mImageUrls.size(); i++) {
-            downloadAndDisplayImage(mImageUrls.get(i), mResultItems.get(i), cbManager);
+        for (String key: new ArrayList<>(mResultItems.keySet())) {
+            downloadAndDisplayImage(mImageUrls.get(key), mResultItems.get(key), cbManager);
         }
     }
 

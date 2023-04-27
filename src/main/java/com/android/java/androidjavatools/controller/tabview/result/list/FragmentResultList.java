@@ -97,7 +97,8 @@ public abstract class FragmentResultList extends FragmentResult {
                     }
                 });
 
-//                activity.setSearchResult(result);
+                final var resultProvider = (ResultProvider)getActivity();
+                resultProvider.setSearchResult(mFoundResult);
             }
 
             @Override
