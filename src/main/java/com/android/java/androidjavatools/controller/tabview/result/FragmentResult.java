@@ -33,9 +33,7 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.controller.tabview.dialog.FragmentHelpDialog;
-import com.android.java.androidjavatools.controller.tabview.result.list.FragmentResultList;
 import com.android.java.androidjavatools.controller.tabview.search.FragmentWithSearch;
-import com.android.java.androidjavatools.model.ResultItemInfo;
 import com.android.java.androidjavatools.model.SearchResult;
 import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.android.java.androidjavatools.R;
@@ -54,16 +52,6 @@ public abstract class FragmentResult extends FragmentWithSearch {
     public enum ResultPageType {
         LIST,
         MAP
-    }
-
-    public interface ResultProvider {
-        int getPreviousResultItemNumber();
-        ResultItemInfo getPreviousResultItem(int index);
-        SearchResult getSearchResult();
-        void setSearchResult(SearchResult result);
-        ResultItemInfo getSelectedResultItem();
-        void setSelectedResultItem(ResultItemInfo value);
-        void showResultList(FragmentResultList list);
     }
 
     protected GeoPoint mUserLocation;

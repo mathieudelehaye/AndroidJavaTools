@@ -35,10 +35,9 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import com.android.java.androidjavatools.controller.tabview.Navigator;
-import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
 import com.android.java.androidjavatools.controller.tabview.result.list.FragmentResultList;
-import com.android.java.androidjavatools.model.ResultItemInfo;
 import com.android.java.androidjavatools.R;
+import com.android.java.androidjavatools.model.ResultItemInfo;
 import com.android.java.androidjavatools.model.SearchResult;
 import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -48,6 +47,7 @@ public abstract class FragmentWithSearch extends Fragment {
     public interface HistoryManager {
         int getPreviousQueryNumber();
         String getPreviousSearchQuery(int index);
+        void storeSearchQuery(@NonNull String query);
     }
 
     public interface SearchProvider {
@@ -56,11 +56,21 @@ public abstract class FragmentWithSearch extends Fragment {
             FirebaseFirestore database, TaskCompletionManager... cbManager);
     }
 
+    public interface ResultProvider {
+        int getPreviousResultItemNumber();
+        ResultItemInfo getPreviousResultItem(int index);
+        SearchResult getSearchResult();
+        void setSearchResult(SearchResult result);
+        ResultItemInfo getSelectedResultItem();
+        void setSelectedResultItem(ResultItemInfo value);
+    }
+
     protected FirebaseFirestore mDatabase;
     protected SharedPreferences mSharedPref;
     protected Context mContext;
+    protected HistoryManager mHistoryManager;
+    protected ResultProvider mResultProvider;
     protected Navigator.NavigatorManager mNavigatorManager;
-    protected FragmentResult.ResultProvider mResultProvider;
     protected SearchableInfo mConfiguration;
     protected SearchView mSearchView;
     protected EditText mSearchQuery;
@@ -77,8 +87,9 @@ public abstract class FragmentWithSearch extends Fragment {
         mSharedPref = mContext.getSharedPreferences(
             getString(R.string.lib_name), Context.MODE_PRIVATE);
 
+        mHistoryManager = (HistoryManager)mContext;
+        mResultProvider = (ResultProvider)mContext;
         mNavigatorManager = (Navigator.NavigatorManager)mContext;
-        mResultProvider = (FragmentResult.ResultProvider)mContext;
 
         setupSearchBox(view);
     }
@@ -153,6 +164,7 @@ public abstract class FragmentWithSearch extends Fragment {
 
     protected void runSearch(String query) {
         FragmentResultList.setResultQuery(query);
+        mHistoryManager.storeSearchQuery(query);
         mNavigatorManager.navigator().showFragment("list");
     }
 
