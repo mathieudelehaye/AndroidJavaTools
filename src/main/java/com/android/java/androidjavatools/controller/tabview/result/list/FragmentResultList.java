@@ -5,7 +5,7 @@
 //
 //  AndroidJavaTools: A framework to develop Android apps in Java.
 //
-//  Copyright © 2022 Mathieu Delehaye. All rights reserved.
+//  Copyright © 2023 Mathieu Delehaye. All rights reserved.
 //
 //
 //  This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General

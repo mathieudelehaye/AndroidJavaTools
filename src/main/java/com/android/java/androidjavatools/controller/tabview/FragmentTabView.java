@@ -40,7 +40,6 @@ public abstract class FragmentTabView extends Fragment {
     protected FragmentTabViewBinding mBinding;
     protected NotSwipeableViewPager mViewPager;
     private Activity mActivity;
-    private Navigator.NavigatorManager mNavigatorManager;
 
     @Override
     public View onCreateView(
@@ -59,7 +58,6 @@ public abstract class FragmentTabView extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mActivity = getActivity();
-        mNavigatorManager = (Navigator.NavigatorManager) mActivity;
 
         mViewPager = mBinding.tabViewPager;
         TabLayout tabLayout = mBinding.tabViewTabbar;
