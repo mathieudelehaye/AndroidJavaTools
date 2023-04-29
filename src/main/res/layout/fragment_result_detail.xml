@@ -9,12 +9,15 @@
     Copyright © 2023 Mathieu Delehaye. All rights reserved.
 
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+    Public License as published by
     the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS
     FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-    You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+    <https://www.gnu.org/licenses/>.
 -->
 
 <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,18 +26,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.beautyorder.androidclient.com.android.java.androidjavatools.controller.tabview.result.FragmentResultDetail">
+    tools:context="com.android.java.androidjavatools.controller.tabview.result.FragmentResultDetail">
 
-    <ImageView
-        android:id="@+id/image_result_detail"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:importantForAccessibility="no"
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/result_detail_header_layout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="66dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-    />
+    >
+
+        <ImageView
+            android:id="@+id/image_result_detail"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:importantForAccessibility="no"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+        />
+
+        <Button
+            android:id="@+id/save_result_detail"
+            android:backgroundTint="@color/Transparent"
+            android:background="@null"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="15dp"
+            android:paddingStart="0dp"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="24dp"
+            app:layout_constraintStart_toEndOf="@id/image_result_detail"
+            app:layout_constraintTop_toTopOf="parent"
+            style="?android:attr/borderlessButtonStyle"
+        />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/description_result_detail_layout"
@@ -44,7 +75,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginTop="5dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image_result_detail"
+        app:layout_constraintTop_toBottomOf="@id/result_detail_header_layout"
     >
 
         <View
@@ -87,5 +118,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/description_result_detail_layout"
     />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

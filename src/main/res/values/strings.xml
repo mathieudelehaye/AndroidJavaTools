@@ -41,4 +41,8 @@
         Et minus laboriosam qui laborum voluptate aut doloribus soluta ex voluptatem amet. Sed quae voluptatum et
         velit quam et rerum asperiores! Aut quam dicta quo architecto corporis qui consequatur eveniet.
     </string>
+
+    <!-- Detail Fragment -->
+    <string name="save_text">Result added to favorites</string>
+    <string name="unsave_text">Result removed from favorites</string>
 </resources>
