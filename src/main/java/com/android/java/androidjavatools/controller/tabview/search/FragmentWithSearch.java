@@ -44,7 +44,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.osmdroid.util.GeoPoint;
 
 public abstract class FragmentWithSearch extends Fragment {
-    public interface HistoryManager {
+    public interface SearchHistoryManager {
         int getPreviousQueryNumber();
         String getPreviousSearchQuery(int index);
         void storeSearchQuery(@NonNull String query);
@@ -57,18 +57,23 @@ public abstract class FragmentWithSearch extends Fragment {
     }
 
     public interface ResultProvider {
-        int getPreviousResultItemNumber();
-        ResultItemInfo getPreviousResultItem(int index);
         SearchResult getSearchResult();
         void setSearchResult(SearchResult result);
         ResultItemInfo getSelectedResultItem();
         void setSelectedResultItem(ResultItemInfo value);
+        int getPreviousResultNumber();
+        ResultItemInfo getPreviousResultItem(int index);
+        int getSavedResultItemNumber();
+        ResultItemInfo getSavedResultItem(int index);
+        boolean createSavedResult(ResultItemInfo value);
+        boolean isSavedResult(String key);
+        void deleteSavedResult(String key);
     }
 
     protected FirebaseFirestore mDatabase;
     protected SharedPreferences mSharedPref;
     protected Context mContext;
-    protected HistoryManager mHistoryManager;
+    protected SearchHistoryManager mHistoryManager;
     protected ResultProvider mResultProvider;
     protected Navigator.NavigatorManager mNavigatorManager;
     protected SearchableInfo mConfiguration;
@@ -81,13 +86,11 @@ public abstract class FragmentWithSearch extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mDatabase = FirebaseFirestore.getInstance();
-
         mContext = view.getContext();
-
         mSharedPref = mContext.getSharedPreferences(
             getString(R.string.lib_name), Context.MODE_PRIVATE);
 
-        mHistoryManager = (HistoryManager)mContext;
+        mHistoryManager = (SearchHistoryManager)mContext;
         mResultProvider = (ResultProvider)mContext;
         mNavigatorManager = (Navigator.NavigatorManager)mContext;
 

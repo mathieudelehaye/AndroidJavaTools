@@ -47,9 +47,11 @@ import com.android.java.androidjavatools.R;
 public abstract class FragmentResultDetail extends Fragment {
     private FragmentResultDetailBinding mBinding;
     private Context mContext;
-    private Navigator.NavigatorManager mNavigatorManager;
     private FragmentResult.ResultProvider mResultProvider;
-    private boolean mIsFavorite = false;
+    private ResultItemInfo mSelectedItem;
+    private String mSelectedItemKey;
+    private boolean mIsSaved;
+    private Button mSaveButton;
 
     @Override
     public View onCreateView(
@@ -68,24 +70,25 @@ public abstract class FragmentResultDetail extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mContext = getContext();
-        mNavigatorManager = (Navigator.NavigatorManager)getActivity();
         mResultProvider = (FragmentResult.ResultProvider) getActivity();
 
-        Button saveButton = mBinding.saveResultDetail;
-        saveButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.heart_outline, 0, 0, 0);
-        saveButton.setCompoundDrawableTintList(
-            ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.ButtonGray)));
+        mSaveButton = mBinding.saveResultDetail;
+        mSaveButton.setOnClickListener(v -> {
+            if (mSelectedItem == null || mSelectedItemKey == null) {
+                return;
+            }
 
-        saveButton.setOnClickListener(v -> {
-            mIsFavorite = !mIsFavorite;
+            boolean toSave = !mResultProvider.isSavedResult(mSelectedItemKey);
 
-            final int icon = mIsFavorite ? R.drawable.heart : R.drawable.heart_outline;
-            final int color = mIsFavorite ? R.color.black : R.color.ButtonGray;
-            final int toastText = mIsFavorite ? R.string.save_text : R.string.unsave_text;
+            if (toSave) {
+                mResultProvider.createSavedResult(mSelectedItem);
+            } else {
+                mResultProvider.deleteSavedResult(mSelectedItemKey);
+            }
 
-            saveButton.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0);
-            saveButton.setCompoundDrawableTintList(ColorStateList.valueOf(ContextCompat.getColor(mContext, color)));
+            updateSavedButton();
 
+            final int toastText = toSave ? R.string.save_text : R.string.unsave_text;
             Toast.makeText(mContext, toastText, Toast.LENGTH_SHORT).show();
         });
 
@@ -103,18 +106,20 @@ public abstract class FragmentResultDetail extends Fragment {
             Log.d("AndroidJavaTools", "Result detail view becomes visible");
 
             updateDetails();
+            updateSavedButton();
         }
     }
 
     private void updateDetails() {
         // Description and image
-        final ResultItemInfo info = mResultProvider.getSelectedResultItem();
+        mSelectedItem = mResultProvider.getSelectedResultItem();
+        mSelectedItemKey = mSelectedItem.getKey();
 
-        final byte[] imageBytes = info.getImage();
-        final boolean showImage = info.isImageShown();
+        final byte[] imageBytes = mSelectedItem.getImage();
+        final boolean showImage = mSelectedItem.isImageShown();
 
-        String title = showImage ? info.getTitle() : "Lorem ipsum dolor sit";
-        String description = showImage ? info.getDescription() : "Lorem ipsum dolor sit amet. Ut enim "
+        String title = showImage ? mSelectedItem.getTitle() : "Lorem ipsum dolor sit";
+        String description = showImage ? mSelectedItem.getDescription() : "Lorem ipsum dolor sit amet. Ut enim "
             + "corporis ea labore esse ea illum consequatur. Et reiciendis ducimus et repellat magni id ducimus "
             + "nesc.";
 
@@ -130,5 +135,16 @@ public abstract class FragmentResultDetail extends Fragment {
             resultImage.setImageResource(R.drawable.camera);
         }
         resultImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+    }
+
+    @SuppressLint("UseCompatTextViewDrawableApis")
+    private void updateSavedButton() {
+        mIsSaved = mResultProvider.isSavedResult(mSelectedItemKey);
+
+        final int icon = mIsSaved ? R.drawable.heart : R.drawable.heart_outline;
+        final int color = mIsSaved ? R.color.black : R.color.ButtonGray;
+
+        mSaveButton.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0);
+        mSaveButton.setCompoundDrawableTintList(ColorStateList.valueOf(ContextCompat.getColor(mContext, color)));
     }
 }

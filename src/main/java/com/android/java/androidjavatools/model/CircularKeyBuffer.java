@@ -71,7 +71,7 @@ public class CircularKeyBuffer<T> {
         return mData.size();
     }
 
-    public T readFromEnd(Integer index) {
+    public T getFromEnd(Integer index) {
         final boolean atLeastFourDataItems = mData.size() > mMaximumItemIndex;
 
         if (!atLeastFourDataItems && index > mMostRecentItemIndex) {

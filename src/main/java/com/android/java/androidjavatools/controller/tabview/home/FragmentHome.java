@@ -37,7 +37,7 @@ public abstract class FragmentHome extends FragmentWithSearch {
     protected FragmentHomeBinding mBinding;
     protected Context mContext;
     protected FirebaseFirestore mDatabase;
-    protected HistoryManager mHistoryManager;
+    protected SearchHistoryManager mHistoryManager;
     protected FragmentResult.ResultProvider mResultProvider;
 
     public FragmentHome(FragmentResult.ResultProvider provider) {
@@ -61,7 +61,7 @@ public abstract class FragmentHome extends FragmentWithSearch {
         mDatabase = FirebaseFirestore.getInstance();
         mContext = getContext();
 
-        mHistoryManager = (HistoryManager)getActivity();
+        mHistoryManager = (SearchHistoryManager)getActivity();
         mResultProvider = (FragmentResult.ResultProvider) getActivity();
 
         updateRecentResults();
@@ -87,7 +87,7 @@ public abstract class FragmentHome extends FragmentWithSearch {
             return;
         }
 
-        final var results = mResultProvider.getPreviousResultItemNumber();
+        final var results = mResultProvider.getPreviousResultNumber();
 
         for(int i = 0; i < buttonNumber; i++) {
             var historyButton = (i == 0) ?
