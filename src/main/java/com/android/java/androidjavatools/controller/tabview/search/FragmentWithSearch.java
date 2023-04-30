@@ -42,6 +42,8 @@ import com.android.java.androidjavatools.model.SearchResult;
 import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.google.firebase.firestore.FirebaseFirestore;
 import org.osmdroid.util.GeoPoint;
+import java.util.List;
+import java.util.Map;
 
 public abstract class FragmentWithSearch extends Fragment {
     public interface SearchHistoryManager {
@@ -63,8 +65,8 @@ public abstract class FragmentWithSearch extends Fragment {
         void setSelectedResultItem(ResultItemInfo value);
         int getPreviousResultNumber();
         ResultItemInfo getPreviousResultItem(int index);
-        int getSavedResultItemNumber();
-        ResultItemInfo getSavedResultItem(int index);
+        Map<String, ResultItemInfo> getSavedResults();
+        List<String> getSavedResultKeys();
         boolean createSavedResult(ResultItemInfo value);
         boolean isSavedResult(String key);
         void deleteSavedResult(String key);

@@ -28,17 +28,29 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import com.android.java.androidjavatools.controller.tabview.search.FragmentWithSearch;
 import com.android.java.androidjavatools.databinding.FragmentSavedListBinding;
 import com.android.java.androidjavatools.R;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class FragmentSavedList extends Fragment {
     protected FragmentSavedListBinding mBinding;
+    protected FragmentWithSearch.ResultProvider mResultProvider;
     private Toolbar mToolbar;
+    private Button mToolbarBackButton;
+    private ListView mSavedItemList;
+    private BaseAdapter mListAdapter;
+
+    public FragmentSavedList(FragmentWithSearch.ResultProvider provider) {
+        mResultProvider = provider;
+    }
 
     @Override
     public View onCreateView(
@@ -55,13 +67,29 @@ public abstract class FragmentSavedList extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mToolbar = mBinding.savedListViewToolbarLayout.findViewById(R.id.ajt_toolbar);
+        mToolbarBackButton = mToolbar.findViewById(R.id.ajt_toolbar_back);
+
+        mSavedItemList = mBinding.savedListView;
+        mListAdapter = new SavedListAdapter(getContext(), mResultProvider.getSavedResults(),
+            mResultProvider.getSavedResultKeys());
+        mSavedItemList.setAdapter(mListAdapter);
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
+        if (isVisibleToUser) {
+            Log.d("AndroidJavaTools", "Saved view becomes visible");
+
+            mListAdapter.notifyDataSetChanged();
+        }
+
         toggleToolbar(isVisibleToUser);
+    }
+
+    protected void setToolbarBackButtonVisibility(boolean visible) {
+        mToolbarBackButton.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     protected void setToolbarBackgroundColor(int color) {

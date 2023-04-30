@@ -24,32 +24,37 @@ package com.android.java.androidjavatools.controller.tabview.saved;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.model.ResultItemInfo;
-import com.android.java.androidjavatools.model.SearchResult;
+import java.util.List;
+import java.util.Map;
 
 public class SavedListAdapter extends BaseAdapter {
-    private SearchResult mResultItems;
     private Context mContext;
+    private Map<String, ResultItemInfo> mResults;
+    private List<String> mResultKeys;
 
-    public SavedListAdapter(Context ctxt, SearchResult result) {
+    public SavedListAdapter(Context ctxt, Map<String, ResultItemInfo> results, List<String> keys) {
         mContext=ctxt;
-        mResultItems = result;
+        mResults = results;
+        mResultKeys = keys;
     }
 
     @Override
     public int getCount() {
-        return mResultItems.size();
+        return mResults.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mResultItems.get(position);
+        return mResults.get(mResultKeys.get(position));
     }
 
     @Override
@@ -60,8 +65,10 @@ public class SavedListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = View.inflate(mContext, R.layout.saved_list_item,null);
+
         TextView textView = view.findViewById(R.id.saved_list_item_text);
-        ImageView imageView = view.findViewById(R.id.result_list_item_image);
+        ImageView imageView = view.findViewById(R.id.saved_list_item_image);
+        Button buttonView = view.findViewById(R.id.saved_list_item_delete);
 
         var itemInfo=(ResultItemInfo) getItem(position);
 
@@ -78,6 +85,10 @@ public class SavedListAdapter extends BaseAdapter {
             imageView.setImageResource(R.drawable.camera);
         }
         imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+        buttonView.setOnClickListener(v -> {
+            Log.v("AndroidJavaTools", "mdl button clicked for saved item in position " + position);
+        });
 
         return view;
     }
