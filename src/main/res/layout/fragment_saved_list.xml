@@ -24,17 +24,27 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/saved_list_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     tools:context="com.android.java.androidjavatools.controller.tabview.saved.FragmentSavedList"
 >
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/saved_list_view_toolbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="52.5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+    >
+        <include layout="@layout/toolbar"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_height="330dp"
-        android:layout_width="match_parent"
         android:layout_marginTop="150dp"
+        android:layout_width="match_parent"
+        android:layout_height="330dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
     >

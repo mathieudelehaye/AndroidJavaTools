@@ -21,20 +21,24 @@
 
 package com.android.java.androidjavatools.controller.tabview.saved;
 
+import android.annotation.SuppressLint;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import com.android.java.androidjavatools.Helpers;
-import com.android.java.androidjavatools.controller.tabview.FragmentToolbar;
 import com.android.java.androidjavatools.databinding.FragmentSavedListBinding;
+import com.android.java.androidjavatools.R;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class FragmentSavedList extends Fragment {
     protected FragmentSavedListBinding mBinding;
-    private FragmentToolbar mFragmentToolbar;
+    private Toolbar mToolbar;
 
     @Override
     public View onCreateView(
@@ -45,18 +49,28 @@ public abstract class FragmentSavedList extends Fragment {
         return mBinding.getRoot();
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.v("AndroidJavaTools", "Saved list view created at timestamp: "
-            + Helpers.getTimestamp());
-
-        mFragmentToolbar = new FragmentToolbar();
-
-        getChildFragmentManager()
-            .beginTransaction()
-            .show(mFragmentToolbar)
-            .commit();
-
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mToolbar = mBinding.savedListViewToolbarLayout.findViewById(R.id.ajt_toolbar);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        toggleToolbar(isVisibleToUser);
+    }
+
+    protected void setToolbarBackgroundColor(int color) {
+        mToolbar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(color)));
+    }
+
+    private void toggleToolbar(Boolean visible) {
+        Log.v("AndroidJavaTools", "Saved page toolbar " + (visible ? "shown" : "hidden"));
+
+        mToolbar.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 }
