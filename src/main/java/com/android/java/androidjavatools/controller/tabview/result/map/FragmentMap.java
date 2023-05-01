@@ -45,7 +45,6 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.*;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
-
 import java.util.ArrayList;
 
 public class FragmentMap extends FragmentResult {

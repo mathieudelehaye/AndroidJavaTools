@@ -30,6 +30,7 @@
 
     <ImageView
         android:id="@+id/saved_list_item_image"
+        android:background="@drawable/camera"
         android:layout_width="140dp"
         android:layout_height="120dp"
         android:importantForAccessibility="no"
@@ -38,36 +39,33 @@
         app:layout_constraintTop_toTopOf="parent"
     />
 
-    <View
-        android:id="@+id/saved_list_item_delete_background"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/saved_list_item_delete_layout"
+        android:background="@drawable/delete_saved_item_layout_bg"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="10dp"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toStartOf="@id/saved_list_item_text"
         app:layout_constraintTop_toTopOf="parent"
-    />
+    >
 
-    <Button
-        android:id="@+id/saved_list_item_delete"
-        android:backgroundTint="@color/Transparent"
-        android:background="@null"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="10dp"
-        android:paddingStart="0dp"
-        app:icon="@drawable/heart"
-        app:iconGravity="textStart"
-        app:iconPadding="0dp"
-        app:iconSize="24dp"
-        app:layout_constraintEnd_toStartOf="@id/saved_list_item_text"
-        app:layout_constraintTop_toTopOf="parent"
-        style="?android:attr/borderlessButtonStyle"
-    />
+        <ImageButton
+            android:id="@+id/saved_list_item_delete"
+            android:background="@drawable/heart"
+            android:backgroundTint="@color/HeartRed"
+            android:layout_marginStart="7.5dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+        />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/saved_list_item_text"
+        android:text="This is a placeholder"
         android:layout_width="271dp"
         android:layout_height="match_parent"
         android:maxLines = "6"

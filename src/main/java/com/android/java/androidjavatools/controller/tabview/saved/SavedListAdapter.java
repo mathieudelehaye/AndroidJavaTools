@@ -27,10 +27,7 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.model.ResultItemInfo;
 import java.util.List;
@@ -68,7 +65,7 @@ public class SavedListAdapter extends BaseAdapter {
 
         TextView textView = view.findViewById(R.id.saved_list_item_text);
         ImageView imageView = view.findViewById(R.id.saved_list_item_image);
-        Button buttonView = view.findViewById(R.id.saved_list_item_delete);
+        ImageButton buttonView = view.findViewById(R.id.saved_list_item_delete);
 
         var itemInfo=(ResultItemInfo) getItem(position);
 
