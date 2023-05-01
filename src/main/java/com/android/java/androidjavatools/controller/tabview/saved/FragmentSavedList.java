@@ -63,7 +63,9 @@ public abstract class FragmentSavedList extends Fragment {
 
     @SuppressLint("ResourceAsColor")
     @Override
-    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull @NotNull View view,
+        @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+
         super.onViewCreated(view, savedInstanceState);
 
         mToolbar = mBinding.savedListViewToolbarLayout.findViewById(R.id.ajt_toolbar);
