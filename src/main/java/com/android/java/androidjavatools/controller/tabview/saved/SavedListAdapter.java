@@ -29,19 +29,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.android.java.androidjavatools.R;
+import com.android.java.androidjavatools.controller.tabview.search.FragmentWithSearch;
 import com.android.java.androidjavatools.model.ResultItemInfo;
 import java.util.List;
 import java.util.Map;
 
 public class SavedListAdapter extends BaseAdapter {
     private Context mContext;
+    protected FragmentWithSearch.ResultProvider mResultProvider;
     private Map<String, ResultItemInfo> mResults;
     private List<String> mResultKeys;
 
-    public SavedListAdapter(Context ctxt, Map<String, ResultItemInfo> results, List<String> keys) {
-        mContext=ctxt;
-        mResults = results;
-        mResultKeys = keys;
+    public SavedListAdapter(Context ctxt, FragmentWithSearch.ResultProvider resultProvider) {
+        mContext = ctxt;
+        mResultProvider = resultProvider;
+        mResults = resultProvider.getSavedResults();
+        mResultKeys = resultProvider.getSavedResultKeys();
     }
 
     @Override
@@ -85,6 +88,9 @@ public class SavedListAdapter extends BaseAdapter {
 
         buttonView.setOnClickListener(v -> {
             Log.v("AndroidJavaTools", "mdl button clicked for saved item in position " + position);
+
+            mResultProvider.deleteSavedResult(mResultKeys.get(position));
+            notifyDataSetChanged();
         });
 
         return view;

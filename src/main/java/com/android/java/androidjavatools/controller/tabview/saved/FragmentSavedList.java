@@ -72,8 +72,7 @@ public abstract class FragmentSavedList extends Fragment {
         mToolbarBackButton = mToolbar.findViewById(R.id.ajt_toolbar_back);
 
         mSavedItemList = mBinding.savedListView;
-        mListAdapter = new SavedListAdapter(getContext(), mResultProvider.getSavedResults(),
-            mResultProvider.getSavedResultKeys());
+        mListAdapter = new SavedListAdapter(getContext(), mResultProvider);
         mSavedItemList.setAdapter(mListAdapter);
     }
 
