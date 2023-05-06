@@ -5,70 +5,64 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import com.google.accompanist.pager.HorizontalPager
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.android.java.androidjavatools.R
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalPagerApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val images = intArrayOf(R.drawable.beauty01, R.drawable.beauty02, R.drawable.beauty03,
+            R.drawable.beauty04, R.drawable.beauty05)
+
         setContent {
             Column {
-                messageCard(Message("Android", "Jetpack Compose"))
-
-                HorizontalPager(
-                    modifier = Modifier.fillMaxWidth(),
-                    count = 10
-                ) { page ->
-                    Box(
-                        modifier = Modifier
-                            .padding(10.dp)
-                            .background(Color.Blue)
-                            .fillMaxWidth()
-                            .aspectRatio(1f)
-                    ) {
-                        Text(text = page.toString())
-                    }
-                }
+                Spacer(modifier = Modifier.height(130.dp))
+                infinitePage(images)
+                Spacer(modifier = Modifier.height(40.dp))
+                infinitePage(images)
+                Spacer(modifier = Modifier.height(40.dp))
+                infinitePage(images)
             }
         }
     }
 
+    @OptIn(ExperimentalPagerApi::class)
     @Composable
-    fun messageCard(msg: Message) {
+    fun infinitePage(images: IntArray) {
         // Add padding around our message
-        Row(modifier = Modifier.padding(all = 8.dp)) {
-            Image(
-                painter = painterResource(R.drawable.beauty01),
-                contentDescription = "Contact profile picture",
-                modifier = Modifier
-                    // Set image size to 40 dp
-                    .size(40.dp)
-                    // Clip image to be shaped as a circle
-                    .clip(CircleShape)
+        HorizontalPager(
+            count = Int.MAX_VALUE,
+            state = rememberPagerState(
+                initialPage = Int.MAX_VALUE / 2
             )
-
-            // Add a horizontal space between the image and the column
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Column {
-                Text(text = msg.author)
-                // Add a vertical space between the author and message texts
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = msg.body)
+        ) { page ->
+            Box(
+                modifier = Modifier
+                    .background(Color.White)
+                    .border(width = 2.dp, Color.DarkGray)
+                    .width(251.dp)
+                    .height(180.dp)
+            ) {
+                Image(
+                    contentDescription = "Contact profile picture",
+                    painter = painterResource(images[page % 5]),
+                    contentScale = ContentScale.FillHeight,
+                    modifier = Modifier
+                    .align(Alignment.Center)
+                )
             }
         }
     }
 }
-
-data class Message(val author: String, val body: String)
