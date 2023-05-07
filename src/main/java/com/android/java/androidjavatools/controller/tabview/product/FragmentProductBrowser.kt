@@ -1,5 +1,5 @@
 //
-//  FragmentResultDetail.kt
+//  FragmentProductBrowser.kt
 //
 //  Created by Mathieu Delehaye on 6/05/2023.
 //
@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.controller.tabview.sample
+package com.android.java.androidjavatools.controller.tabview.product
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -39,12 +39,11 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import com.android.java.androidjavatools.R
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
-abstract class FragmentSampleBrowser : Fragment() {
+abstract class FragmentProductBrowser : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -55,21 +54,14 @@ abstract class FragmentSampleBrowser : Fragment() {
             // is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-            val images = intArrayOf(R.drawable.beauty01, R.drawable.beauty02, R.drawable.beauty03,
-                R.drawable.beauty04, R.drawable.beauty05)
-
             setContent {
-                Column {
-                    Spacer(modifier = Modifier.height(130.dp))
-                    infinitePager(images)
-                    Spacer(modifier = Modifier.height(40.dp))
-                    infinitePager(images)
-                    Spacer(modifier = Modifier.height(40.dp))
-                    infinitePager(images)
-                }
+                viewContent()
             }
         }
     }
+
+    @Composable
+    abstract fun viewContent()
 
     @OptIn(ExperimentalPagerApi::class)
     @Composable
@@ -85,8 +77,8 @@ abstract class FragmentSampleBrowser : Fragment() {
                 modifier = Modifier
                     .background(Color.White)
                     .border(width = 2.dp, Color.DarkGray)
-                    .width(251.dp)
-                    .height(180.dp)
+                    .width(201.dp)
+                    .height(144.dp)
             ) {
                 Image(
                     contentDescription = "Contact profile picture",
