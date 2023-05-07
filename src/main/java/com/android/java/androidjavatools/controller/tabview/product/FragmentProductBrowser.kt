@@ -45,9 +45,9 @@ import com.google.accompanist.pager.rememberPagerState
 
 abstract class FragmentProductBrowser : Fragment() {
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater
+        , container: ViewGroup?
+        , savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
             // Dispose of the Composition when the view's LifecycleOwner
@@ -65,7 +65,9 @@ abstract class FragmentProductBrowser : Fragment() {
 
     @OptIn(ExperimentalPagerApi::class)
     @Composable
-    fun infinitePager(images: IntArray) {
+    fun infinitePager(
+        images: IntArray
+    ) {
         // Add padding around our message
         HorizontalPager(
             count = Int.MAX_VALUE,
@@ -81,11 +83,11 @@ abstract class FragmentProductBrowser : Fragment() {
                     .height(150.dp)
             ) {
                 Image(
-                    contentDescription = "Contact profile picture",
-                    painter = painterResource(images[page % 5]),
-                    contentScale = ContentScale.FillHeight,
-                    modifier = Modifier
-                    .align(Alignment.Center)
+                    contentDescription = "Contact profile picture"
+                    , painter = painterResource(images[page % 5])
+                    , contentScale = ContentScale.FillHeight
+                    , modifier = Modifier
+                        .align(Alignment.Center)
                 )
             }
         }
