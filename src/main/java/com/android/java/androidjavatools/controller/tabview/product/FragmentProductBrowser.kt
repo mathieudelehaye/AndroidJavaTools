@@ -79,8 +79,8 @@ abstract class FragmentProductBrowser : Fragment() {
                 modifier = Modifier
                     .background(Color.White)
                     .border(width = 2.dp, Color.DarkGray)
-                    .width(220.dp)
-                    .height(150.dp)
+                    .width(191.dp)
+                    .height(130.dp)
             ) {
                 Image(
                     contentDescription = "Contact profile picture"
