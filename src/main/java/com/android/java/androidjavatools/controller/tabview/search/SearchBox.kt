@@ -20,19 +20,54 @@
 
 package com.android.java.androidjavatools.controller.tabview.search
 
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import android.widget.Filter.FilterListener
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import com.android.java.androidjavatools.databinding.SearchViewBinding
 
-@Composable
-fun SearchBox() {
-    AndroidViewBinding(SearchViewBinding::inflate) {
-    }
-}
+class SearchBox: FilterListener {
+    @Composable
+    fun show() {
+        AndroidViewBinding(SearchViewBinding::inflate) {
+            // Edit text
+            val textWatcher = object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-@Preview
-@Composable
-fun previewBrowserSearch() {
-    SearchBox()
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    if (searchViewQuery.text.toString().equals("")) {
+                        // If the query is empty, hide the Clear button
+                        searchViewClearButton.visibility = View.GONE
+                    } else {
+                        searchViewClearButton.visibility = View.VISIBLE
+                    }
+
+                    //performFiltering()
+                }
+
+                override fun afterTextChanged(s: Editable?) {}
+            }
+            searchViewQuery.addTextChangedListener(textWatcher)
+
+            // Clear button
+            searchViewClearButton.visibility = View.GONE
+            searchViewClearButton.setOnClickListener {
+                v: View? -> searchViewQuery.text.clear()
+            }
+        }
+    }
+
+    @Preview
+    @Composable
+    fun previewBrowserSearch() {
+        var searchBox = SearchBox()
+        searchBox.show()
+    }
+
+    override fun onFilterComplete(count: Int) {
+        TODO("Not yet implemented")
+    }
 }
