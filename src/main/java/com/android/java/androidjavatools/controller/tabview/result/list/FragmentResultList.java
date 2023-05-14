@@ -50,6 +50,10 @@ public abstract class FragmentResultList extends FragmentResult {
         Bundle savedInstanceState
     ) {
         mBinding = FragmentResultListBinding.inflate(inflater, container, false);
+
+        var contentView = new ResultListView(getActivity(), this, mBinding);
+        contentView.show();
+
         return mBinding.getRoot();
     }
 

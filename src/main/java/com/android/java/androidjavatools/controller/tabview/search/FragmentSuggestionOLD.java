@@ -32,6 +32,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import androidx.annotation.NonNull;
+import androidx.compose.ui.platform.ViewCompositionStrategy;
 import com.android.java.androidjavatools.databinding.FragmentSuggestionBinding;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.R;
@@ -40,6 +41,7 @@ public abstract class FragmentSuggestion extends FragmentWithSearch {
     protected FragmentSuggestionBinding mBinding;
     private Context mContext;
     private View mContainerView;
+    private SearchBox mSearchView;
 
     @Override
     public View onCreateView(
@@ -47,6 +49,17 @@ public abstract class FragmentSuggestion extends FragmentWithSearch {
         Bundle savedInstanceState
     ) {
         mBinding = FragmentSuggestionBinding.inflate(inflater, container, false);
+
+        // Dispose of the Composition when the view's LifecycleOwner is destroyed
+        mBinding.suggestionSearchComposeView.setViewCompositionStrategy(
+            new ViewCompositionStrategy.DisposeOnLifecycleDestroyed(getActivity()));
+
+        SearchBox sb = new SearchBox(getActivity(), this);
+        mBinding.suggestionSearchComposeView.setContent({
+            // In Compose world
+            sb.setQuery("example 1");
+        });
+
         return mBinding.getRoot();
     }
 
@@ -59,6 +72,8 @@ public abstract class FragmentSuggestion extends FragmentWithSearch {
 
         mContext = getContext();
         mContainerView = view;
+
+        mSearchView = new SearchBox(getActivity(), this);
 
         final var suggestionsAdapter = new SuggestionsAdapter(mContext, mSearchView, mConfiguration);
         mSearchView.setAdapter(suggestionsAdapter);
@@ -75,8 +90,8 @@ public abstract class FragmentSuggestion extends FragmentWithSearch {
 
         suggestionsList.setOnItemClickListener((adapterView, view, position, l) -> {
             final String query = ((Cursor)adapter.getItem(position)).getString(1);
-            mSearchQuery.setText(query);
-            Log.v("AndroidJavaTools", "Search query set from tapped suggestion to: " + query);
+            mSearchView.setQuery(query);
+            Log.v("AndroidJavaTools",  "Search query set from tapped suggestion to: " + query);
 
             // Start the search
             runSearch(query);
@@ -97,14 +112,14 @@ public abstract class FragmentSuggestion extends FragmentWithSearch {
 
             // When the view is displayed, the keyboard is visible. So, give the focus to the edit text view
             Log.v("AndroidJavaTools", "Focus requested on the edit text view");
-            mSearchQuery.requestFocus();
+//            mSearchQuery.requestFocus();
 
             // Show the keyboard
             final var inputManager = (InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 
             // Clear the edit text
-            mSearchQuery.getText().clear();
+            mSearchView.setQuery("");
         }
     }
 

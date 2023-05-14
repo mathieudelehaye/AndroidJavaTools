@@ -249,7 +249,7 @@ public abstract class FragmentResult extends FragmentWithSearch {
             return;
         }
 
-        Button viewSwitch = containerView.findViewById(R.id.search_box_switch_button);
+        Button viewSwitch = containerView.findViewById(R.id.search_view_switch_button);
         if (viewSwitch == null) {
             Log.w("AndroidJavaTools", "No view found when changing the search switch");
             return;

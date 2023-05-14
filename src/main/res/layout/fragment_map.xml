@@ -134,8 +134,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
         >
 
-            <include layout="@layout/search_box"/>
-
+            <include layout="@layout/search_view"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
