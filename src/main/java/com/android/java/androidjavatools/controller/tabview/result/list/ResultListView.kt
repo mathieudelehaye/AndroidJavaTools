@@ -57,9 +57,6 @@ class ResultListView {
                     hasQueryFocus = hasQueryFocus
                     , onQueryFocusChange = {
                     hasQueryFocus = it
-                    if (hasQueryFocus) {
-                        mNavigatorManager.navigator().showFragment("suggestion")
-                    }
                 })
             }
         }

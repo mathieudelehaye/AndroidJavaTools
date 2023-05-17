@@ -31,31 +31,28 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
-import android.widget.EditText;
 import android.widget.TextView;
 import com.android.java.androidjavatools.R;
-
 
 public class SuggestionsAdapter extends CursorAdapter {
 
     private static final int QUERY_LIMIT = 50;
     private Context mContext;
     private final SearchManager mSearchManager;
-    private final EditText mSearchView;
+    private final SearchBox mSearchView;
     private final SearchableInfo mSearchable;
     private Cursor mLastFoundSuggestions;
 
-    public SuggestionsAdapter(Context context, SearchView search, SearchableInfo searchable) {
+    public SuggestionsAdapter(Context context, SearchBox search, SearchableInfo searchable) {
         super(context, null /* no initial cursor */, true /* auto-requery */);
 
         mContext = context;
         mSearchManager = (SearchManager) context.getSystemService(Context.SEARCH_SERVICE);
         mSearchable = searchable;
 
-        mSearchView = search.findViewById(R.id.search_view_query);
-        if (mSearchView == null) {
-            Log.e("AndroidJavaTools", "Error with suggestions adapter, as no Query edit text");
-        }
+        search.setSuggestionsAdapter(this);
+
+        mSearchView = search;
     }
 
     /**
@@ -69,12 +66,6 @@ public class SuggestionsAdapter extends CursorAdapter {
         Log.d("AndroidJavaTools", "runQueryOnBackgroundThread(" + constraint + ")");
 
         final String query = (constraint == null) ? "" : constraint.toString();
-
-        if (mSearchView.getVisibility() != View.VISIBLE
-            || mSearchView.getWindowVisibility() != View.VISIBLE) {
-
-            return null;
-        }
 
         try {
             final Cursor cursor = getSuggestions(mSearchable, query, QUERY_LIMIT);

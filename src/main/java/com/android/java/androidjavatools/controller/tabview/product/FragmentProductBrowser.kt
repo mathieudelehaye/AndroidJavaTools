@@ -38,12 +38,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
+import com.android.java.androidjavatools.controller.tabview.search.FragmentWithSearch
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
-abstract class FragmentProductBrowser : Fragment() {
+abstract class FragmentProductBrowser : FragmentWithSearch() {
     override fun onCreateView(
         inflater: LayoutInflater
         , container: ViewGroup?

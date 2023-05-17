@@ -129,17 +129,19 @@ public class Navigator {
 
         if (mShownFragment != null) {
             mManager.onNavigation(key, mShownFragment);
-        }
+            mFragments.get(mShownFragment).setUserVisibleHint(false);
 
-        mPrevFragments.push(mShownFragment);
-        Log.v("AndroidJavaTools", "Fragment pushed to the previous fragment stack: "
-            + mPrevFragments.peek());
+            mPrevFragments.push(mShownFragment);
+            Log.v("AndroidJavaTools", "Fragment pushed to the previous fragment stack: "
+                + mPrevFragments.peek());
+
+            hideFragment(mShownFragment);
+        }
 
         mFragmentManager
             .beginTransaction()
             .show(fragmentToShow)
             .commit();
-        hideFragment(mShownFragment);
 
         mShownFragment = key;
         fragmentToShow.setUserVisibleHint(true);
@@ -165,16 +167,15 @@ public class Navigator {
             return;
         }
 
-
         if (mShownFragment != null) {
             mManager.onNavigation(prevFragmentKey, mShownFragment);
+            hideFragment(mShownFragment);
         }
 
         mFragmentManager
             .beginTransaction()
             .show(mFragments.get(prevFragmentKey))
             .commit();
-        hideFragment(mShownFragment);
 
         mShownFragment = prevFragmentKey;
         fragmentToShow.setUserVisibleHint(true);

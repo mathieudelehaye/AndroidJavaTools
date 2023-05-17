@@ -21,17 +21,11 @@
 
 package com.android.java.androidjavatools.controller.tabview.search;
 
-import android.app.Activity;
-import android.app.SearchManager;
-import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import com.android.java.androidjavatools.controller.tabview.Navigator;
@@ -78,9 +72,8 @@ public abstract class FragmentWithSearch extends Fragment {
     protected SearchHistoryManager mHistoryManager;
     protected ResultProvider mResultProvider;
     protected Navigator.NavigatorManager mNavigatorManager;
-    protected SearchableInfo mConfiguration;
-    protected SearchView mSearchView;
-    protected EditText mSearchQuery;
+    protected SearchBox mSearchView;
+
     protected abstract void searchAndDisplayItems();
 
     @Override
@@ -95,79 +88,9 @@ public abstract class FragmentWithSearch extends Fragment {
         mHistoryManager = (SearchHistoryManager)mContext;
         mResultProvider = (ResultProvider)mContext;
         mNavigatorManager = (Navigator.NavigatorManager)mContext;
-
-        setupSearchBox(view);
     }
 
-    private void setupSearchBox(@NonNull View view) {
-        final Activity activity = getActivity();
-        if (activity == null || mContext == null) {
-            Log.e("AndroidJavaTools", "Cannot set up the search box, as no activity or no context");
-            return;
-        }
-
-        mSearchView = view.findViewById(R.id.search_box_search_view);
-
-        final boolean isSuggestionFragment = this instanceof FragmentSuggestion;
-        final boolean isResultListFragment = this instanceof FragmentResultList;
-
-        mSearchQuery = mSearchView.findViewById(R.id.search_view_query);
-        if (mSearchQuery == null) {
-            Log.e("AndroidJavaTools", "Error with fragment with search, as no query edit text");
-            return;
-        }
-
-        mSearchQuery.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                return;
-            }
-            Log.v("AndroidJavaTools", "View " + v + " has focus");
-
-            if (isSuggestionFragment) {
-                return;
-            }
-
-            // Only if Suggestions fragment not displayed
-            mNavigatorManager.navigator().showFragment("suggestion");
-        });
-
-        mSearchQuery.setOnKeyListener((v, keyCode, event) -> {
-            if (event.getAction() == KeyEvent.ACTION_DOWN
-                && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
-            {
-                final String query = mSearchQuery.getText().toString();
-                Log.v("AndroidJavaTools", "Search query validated by pressing enter: " + query);
-
-                // Start the search
-                runSearch(query);
-
-                return false;
-            }
-
-            return false;
-        });
-
-        // Set the searchable configuration
-        final var searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
-        mConfiguration = searchManager.getSearchableInfo(activity.getComponentName());
-        mSearchView.setSearchableInfo(mConfiguration);
-
-        if (!isSuggestionFragment && !isResultListFragment) {
-            return;
-        }
-
-        // Only if Suggestions or Result list fragment displayed
-
-        // Show the Back button from the search box
-        ViewGroup searchBackLayout = mSearchView.findViewById(R.id.search_view_back_button_layout);
-        if (searchBackLayout == null) {
-            Log.e("AndroidJavaTools", "No view found when showing the search Back button");
-            return;
-        }
-        searchBackLayout.setVisibility(View.VISIBLE);
-    }
-
-    protected void runSearch(String query) {
+    public void runSearch(String query) {
         FragmentResultList.setResultQuery(query);
         mHistoryManager.storeSearchQuery(query);
         mNavigatorManager.navigator().showFragment("list");

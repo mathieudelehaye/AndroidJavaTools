@@ -20,42 +20,153 @@
 
 package com.android.java.androidjavatools.controller.tabview.search
 
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.SearchManager
+import android.app.SearchableInfo
+import android.content.Context
+import android.database.DataSetObserver
 import android.text.Editable
+import android.view.inputmethod.InputMethodManager
+import android.view.KeyEvent
+import android.util.Log
 import android.text.TextWatcher
 import android.view.View
+import android.widget.*
 import android.widget.Filter.FilterListener
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidViewBinding
+import com.android.java.androidjavatools.controller.tabview.Navigator.NavigatorManager
+import com.android.java.androidjavatools.controller.tabview.result.list.FragmentResultList
 import com.android.java.androidjavatools.databinding.SearchViewBinding
 
 class SearchBox: FilterListener {
+    private val mActivity: Activity
+    private val mContainer: FragmentWithSearch
+    private val mSuggestionsContainer: Boolean
+    private val mResultListContainer: Boolean
+    private val mNavigatorManager: NavigatorManager
+    private val mSearchManager: SearchManager
+    private val mSearchableConfig: SearchableInfo
+    private val mQueryHint: String
+    private var mObserver: DataSetObserver? = null
+
+    private var mSuggestionsAdapter: CursorAdapter? = null
+    private var mFilter: Filter? = null
+
+    constructor(activity: Activity, container: FragmentWithSearch, adapter: SuggestionsAdapter?) {
+        mActivity = activity
+        mContainer = container
+        mSuggestionsContainer = mContainer is FragmentSuggestion
+        mResultListContainer = mContainer is FragmentResultList
+        mNavigatorManager = mActivity as NavigatorManager
+        mSearchManager = mActivity.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        mSearchableConfig = mSearchManager.getSearchableInfo(mActivity.componentName)
+        mQueryHint = mActivity.getString(mSearchableConfig.hintId)
+        mSuggestionsAdapter = adapter
+    }
+
+    @SuppressLint("SetTextI18n")
     @Composable
-    fun show() {
-        AndroidViewBinding(SearchViewBinding::inflate) {
-            // Edit text
+    fun show(
+        query: String = "",
+        onQueryChange: (String) -> Unit = {},
+        hasQueryFocus: Boolean = false,
+        onQueryFocusChange: (Boolean) -> Unit = {}) {
+
+        AndroidViewBinding(
+            factory = SearchViewBinding::inflate
+            , modifier = Modifier
+        ) {
+
+            // Navigate back when pressing it
+            searchViewBackButton.setOnClickListener { v: View? ->
+                // Hide the keyboard
+                val context = (mActivity as Context)
+                val inputManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+                if (v != null) {
+                    inputManager.hideSoftInputFromWindow(v.windowToken, 0)
+                }
+                val navigatorManager = mActivity as NavigatorManager
+                navigatorManager.navigator().back()
+            }
+
+            // Show it only if on the Suggestions or Result list page
+            searchViewBackButtonLayout.visibility = if (mSuggestionsContainer || mResultListContainer)
+                View.VISIBLE else View.GONE
+            ;
+            // Filter the suggestions and show the Clear button while editing text
             val textWatcher = object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    if (searchViewQuery.text.toString().equals("")) {
+                    val query: String = s.toString()
+
+                    if (query.equals("")) {
                         // If the query is empty, hide the Clear button
                         searchViewClearButton.visibility = View.GONE
                     } else {
                         searchViewClearButton.visibility = View.VISIBLE
                     }
 
-                    //performFiltering()
+                    onQueryChange(query)
+                    performFiltering(query)
                 }
 
                 override fun afterTextChanged(s: Editable?) {}
             }
             searchViewQuery.addTextChangedListener(textWatcher)
 
+            // Navigate to the Suggestions fragment when clicking on the edit text view
+            searchViewQuery.setOnFocusChangeListener { v: View, hasFocus: Boolean ->
+
+                onQueryFocusChange(hasFocus)
+
+                if (!hasFocus) {
+                    return@setOnFocusChangeListener
+                }
+                Log.d("AndroidJavaTools", "View $v has focus")
+
+                // Possibly show the Suggestions fragment
+                if (mSuggestionsContainer) {
+                    // Return if already shown
+                    Log.v("AndroidJavaTools", "View has already the focus")
+                    return@setOnFocusChangeListener
+                }
+                mNavigatorManager.navigator().showFragment("suggestion")
+            }
+
+            if (searchViewQuery.text.toString() != query) {
+                searchViewQuery.setText(query)
+            }
+
+            if (hasQueryFocus) {
+                // If this is the Suggestions fragment, focus on the edit text
+                searchViewQuery.requestFocus()
+                onQueryFocusChange(true)
+            }
+
+            // Start the search when the Enter key is sent to the edit text view
+            searchViewQuery.setOnKeyListener { _: View?, _: Int, event: KeyEvent ->
+                if (event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
+
+                    val query: String = searchViewQuery.text.toString()
+                    Log.v("AndroidJavaTools", "Search query validated by pressing enter: $query")
+
+                    mContainer.runSearch(query)
+                }
+                false
+            }
+
+            // Set query hint
+            searchViewQuery.hint = mQueryHint
+
             // Clear button
-            searchViewClearButton.visibility = View.GONE
             searchViewClearButton.setOnClickListener {
-                v: View? -> searchViewQuery.text.clear()
+                searchViewQuery.text.clear()
             }
         }
     }
@@ -63,11 +174,38 @@ class SearchBox: FilterListener {
     @Preview
     @Composable
     fun previewBrowserSearch() {
-        var searchBox = SearchBox()
+        var searchBox = SearchBox(mActivity, mContainer, null)
+        val adapter = SuggestionsAdapter(mActivity, searchBox, searchBox.getSearchableConfig())
+        searchBox.setSuggestionsAdapter(adapter)
+
         searchBox.show()
     }
 
+    fun getSearchableConfig(): SearchableInfo {
+        return mSearchableConfig
+    }
+
+    fun <T> setSuggestionsAdapter(adapter: T) where T : ListAdapter?, T : Filterable? {
+        if (mObserver == null) {
+            mObserver = object : DataSetObserver() {
+            }
+        } else {
+            mSuggestionsAdapter?.unregisterDataSetObserver(mObserver)
+        }
+
+        mSuggestionsAdapter = adapter as CursorAdapter
+        if (mSuggestionsAdapter != null) {
+            mFilter = (mSuggestionsAdapter as Filterable).filter
+            adapter.registerDataSetObserver(mObserver)
+        } else {
+            mFilter = null
+        }
+    }
+
     override fun onFilterComplete(count: Int) {
-        TODO("Not yet implemented")
+    }
+
+    private fun performFiltering(query: String) {
+        mFilter?.filter(query, this)
     }
 }

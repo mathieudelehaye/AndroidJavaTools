@@ -21,7 +21,6 @@
 
 package com.android.java.androidjavatools.controller.tabview.search
 
-import android.app.Activity
 import android.content.Context
 import android.database.Cursor
 import android.os.Bundle
@@ -31,38 +30,63 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
-import android.widget.BaseAdapter
-import android.widget.ListView
+import androidx.compose.foundation.layout.Column
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.viewinterop.AndroidViewBinding
-import com.android.java.androidjavatools.Helpers
 import com.android.java.androidjavatools.databinding.FragmentSuggestionBinding
+import com.android.java.androidjavatools.Helpers
 
 abstract class FragmentSuggestion : FragmentWithSearch() {
-    private var mSuggestionsAdapter: SuggestionsAdapter? = null
+    private var mQuery: MutableState<String> = mutableStateOf("")
+    private var mHasQueryFocus: MutableState<Boolean> = mutableStateOf(false)
 
     override fun onCreateView(
         inflater: LayoutInflater
         , container: ViewGroup?
         , savedInstanceState: Bundle?
     ): View {
-        val context = requireContext()
-        val containerFragment = this
-        val sb = SearchBox(activity as Activity, containerFragment)
+        val activity = requireActivity()
+        mSearchView = SearchBox(activity, this, null)
+        val adapter = SuggestionsAdapter(activity, mSearchView, mSearchView.getSearchableConfig())
+        mSearchView.setSuggestionsAdapter(adapter)
 
-        mSuggestionsAdapter = SuggestionsAdapter(context, sb, mConfiguration)
-        setListAdapter(mSuggestionsAdapter!!)
+        return ComposeView(activity).apply {
 
-        return ComposeView(context).apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                AndroidViewBinding(FragmentSuggestionBinding::inflate) {
-                    suggestionSearchComposeView.setContent {
-                        sb.show()
-                    }
+                Column {
+                    var query by remember { mQuery }
+                    var focus by remember { mHasQueryFocus }
+
+                    mSearchView.show(
+                        query = query
+                        , onQueryChange = {
+                            query = it
+                        }
+                        , hasQueryFocus = focus
+                        , onQueryFocusChange = {
+                        })
+
+                    AndroidViewBinding(
+                        factory = FragmentSuggestionBinding::inflate,
+                        modifier = Modifier,
+                        update = {
+
+                            suggestionList.adapter = adapter
+
+                            suggestionList.onItemClickListener = AdapterView.OnItemClickListener {
+                                _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+
+                                query = (adapter.getItem(position) as Cursor).getString(1)
+                                Log.d("AndroidJavaTools",
+                                    "Search query set from tapped suggestion to: $query")
+                            }
+                        })
                 }
             }
         }
@@ -72,45 +96,34 @@ abstract class FragmentSuggestion : FragmentWithSearch() {
         Log.v("AndroidJavaTools", "Suggestion view created at timestamp: "
             + Helpers.getTimestamp())
         super.onViewCreated(view, savedInstanceState)
-    }
-
-    open fun setListAdapter(adapter: BaseAdapter) {
-        val suggestionsList = requireView().findViewById<View>(R.id.suggestion_list) as ListView
-
-        if (suggestionsList == null) {
-            Log.e("AndroidJavaTools", "Cannot set the Suggestions adapter, as no suggestions list view")
-        }
-        suggestionsList.adapter = adapter
-        suggestionsList.onItemClickListener = AdapterView.OnItemClickListener { adapterView: AdapterView<*>?, view: View?, position: Int, l: Long ->
-            val query = (adapter.getItem(position) as Cursor).getString(1)
-            mSearchView.setQuery(query)
-            Log.v("AndroidJavaTools", "Search query set from tapped suggestion to: $query")
-
-            // Start the search
-            runSearch(query)
-        }
+        mContext = activity as Context
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
 
+        val inputManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE)
+            as InputMethodManager
+
         if (isVisibleToUser) {
             Log.d("AndroidJavaTools", "Suggestions page becomes visible")
-            if (mContext == null) {
-                Log.w("AndroidJavaTools", "Cannot prepare the edit text view, as no context")
-                return
-            }
 
-            // When the view is displayed, the keyboard is visible. So, give the focus to the edit text view
-            Log.v("AndroidJavaTools", "Focus requested on the edit text view")
-            //            mSearchQuery.requestFocus();
+            // Give the focus to the edit text view
+            mHasQueryFocus.value = true
+
+            // Clear the edit text content
+            mQuery.value = ""
 
             // Show the keyboard
-            val inputManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+            inputManager.toggleSoftInput(InputMethodManager.RESULT_SHOWN, 0)
+        } else {
+            Log.d("AndroidJavaTools", "Suggestions page becomes hidden")
 
-            // Clear the edit text
-//            mSearchView.setQuery("");
+            // Remove the focus from the edit text view
+            mHasQueryFocus.value = false
+
+            // Hide the keyboard
+            inputManager.toggleSoftInput(InputMethodManager.RESULT_HIDDEN, 0)
         }
     }
 
