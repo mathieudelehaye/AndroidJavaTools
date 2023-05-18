@@ -102,9 +102,6 @@ abstract class FragmentSuggestion : FragmentWithSearch() {
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
 
-        val inputManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE)
-            as InputMethodManager
-
         if (isVisibleToUser) {
             Log.d("AndroidJavaTools", "Suggestions page becomes visible")
 
@@ -113,17 +110,11 @@ abstract class FragmentSuggestion : FragmentWithSearch() {
 
             // Clear the edit text content
             mQuery.value = ""
-
-            // Show the keyboard
-            inputManager.toggleSoftInput(InputMethodManager.RESULT_SHOWN, 0)
         } else {
             Log.d("AndroidJavaTools", "Suggestions page becomes hidden")
 
             // Remove the focus from the edit text view
             mHasQueryFocus.value = false
-
-            // Hide the keyboard
-            inputManager.toggleSoftInput(InputMethodManager.RESULT_HIDDEN, 0)
         }
     }
 

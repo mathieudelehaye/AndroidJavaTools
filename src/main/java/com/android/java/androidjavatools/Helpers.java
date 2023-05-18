@@ -21,9 +21,11 @@
 
 package com.android.java.androidjavatools;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.inputmethod.InputMethodManager;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
@@ -80,7 +82,14 @@ public class Helpers {
         return (d1.getDate() - d2.getDate());
     }
 
+    public static void toggleKeyboard(Context context, boolean visible) {
+        ((InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE))
+            .toggleSoftInput(
+                visible ? InputMethodManager.RESULT_SHOWN : InputMethodManager.RESULT_HIDDEN, 0);
+    }
+
     // TODO: improve implementation, e.g. by using varargs or array for the called method arguments.
+    // TODO: remove this static method if unused.
     public static <T, T1, T2, T3> Object callObjectMethod(Object obj, Class<T> objType, String methodName,
         T1 arg1, T2 arg2, T3 arg3) {
 

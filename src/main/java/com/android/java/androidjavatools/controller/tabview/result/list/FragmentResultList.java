@@ -126,12 +126,6 @@ public abstract class FragmentResultList extends FragmentResult {
 
             updateSearchResults();
 
-            // Hide the keyboard
-            if(mContext!= null) {
-                ((InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE))
-                    .toggleSoftInput(InputMethodManager.RESULT_HIDDEN, 0);
-            }
-
             showHelp();
         } else {
             mIsViewVisible = false;

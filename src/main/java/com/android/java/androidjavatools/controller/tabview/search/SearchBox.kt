@@ -27,7 +27,6 @@ import android.app.SearchableInfo
 import android.content.Context
 import android.database.DataSetObserver
 import android.text.Editable
-import android.view.inputmethod.InputMethodManager
 import android.view.KeyEvent
 import android.util.Log
 import android.text.TextWatcher
@@ -83,13 +82,6 @@ class SearchBox: FilterListener {
 
             // Navigate back when pressing it
             searchViewBackButton.setOnClickListener { v: View? ->
-                // Hide the keyboard
-                val context = (mActivity as Context)
-                val inputManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
-                if (v != null) {
-                    inputManager.hideSoftInputFromWindow(v.windowToken, 0)
-                }
                 val navigatorManager = mActivity as NavigatorManager
                 navigatorManager.navigator().back()
             }
