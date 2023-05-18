@@ -83,6 +83,8 @@ public class Helpers {
     }
 
     public static void toggleKeyboard(Context context, boolean visible) {
+        Log.d("AJT", "Soft keyboard " + (visible ? "shown" : "hidden"));
+
         ((InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE))
             .toggleSoftInput(
                 visible ? InputMethodManager.RESULT_SHOWN : InputMethodManager.RESULT_HIDDEN, 0);

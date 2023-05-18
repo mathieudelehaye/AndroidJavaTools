@@ -25,10 +25,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +40,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.controller.tabview.search.FragmentWithSearch
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -63,30 +70,96 @@ abstract class FragmentProductBrowser : FragmentWithSearch() {
     @Composable
     abstract fun viewContent()
 
+    @Composable
+    fun browserButton(
+            title: String
+            , color: Color
+    ) {
+        Button(
+                modifier = Modifier
+                        .width(width = 188.dp)
+                        .height(height = 60.dp)
+                , shape = RoundedCornerShape(size = 15.dp)
+                , border = BorderStroke(
+                1.dp
+                , Color.Black
+        )
+                , onClick = {
+        }
+                , colors = ButtonDefaults.buttonColors(
+                backgroundColor = color
+        )
+        ) {
+            Text(
+                    text = title
+                    , fontWeight = FontWeight.W400
+                    , fontSize = 22.sp
+                    , textAlign = TextAlign.Center
+            )
+        }
+    }
+
+    @Preview
+    @Composable
+    fun previewBrowserButton() {
+        browserButton("Free Samples", Color(0xFF3FA3BD))
+    }
+
+    @Composable
+    fun browserPager(
+            title: String
+            , images: IntArray)
+    {
+        Column {
+            Spacer(modifier = Modifier.height(5.dp))
+            Row {
+                Spacer(modifier = Modifier.width(25.dp))
+                Text(
+                        text = title
+                        , fontSize = 20.sp
+                        , fontWeight = FontWeight.Bold
+                        , modifier = Modifier
+                        .padding(all = 4.dp)
+                        , style = MaterialTheme.typography.h1
+                )
+            }
+            infinitePager(images)
+            Spacer(modifier = Modifier.height(10.dp))
+            Divider(color = Color.LightGray, thickness = 2.dp)
+        }
+    }
+
+    @Preview
+    @Composable
+    // TODO: add demo images to shared lib
+    fun previewBrowserPager() {
+//        browserPager("Browse by Functions", images)
+    }
+
     @OptIn(ExperimentalPagerApi::class)
     @Composable
     fun infinitePager(
-        images: IntArray
+            images: IntArray
     ) {
         // Add padding around our message
         HorizontalPager(
-            count = Int.MAX_VALUE,
-            state = rememberPagerState(
-                initialPage = Int.MAX_VALUE / 2
-            )
+                count = Int.MAX_VALUE,
+                state = rememberPagerState(
+                        initialPage = Int.MAX_VALUE / 2
+                )
         ) { page ->
             Box(
-                modifier = Modifier
-                    .background(Color.White)
-                    .border(width = 2.dp, Color.DarkGray)
-                    .width(191.dp)
-                    .height(130.dp)
+                    modifier = Modifier
+                            .background(Color.White)
+                            .border(width = 2.dp, Color.DarkGray)
+                            .width(191.dp)
+                            .height(130.dp)
             ) {
                 Image(
-                    contentDescription = "Contact profile picture"
-                    , painter = painterResource(images[page % 5])
-                    , contentScale = ContentScale.FillHeight
-                    , modifier = Modifier
+                        contentDescription = "Contact profile picture"
+                        , painter = painterResource(images[page % 5])
+                        , contentScale = ContentScale.FillHeight
+                        , modifier = Modifier
                         .align(Alignment.Center)
                 )
             }
