@@ -29,8 +29,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
-import com.android.java.androidjavatools.databinding.FragmentHomeBinding;
 import com.android.java.androidjavatools.controller.tabview.search.FragmentWithSearch;
+import com.android.java.androidjavatools.databinding.FragmentHomeBinding;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public abstract class FragmentHome extends FragmentWithSearch {
@@ -51,6 +51,10 @@ public abstract class FragmentHome extends FragmentWithSearch {
         Bundle savedInstanceState
     ) {
         mBinding = FragmentHomeBinding.inflate(inflater, container, false);
+
+        var contentView = new ProductBrowserView(getActivity(), this, mBinding);
+        contentView.show();
+
         return mBinding.getRoot();
     }
 
