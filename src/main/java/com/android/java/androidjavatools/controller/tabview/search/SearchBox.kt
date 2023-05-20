@@ -42,18 +42,29 @@ import com.android.java.androidjavatools.controller.tabview.result.list.Fragment
 import com.android.java.androidjavatools.databinding.SearchViewBinding
 
 class SearchBox: FilterListener {
-    private val mActivity: Activity
-    private val mContainer: FragmentWithSearch
-    private val mSuggestionsContainer: Boolean
-    private val mResultListContainer: Boolean
-    private val mNavigatorManager: NavigatorManager
-    private val mSearchManager: SearchManager
-    private val mSearchableConfig: SearchableInfo
-    private val mQueryHint: String
+    private val mActivity: Activity?
+    private val mContainer: FragmentWithSearch?
+    private val mSuggestionsContainer: Boolean?
+    private val mResultListContainer: Boolean?
+    private val mNavigatorManager: NavigatorManager?
+    private val mSearchManager: SearchManager?
+    private val mSearchableConfig: SearchableInfo?
+    private val mQueryHint: String?
     private var mObserver: DataSetObserver? = null
 
     private var mSuggestionsAdapter: CursorAdapter? = null
     private var mFilter: Filter? = null
+
+    constructor() {
+        mActivity = null
+        mContainer = null
+        mSuggestionsContainer = null
+        mResultListContainer = null
+        mNavigatorManager = null
+        mSearchManager = null
+        mSearchableConfig = null
+        mQueryHint = null
+    }
 
     constructor(activity: Activity, container: FragmentWithSearch, adapter: SuggestionsAdapter?) {
         mActivity = activity
@@ -87,7 +98,7 @@ class SearchBox: FilterListener {
             }
 
             // Show it only if on the Suggestions or Result list page
-            searchViewBackButtonLayout.visibility = if (mSuggestionsContainer || mResultListContainer)
+            searchViewBackButtonLayout.visibility = if (mSuggestionsContainer!! || mResultListContainer!!)
                 View.VISIBLE else View.GONE
             ;
             // Filter the suggestions and show the Clear button while editing text
@@ -128,7 +139,7 @@ class SearchBox: FilterListener {
                     Log.v("AndroidJavaTools", "View has already the focus")
                     return@setOnFocusChangeListener
                 }
-                mNavigatorManager.navigator().showFragment("suggestion")
+                mNavigatorManager!!.navigator().showFragment("suggestion")
             }
 
             if (searchViewQuery.text.toString() != query) {
@@ -148,7 +159,7 @@ class SearchBox: FilterListener {
                     val query: String = searchViewQuery.text.toString()
                     Log.v("AndroidJavaTools", "Search query validated by pressing enter: $query")
 
-                    mContainer.runSearch(query)
+                    mContainer!!.runSearch(query)
                 }
                 false
             }
@@ -166,7 +177,7 @@ class SearchBox: FilterListener {
     @Preview
     @Composable
     fun previewBrowserSearch() {
-        var searchBox = SearchBox(mActivity, mContainer, null)
+        var searchBox = SearchBox(mActivity!!, mContainer!!, null)
         val adapter = SuggestionsAdapter(mActivity, searchBox, searchBox.getSearchableConfig())
         searchBox.setSuggestionsAdapter(adapter)
 
@@ -174,7 +185,7 @@ class SearchBox: FilterListener {
     }
 
     fun getSearchableConfig(): SearchableInfo {
-        return mSearchableConfig
+        return mSearchableConfig!!
     }
 
     fun <T> setSuggestionsAdapter(adapter: T) where T : ListAdapter?, T : Filterable? {

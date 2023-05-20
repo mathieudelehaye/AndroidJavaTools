@@ -29,7 +29,6 @@ import com.android.java.androidjavatools.controller.tabview.search.FragmentWithS
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
 import com.android.java.androidjavatools.databinding.FragmentResultListBinding
 
-
 class ResultListView {
     private val mActivity: Activity
     private val mContainer: FragmentWithSearch
@@ -56,8 +55,8 @@ class ResultListView {
                 sb.show(
                     hasQueryFocus = hasQueryFocus
                     , onQueryFocusChange = {
-                    hasQueryFocus = it
-                })
+                        hasQueryFocus = it
+                    })
             }
         }
     }

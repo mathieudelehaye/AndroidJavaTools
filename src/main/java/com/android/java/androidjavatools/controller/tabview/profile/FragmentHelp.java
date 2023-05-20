@@ -1,11 +1,11 @@
 //
-//  FragmentMenu.java
+//  FragmentHelp.java
 //
-//  Created by Mathieu Delehaye on 28/12/2022.
+//  Created by Mathieu Delehaye on 19/01/2023.
 //
 //  AndroidJavaTools: A framework to develop Android apps in Java.
 //
-//  Copyright © 2022 Mathieu Delehaye. All rights reserved.
+//  Copyright © 2023 Mathieu Delehaye. All rights reserved.
 //
 //
 //  This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.controller.tabview.menu;
+package com.android.java.androidjavatools.controller.tabview.profile;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -29,52 +29,24 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import com.android.java.androidjavatools.Helpers;
-import com.android.java.androidjavatools.databinding.FragmentMenuBinding;
-import com.android.java.androidjavatools.model.AppUser;
+import com.android.java.androidjavatools.databinding.FragmentHelpBinding;
 
-public abstract class FragmentMenu extends Fragment {
-    protected FragmentMenuBinding mBinding;
+public abstract class FragmentHelp extends Fragment {
+    protected FragmentHelpBinding mBinding;
 
     @Override
     public View onCreateView(
         LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState
     ) {
-        mBinding = FragmentMenuBinding.inflate(inflater, container, false);
+        mBinding = FragmentHelpBinding.inflate(inflater, container, false);
         return mBinding.getRoot();
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.v("AndroidJavaTools", "Menu view created at timestamp: "
+        Log.v("AndroidJavaTools", "Help view created at timestamp: "
             + Helpers.getTimestamp());
 
         super.onViewCreated(view, savedInstanceState);
-
-        switchLogoutButtonVisibility();
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-
-        if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Menu view becomes visible");
-            switchLogoutButtonVisibility();
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mBinding = null;
-    }
-
-    private void switchLogoutButtonVisibility() {
-        // Show the logout button if the uid is a registered one. Hide the button otherwise
-        mBinding.logOutMenu.setVisibility(
-            (AppUser.getInstance().getAuthenticationType() == AppUser.AuthenticationType.REGISTERED) ?
-                View.VISIBLE :
-                View.GONE
-        );
     }
 }

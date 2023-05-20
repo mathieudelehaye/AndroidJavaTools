@@ -51,10 +51,17 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
 class ProductBrowserView {
-    private val mActivity: Activity
-    private val mContainer: FragmentWithSearch
-    private val mBinding: FragmentHomeBinding
-    private val mNavigatorManager: Navigator.NavigatorManager
+    private val mActivity: Activity?
+    private val mContainer: FragmentWithSearch?
+    private val mBinding: FragmentHomeBinding?
+    private val mNavigatorManager: Navigator.NavigatorManager?
+
+    constructor() {
+        mActivity = null
+        mContainer = null
+        mBinding = null
+        mNavigatorManager = null
+    }
 
     constructor(activity: Activity, container: FragmentWithSearch, binding: FragmentHomeBinding) {
         mActivity = activity
@@ -64,7 +71,7 @@ class ProductBrowserView {
     }
 
     fun show() {
-        mBinding.productBrowserView.apply {
+        mBinding!!.productBrowserView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
@@ -77,7 +84,7 @@ class ProductBrowserView {
     @Composable
     fun browserView(
     ) {
-        var searchBox = SearchBox(mActivity as Activity, mContainer, null)
+        var searchBox = SearchBox(mActivity as Activity, mContainer!!, null)
 
         val images = intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
             R.drawable.product04, R.drawable.product05)
@@ -161,9 +168,10 @@ class ProductBrowserView {
 
     @Preview
     @Composable
-    // TODO: add demo images to shared lib
     fun previewBrowserPager() {
-//        browserPager("Browse by Functions", images)
+        val images = intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
+            R.drawable.product04, R.drawable.product05)
+        browserPager("Browse by Functions", images)
     }
 
     @OptIn(ExperimentalPagerApi::class)
@@ -190,7 +198,7 @@ class ProductBrowserView {
                     , painter = painterResource(images[page % 5])
                     , contentScale = ContentScale.FillHeight
                     , modifier = Modifier
-                    .align(Alignment.Center)
+                        .align(Alignment.Center)
                 )
             }
         }
