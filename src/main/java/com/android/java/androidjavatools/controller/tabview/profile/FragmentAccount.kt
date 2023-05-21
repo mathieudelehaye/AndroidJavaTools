@@ -21,6 +21,7 @@
 
 package com.android.java.androidjavatools.controller.tabview.profile
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,8 +29,9 @@ import androidx.compose.ui.viewinterop.AndroidViewBinding
 import com.android.java.androidjavatools.controller.tabview.Navigator
 import com.android.java.androidjavatools.controller.template.FragmentBase
 import com.android.java.androidjavatools.databinding.FragmentAccountBinding
+import com.android.java.androidjavatools.model.AppUser
 
-class FragmentAccount : FragmentBase() {
+abstract class FragmentAccount : FragmentBase() {
     @Composable
     override fun contentView() {
         val mNavigatorManager : Navigator.NavigatorManager = mActivity!! as Navigator.NavigatorManager
@@ -42,6 +44,11 @@ class FragmentAccount : FragmentBase() {
                 // Go back to the Profile menu
                 mNavigatorManager.navigator().back()
             }
+
+            logOutRegister.setOnClickListener{
+                AppUser.getInstance().authenticate("", AppUser.AuthenticationType.NONE);
+                onLogout()
+            }
         }
     }
 
@@ -50,4 +57,16 @@ class FragmentAccount : FragmentBase() {
     fun accountContentView() {
         contentView()
     }
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+
+        if (isVisibleToUser) {
+            Log.d("AndroidJavaTools", "Account page becomes visible")
+        } else {
+            Log.d("AndroidJavaTools", "Account page becomes hidden")
+        }
+    }
+
+    abstract fun onLogout()
 }

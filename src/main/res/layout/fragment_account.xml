@@ -136,9 +136,9 @@
     />
     <Button
         android:id="@+id/back_register"
+        android:text="@string/back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/back_button"
         android:layout_marginTop="32dp"
         android:layout_marginStart="80dp"
         app:layout_constraintTop_toBottomOf="@id/register_repeat_password"
@@ -146,12 +146,22 @@
     />
     <Button
         android:id="@+id/confirm_register"
+        android:text="@string/save_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/save_button"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="80dp"
         app:layout_constraintTop_toBottomOf="@id/register_repeat_password"
         app:layout_constraintEnd_toEndOf="parent"
+    />
+    <Button
+        android:id="@+id/log_out_register"
+        android:text="@string/logout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/back_register"
     />
 </androidx.constraintlayout.widget.ConstraintLayout>
