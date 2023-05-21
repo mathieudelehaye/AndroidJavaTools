@@ -24,6 +24,7 @@
     <string name="lib_name">AndroidJavaTools</string>
 
     <!-- Strings used for fragments for navigation -->
+    <string name="save_button">Save</string>
     <string name="back_button">Back</string>
     <string name="logout_button">Log out</string>
     <string name="tab_bar_readable_label">Choose your screen</string>

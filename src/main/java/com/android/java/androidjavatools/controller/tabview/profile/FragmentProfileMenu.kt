@@ -42,6 +42,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import com.android.java.androidjavatools.R
+import com.android.java.androidjavatools.controller.tabview.Navigator
 import com.android.java.androidjavatools.controller.template.FragmentBase
 import com.android.java.androidjavatools.model.AppUser
 
@@ -56,6 +57,8 @@ open class FragmentProfileMenu : FragmentBase() {
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     override fun contentView() {
+        val mNavigatorManager : Navigator.NavigatorManager = mActivity!! as Navigator.NavigatorManager
+
         Column (
             modifier = Modifier
                 .fillMaxSize()
@@ -82,9 +85,9 @@ open class FragmentProfileMenu : FragmentBase() {
             )
 
             var menuItems: List<MenuItem> = ArrayList()
-            menuItems = menuItems + MenuItem("Manage Account", R.drawable.account)
-            menuItems = menuItems + MenuItem("Help", R.drawable.lifebuoy)
-            menuItems = menuItems + MenuItem("Terms", R.drawable.scale_balance)
+            menuItems += MenuItem("Manage Account", R.drawable.account)
+            menuItems += MenuItem("Help", R.drawable.lifebuoy)
+            menuItems += MenuItem("Terms", R.drawable.scale_balance)
 
             LazyColumn {
                 itemsIndexed(menuItems) { index, _ ->
@@ -92,11 +95,15 @@ open class FragmentProfileMenu : FragmentBase() {
 
                     Card(
                         onClick = {
-                            Toast.makeText(
-                                context,
-                                menuItems[index].name + " selected..",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            if (index == 0) {
+                                mNavigatorManager.navigator().showFragment("account")
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    menuItems[index].name + " selected..",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         },
                         modifier = Modifier.padding(8.dp),
                         elevation = 6.dp

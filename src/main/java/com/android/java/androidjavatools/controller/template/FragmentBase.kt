@@ -39,7 +39,7 @@ import androidx.fragment.app.Fragment
 import com.android.java.androidjavatools.Helpers
 
 abstract class FragmentBase : Fragment() {
-    private var mActivity : Activity? = null
+    protected var mActivity : Activity? = null
 
     override fun onCreateView(
         inflater: LayoutInflater
