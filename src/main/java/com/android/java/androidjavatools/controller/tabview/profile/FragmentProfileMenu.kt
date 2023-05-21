@@ -21,7 +21,6 @@
 
 package com.android.java.androidjavatools.controller.tabview.profile
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -52,7 +51,8 @@ data class MenuItem(
 )
 
 open class FragmentProfileMenu : FragmentBase() {
-    private val userName : String = AppUser.getInstance().id
+    private val signedInUser = AppUser.getInstance().authenticationType == AppUser.AuthenticationType.REGISTERED
+    private val userName : String =  if (signedInUser) AppUser.getInstance().id else "Anonymous user"
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
@@ -75,8 +75,7 @@ open class FragmentProfileMenu : FragmentBase() {
                     .clip(CircleShape)
             )
             Text(
-//                text = userName
-                text = "mathieu.delehaye@gmail.com"
+                text = userName
                 , fontSize = 20.sp
                 , fontWeight = FontWeight.Bold
             )
@@ -85,7 +84,11 @@ open class FragmentProfileMenu : FragmentBase() {
             )
 
             var menuItems: List<MenuItem> = ArrayList()
-            menuItems += MenuItem("Manage Account", R.drawable.account)
+
+            if (signedInUser) {
+                // If signed-in user, show the account page button
+                menuItems += MenuItem("Manage Account", R.drawable.account)
+            }
             menuItems += MenuItem("Help", R.drawable.lifebuoy)
             menuItems += MenuItem("Terms", R.drawable.scale_balance)
 
@@ -95,18 +98,14 @@ open class FragmentProfileMenu : FragmentBase() {
 
                     Card(
                         onClick = {
-                            if (index == 0) {
-                                mNavigatorManager.navigator().showFragment("account")
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    menuItems[index].name + " selected..",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                            when (index) {
+                                0 -> mNavigatorManager.navigator().showFragment("account")
+                                1 -> mNavigatorManager.navigator().showFragment("help")
+                                else -> mNavigatorManager.navigator().showFragment("terms")
                             }
-                        },
-                        modifier = Modifier.padding(8.dp),
-                        elevation = 6.dp
+                        }
+                        , modifier = Modifier.padding(8.dp)
+                        , elevation = 6.dp
                     ) {
                         Row(
                             modifier = Modifier
