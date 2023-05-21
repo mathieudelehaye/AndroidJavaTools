@@ -49,5 +49,4 @@
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
         app:layout_constraintStart_toEndOf="@id/result_list_item_image"
     />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

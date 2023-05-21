@@ -21,6 +21,7 @@
 
 package com.android.java.androidjavatools.controller.template
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -38,14 +39,16 @@ import androidx.fragment.app.Fragment
 import com.android.java.androidjavatools.Helpers
 
 abstract class FragmentBase : Fragment() {
+    private var mActivity : Activity? = null
+
     override fun onCreateView(
         inflater: LayoutInflater
         , container: ViewGroup?
         , savedInstanceState: Bundle?
     ): View {
-        val activity = requireActivity()
+        mActivity = requireActivity()
 
-        return ComposeView(activity).apply {
+        return ComposeView(mActivity!!).apply {
 
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
