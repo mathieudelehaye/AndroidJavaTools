@@ -43,8 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
 import com.android.java.androidjavatools.controller.tabview.Navigator
-import com.android.java.androidjavatools.controller.tabview.search.FragmentWithSearch
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
+import com.android.java.androidjavatools.controller.template.FragmentWithSearch
 import com.android.java.androidjavatools.databinding.FragmentHomeBinding
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager

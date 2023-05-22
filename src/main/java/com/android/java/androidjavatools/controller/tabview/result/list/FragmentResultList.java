@@ -31,6 +31,8 @@ import androidx.annotation.NonNull;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.controller.tabview.dialog.FragmentHelpDialog;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
+import com.android.java.androidjavatools.controller.template.ResultProvider;
+import com.android.java.androidjavatools.controller.template.SearchProvider;
 import com.android.java.androidjavatools.databinding.FragmentResultListBinding;
 import com.android.java.androidjavatools.model.ResultItemInfo;
 import com.android.java.androidjavatools.model.TaskCompletionManager;

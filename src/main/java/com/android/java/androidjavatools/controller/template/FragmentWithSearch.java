@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not,
 //  see <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.controller.tabview.search;
+package com.android.java.androidjavatools.controller.template;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -31,41 +31,11 @@ import androidx.fragment.app.Fragment;
 import com.android.java.androidjavatools.controller.tabview.Navigator;
 import com.android.java.androidjavatools.controller.tabview.result.list.FragmentResultList;
 import com.android.java.androidjavatools.R;
+import com.android.java.androidjavatools.controller.tabview.search.SearchBox;
 import com.android.java.androidjavatools.model.ResultItemInfo;
-import com.android.java.androidjavatools.model.SearchResult;
-import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.google.firebase.firestore.FirebaseFirestore;
-import org.osmdroid.util.GeoPoint;
-import java.util.List;
-import java.util.Map;
 
 public abstract class FragmentWithSearch extends Fragment {
-    public interface SearchHistoryManager {
-        int getPreviousQueryNumber();
-        String getPreviousSearchQuery(int index);
-        void storeSearchQuery(@NonNull String query);
-    }
-
-    public interface SearchProvider {
-        SearchResult getSearchResults();
-        void searchGeoPointResults(GeoPoint searchStart, double searchRadiusInCoordinate,
-            FirebaseFirestore database, TaskCompletionManager... cbManager);
-    }
-
-    public interface ResultProvider {
-        SearchResult getSearchResult();
-        void setSearchResult(SearchResult result);
-        ResultItemInfo getSelectedResultItem();
-        void setSelectedResultItem(ResultItemInfo value);
-        int getPreviousResultNumber();
-        ResultItemInfo getPreviousResultItem(int index);
-        Map<String, ResultItemInfo> getSavedResults();
-        List<String> getSavedResultKeys();
-        boolean createSavedResult(ResultItemInfo value);
-        boolean isSavedResult(String key);
-        void deleteSavedResult(String key);
-    }
-
     protected FirebaseFirestore mDatabase;
     protected SharedPreferences mSharedPref;
     protected Context mContext;

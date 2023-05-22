@@ -1,5 +1,5 @@
 //
-//  FragmentAccount.kt
+//  FragmentProductSelection.kt
 //
 //  Created by Mathieu Delehaye on 21/05/2023.
 //
@@ -19,54 +19,41 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.controller.tabview.profile
+package com.android.java.androidjavatools.controller.tabview.product
 
-import android.util.Log
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.viewinterop.AndroidViewBinding
 import com.android.java.androidjavatools.controller.tabview.Navigator
-import com.android.java.androidjavatools.controller.template.FragmentCompose
-import com.android.java.androidjavatools.databinding.FragmentAccountBinding
+import com.android.java.androidjavatools.controller.template.FragmentComposeWithSearch
 import com.android.java.androidjavatools.model.AppUser
 
-abstract class FragmentAccount : FragmentCompose() {
+open class FragmentProductSelection() : FragmentComposeWithSearch() {
+    private val signedInUser = AppUser.getInstance().authenticationType == AppUser.AuthenticationType.REGISTERED
+    private val userName : String =  if (signedInUser) AppUser.getInstance().id else "Anonymous user"
+
     @Composable
     override fun contentView() {
         val mNavigatorManager : Navigator.NavigatorManager = mActivity!! as Navigator.NavigatorManager
 
-        AndroidViewBinding(
-            factory = FragmentAccountBinding::inflate,
+        Column (
             modifier = Modifier
+                .fillMaxSize()
+            , horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            backRegister.setOnClickListener {
-                // Go back to the Profile menu
-                mNavigatorManager.navigator().back()
-            }
-
-            logOutRegister.setOnClickListener{
-                AppUser.getInstance().authenticate("", AppUser.AuthenticationType.NONE);
-                onLogout()
-            }
         }
     }
 
     @Preview
     @Composable
-    fun accountContentView() {
+    fun profileContentPreview() {
+        AppUser.getInstance().authenticate("mathieu.delehaye@gmail.com", AppUser.AuthenticationType.REGISTERED)
         contentView()
     }
 
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-
-        if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Account page becomes visible")
-        } else {
-            Log.d("AndroidJavaTools", "Account page becomes hidden")
-        }
+    override fun searchAndDisplayItems() {
+        TODO("Not yet implemented")
     }
-
-    abstract fun onLogout()
 }

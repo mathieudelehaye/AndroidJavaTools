@@ -1,7 +1,7 @@
 //
-//  FragmentBase.java
+//  FragmentComposeWithSearch.java
 //
-//  Created by Mathieu Delehaye on 19/05/2023.
+//  Created by Mathieu Delehaye on 22/05/2023.
 //
 //  AndroidJavaTools: A framework to develop Android apps in Java.
 //
@@ -35,10 +35,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
 import com.android.java.androidjavatools.Helpers
 
-abstract class FragmentBase : Fragment() {
+abstract class FragmentComposeWithSearch() : FragmentWithSearch() {
+
     protected var mActivity : Activity? = null
 
     override fun onCreateView(
@@ -64,7 +64,7 @@ abstract class FragmentBase : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.v("AndroidJavaTools", "Base view created at timestamp: "
-            + Helpers.getTimestamp())
+                + Helpers.getTimestamp())
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -80,4 +80,8 @@ abstract class FragmentBase : Fragment() {
 
     @Composable
     abstract fun contentView()
+
+    override fun searchAndDisplayItems() {
+        TODO("Not yet implemented")
+    }
 }

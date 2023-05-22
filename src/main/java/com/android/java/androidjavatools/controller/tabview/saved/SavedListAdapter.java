@@ -29,18 +29,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.android.java.androidjavatools.R;
-import com.android.java.androidjavatools.controller.tabview.search.FragmentWithSearch;
+import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.model.ResultItemInfo;
 import java.util.List;
 import java.util.Map;
 
 public class SavedListAdapter extends BaseAdapter {
     private Context mContext;
-    protected FragmentWithSearch.ResultProvider mResultProvider;
+    protected ResultProvider mResultProvider;
     private Map<String, ResultItemInfo> mResults;
     private List<String> mResultKeys;
 
-    public SavedListAdapter(Context ctxt, FragmentWithSearch.ResultProvider resultProvider) {
+    public SavedListAdapter(Context ctxt, ResultProvider resultProvider) {
         mContext = ctxt;
         mResultProvider = resultProvider;
         mResults = resultProvider.getSavedResults();

@@ -39,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import com.android.java.androidjavatools.controller.tabview.Navigator.NavigatorManager
 import com.android.java.androidjavatools.controller.tabview.result.list.FragmentResultList
+import com.android.java.androidjavatools.controller.template.FragmentWithSearch
 import com.android.java.androidjavatools.databinding.SearchViewBinding
 
 class SearchBox: FilterListener {

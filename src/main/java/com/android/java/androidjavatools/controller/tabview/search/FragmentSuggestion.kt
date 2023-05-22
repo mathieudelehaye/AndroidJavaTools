@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import com.android.java.androidjavatools.databinding.FragmentSuggestionBinding
 import com.android.java.androidjavatools.Helpers
+import com.android.java.androidjavatools.controller.template.FragmentWithSearch
 
 abstract class FragmentSuggestion : FragmentWithSearch() {
     private var mQuery: MutableState<String> = mutableStateOf("")
@@ -49,8 +50,8 @@ abstract class FragmentSuggestion : FragmentWithSearch() {
     ): View {
         val activity = requireActivity()
         mSearchView = SearchBox(activity, this, null)
-        val adapter = SuggestionsAdapter(activity, mSearchView, mSearchView.getSearchableConfig())
-        mSearchView.setSuggestionsAdapter(adapter)
+        val adapter = SuggestionsAdapter(activity, mSearchView, mSearchView!!.getSearchableConfig())
+        mSearchView!!.setSuggestionsAdapter(adapter)
 
         return ComposeView(activity).apply {
 
@@ -62,7 +63,7 @@ abstract class FragmentSuggestion : FragmentWithSearch() {
                     var query by remember { mQuery }
                     var focus by remember { mHasQueryFocus }
 
-                    mSearchView.show(
+                    mSearchView!!.show(
                         query = query
                         , onQueryChange = {
                             query = it

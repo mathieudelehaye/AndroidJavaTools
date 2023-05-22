@@ -35,20 +35,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import com.android.java.androidjavatools.controller.tabview.search.FragmentWithSearch;
+import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.databinding.FragmentSavedListBinding;
 import com.android.java.androidjavatools.R;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class FragmentSavedList extends Fragment {
     protected FragmentSavedListBinding mBinding;
-    protected FragmentWithSearch.ResultProvider mResultProvider;
+    protected ResultProvider mResultProvider;
     private Toolbar mToolbar;
     private Button mToolbarBackButton;
     private ListView mSavedItemList;
     private BaseAdapter mListAdapter;
 
-    public FragmentSavedList(FragmentWithSearch.ResultProvider provider) {
+    public FragmentSavedList(ResultProvider provider) {
         mResultProvider = provider;
     }
 

@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
 import com.android.java.androidjavatools.controller.tabview.Navigator
-import com.android.java.androidjavatools.controller.template.FragmentBase
+import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.model.AppUser
 
 data class MenuItem(
@@ -50,7 +50,7 @@ data class MenuItem(
     val icon: Int
 )
 
-open class FragmentProfileMenu : FragmentBase() {
+open class FragmentProfileMenu : FragmentCompose() {
     private val signedInUser = AppUser.getInstance().authenticationType == AppUser.AuthenticationType.REGISTERED
     private val userName : String =  if (signedInUser) AppUser.getInstance().id else "Anonymous user"
 

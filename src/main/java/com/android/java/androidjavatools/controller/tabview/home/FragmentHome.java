@@ -28,8 +28,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
-import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
-import com.android.java.androidjavatools.controller.tabview.search.FragmentWithSearch;
+import com.android.java.androidjavatools.controller.template.FragmentWithSearch;
+import com.android.java.androidjavatools.controller.template.ResultProvider;
+import com.android.java.androidjavatools.controller.template.SearchHistoryManager;
 import com.android.java.androidjavatools.databinding.FragmentHomeBinding;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -38,9 +39,9 @@ public abstract class FragmentHome extends FragmentWithSearch {
     protected Context mContext;
     protected FirebaseFirestore mDatabase;
     protected SearchHistoryManager mHistoryManager;
-    protected FragmentResult.ResultProvider mResultProvider;
+    protected ResultProvider mResultProvider;
 
-    public FragmentHome(FragmentResult.ResultProvider provider) {
+    public FragmentHome(ResultProvider provider) {
         super();
         mResultProvider = provider;
     }
@@ -66,7 +67,7 @@ public abstract class FragmentHome extends FragmentWithSearch {
         mContext = getContext();
 
         mHistoryManager = (SearchHistoryManager)getActivity();
-        mResultProvider = (FragmentResult.ResultProvider) getActivity();
+        mResultProvider = (ResultProvider) getActivity();
 
         updateRecentResults();
         updateRecentSearches();

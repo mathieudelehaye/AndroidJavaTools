@@ -25,8 +25,8 @@ import android.app.Activity
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.android.java.androidjavatools.controller.tabview.Navigator.NavigatorManager
-import com.android.java.androidjavatools.controller.tabview.search.FragmentWithSearch
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
+import com.android.java.androidjavatools.controller.template.FragmentWithSearch
 import com.android.java.androidjavatools.databinding.FragmentResultListBinding
 
 class ResultListView {

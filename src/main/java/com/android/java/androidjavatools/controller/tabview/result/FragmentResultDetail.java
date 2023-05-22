@@ -40,6 +40,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.controller.tabview.Navigator;
+import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.databinding.FragmentResultDetailBinding;
 import com.android.java.androidjavatools.model.ResultItemInfo;
 import com.android.java.androidjavatools.R;
@@ -47,7 +48,7 @@ import com.android.java.androidjavatools.R;
 public abstract class FragmentResultDetail extends Fragment {
     private FragmentResultDetailBinding mBinding;
     private Context mContext;
-    private FragmentResult.ResultProvider mResultProvider;
+    private ResultProvider mResultProvider;
     private ResultItemInfo mSelectedItem;
     private String mSelectedItemKey;
     private boolean mIsSaved;
@@ -70,7 +71,7 @@ public abstract class FragmentResultDetail extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mContext = getContext();
-        mResultProvider = (FragmentResult.ResultProvider) getActivity();
+        mResultProvider = (ResultProvider) getActivity();
 
         mSaveButton = mBinding.saveResultDetail;
         mSaveButton.setOnClickListener(v -> {
