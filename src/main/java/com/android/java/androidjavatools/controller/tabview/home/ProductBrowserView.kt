@@ -118,9 +118,9 @@ class ProductBrowserView {
                 .height(height = 60.dp)
             , shape = RoundedCornerShape(size = 15.dp)
             , border = BorderStroke(
-            1.dp
-            , Color.Black
-        )
+                1.dp
+                , Color.Black
+            )
             , onClick = {
         }
             , colors = ButtonDefaults.buttonColors(
@@ -156,7 +156,7 @@ class ProductBrowserView {
                     , fontSize = 20.sp
                     , fontWeight = FontWeight.Bold
                     , modifier = Modifier
-                    .padding(all = 4.dp)
+                        .padding(all = 4.dp)
                     , style = MaterialTheme.typography.h1
                 )
             }
