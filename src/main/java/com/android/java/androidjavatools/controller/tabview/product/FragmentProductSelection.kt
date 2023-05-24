@@ -22,6 +22,7 @@
 package com.android.java.androidjavatools.controller.tabview.product
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,6 +30,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,9 +48,12 @@ import com.android.java.androidjavatools.R
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
 import com.android.java.androidjavatools.controller.tabview.search.SuggestionsAdapter
 import com.android.java.androidjavatools.controller.template.FragmentComposeWithSearch
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 
 open class FragmentProductSelection() : FragmentComposeWithSearch() {
-    @OptIn(ExperimentalFoundationApi::class)
+    @OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
     @Composable
     override fun contentView() {
 //        val mNavigatorManager : Navigator.NavigatorManager = mActivity!! as Navigator.NavigatorManager
@@ -63,21 +69,28 @@ open class FragmentProductSelection() : FragmentComposeWithSearch() {
 
             Spacer(modifier = Modifier.height(45.dp))
 
-            productGrid()
+            HorizontalPager(
+                count = Int.MAX_VALUE,
+                state = rememberPagerState(
+                    initialPage = Int.MAX_VALUE / 2
+                )
+            ) { page ->
+                productGridPage()
+            }
         }
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
+    @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
     @Composable
-    fun productGrid() {
+    fun productGridPage() {
         val imageNumber = 4
         val images = intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
             R.drawable.product04, R.drawable.product05)
         val titles = arrayOf("Guerlain", "Sisley", "YSL", "Emporio Armani")
         val descriptions = arrayOf(
             "Abeille Royale Double R..."
-            , "Night Cream with Collqgen..."
-            , "Touch Eclqt Le Teint Foun..."
+            , "Night Cream with Collagen..."
+            , "Touch Eclat Le Teint Foun..."
             , "Because it's You EAU DE...")
 
         LazyVerticalGrid(
@@ -90,12 +103,16 @@ open class FragmentProductSelection() : FragmentComposeWithSearch() {
                     modifier = Modifier
                         .padding(3.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
+                    Card(
+                        onClick = {
+                            Toast.makeText(context, "This is item number $index", Toast.LENGTH_SHORT).show()
+                        }
+                        , modifier = Modifier
                             .background(Color.White)
                             .width(200.dp)
                             .height(200.dp)
                             .border(width = 1.dp, Color.DarkGray)
+                        , elevation = 6.dp
                     ) {
                         Column {
                             Box(
@@ -113,10 +130,10 @@ open class FragmentProductSelection() : FragmentComposeWithSearch() {
                                 )
                             }
                             Box(
-                                    modifier = Modifier
-                                            .background(Color(0xfff1f1f4))
-                                            .width(200.dp)
-                                            .height(45.dp)
+                                modifier = Modifier
+                                    .background(Color(0xfff1f1f4))
+                                    .width(200.dp)
+                                    .height(45.dp)
                             ) {
                                 Column {
                                     Text(
