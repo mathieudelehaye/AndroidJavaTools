@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
+import com.android.java.androidjavatools.controller.tabview.Navigator
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
 import com.android.java.androidjavatools.controller.tabview.search.SuggestionsAdapter
 import com.android.java.androidjavatools.controller.template.FragmentComposeWithSearch
@@ -52,11 +53,11 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
-open class FragmentProductSelection() : FragmentComposeWithSearch() {
-    @OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
+open class FragmentProductSelection : FragmentComposeWithSearch() {
+    @OptIn(ExperimentalPagerApi::class)
     @Composable
     override fun contentView() {
-//        val mNavigatorManager : Navigator.NavigatorManager = mActivity!! as Navigator.NavigatorManager
+        val mNavigatorManager : Navigator.NavigatorManager = mActivity!! as Navigator.NavigatorManager
 
         var searchBox = SearchBox(mActivity as Activity, this, null)
         val adapter = SuggestionsAdapter(mActivity, searchBox, searchBox.getSearchableConfig())
@@ -105,7 +106,7 @@ open class FragmentProductSelection() : FragmentComposeWithSearch() {
                 ) {
                     Card(
                         onClick = {
-                            Toast.makeText(context, "This is item number $index", Toast.LENGTH_SHORT).show()
+                            mNavigatorManager.navigator().showFragment("product")
                         }
                         , modifier = Modifier
                             .background(Color.White)
@@ -131,7 +132,7 @@ open class FragmentProductSelection() : FragmentComposeWithSearch() {
                             }
                             Box(
                                 modifier = Modifier
-                                    .background(Color(0xfff1f1f4))
+                                    .background(Color(0xFFF1F1F4))
                                     .width(200.dp)
                                     .height(45.dp)
                             ) {
