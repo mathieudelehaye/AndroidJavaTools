@@ -21,6 +21,7 @@
 
 package com.android.java.androidjavatools.controller.tabview.product
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,13 +29,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -73,28 +77,27 @@ open class FragmentProductDetail : FragmentCompose() {
                         .height(250.dp)
                         .border(width = 0.5.dp, Color.DarkGray)
                 ) {
-                    Box(
+                    Button(
                         modifier = Modifier
-                            .background(Color.White)
-                            .width(60.dp)
-                            .height(60.dp)
-                    ) {
-                        Button(
-                            modifier = Modifier
-                                .width(width = 30.dp)
-                                .height(height = 30.dp)
-                            , shape = CircleShape
-                            , colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Color.Blue
-                            )
-                            , onClick = {
-                            }
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.chevron_left)
-                                , contentDescription = "Navigate Back"
-                            )
+                            .width(width = 120.dp)
+                            .height(height = 120.dp)
+                            .padding(30.dp)
+                        , colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.Black
+                        )
+                        , shape = CircleShape
+                        , onClick = {
+                            Toast.makeText(context, "Back clicked", Toast.LENGTH_SHORT).show()
                         }
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.chevron_left)
+                            , contentDescription = "Back icon"
+                            , tint = Color.White
+                            , modifier = Modifier
+                                .width(width = 60.dp)
+                                .height(height = 60.dp)
+                        )
                     }
                     Image(
                         painter = painterResource(id = image)
