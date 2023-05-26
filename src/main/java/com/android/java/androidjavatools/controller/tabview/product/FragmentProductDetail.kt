@@ -25,6 +25,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,11 +37,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
-import com.android.java.androidjavatools.controller.tabview.Navigator
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 
 open class FragmentProductDetail : FragmentCompose() {
@@ -48,7 +51,11 @@ open class FragmentProductDetail : FragmentCompose() {
 
     @Composable
     override fun contentView() {
-        //val mNavigatorManager : Navigator.NavigatorManager = mActivity!! as Navigator.NavigatorManager
+        productDetail()
+    }
+
+    @Composable
+    fun productDetail() {
         var image by remember { mImage }
         var title by remember { mTitle }
         var description by remember { mDescription }
@@ -59,14 +66,36 @@ open class FragmentProductDetail : FragmentCompose() {
                 , modifier = Modifier
                     .background(Color.White)
             ) {
-                Spacer(modifier = Modifier.height(56.dp))
                 Box(
                     modifier = Modifier
                         .background(Color.White)
                         .fillMaxWidth()
                         .height(250.dp)
-                        .border(width = 1.dp, Color.DarkGray)
+                        .border(width = 0.5.dp, Color.DarkGray)
                 ) {
+                    Box(
+                        modifier = Modifier
+                            .background(Color.White)
+                            .width(60.dp)
+                            .height(60.dp)
+                    ) {
+                        Button(
+                            modifier = Modifier
+                                .width(width = 30.dp)
+                                .height(height = 30.dp)
+                            , shape = CircleShape
+                            , colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color.Blue
+                            )
+                            , onClick = {
+                            }
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.chevron_left)
+                                , contentDescription = "Navigate Back"
+                            )
+                        }
+                    }
                     Image(
                         painter = painterResource(id = image)
                         , contentDescription = "Image with id $image"
@@ -78,7 +107,8 @@ open class FragmentProductDetail : FragmentCompose() {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                     , modifier = Modifier
-                    .background(Color(0xFFF1F1F4))
+                        .background(Color(0xFFF1F1F4))
+                        .fillMaxWidth()
                 ) {
                     Text(
                         text = title
@@ -86,21 +116,26 @@ open class FragmentProductDetail : FragmentCompose() {
                         , fontSize = 20.sp
                         , textAlign = TextAlign.Center
                         , color = Color.Blue
-                        , modifier = Modifier
-                            .padding(start = 2.dp)
                     )
-
                     Text(
                         text = description
                         , fontWeight = FontWeight.W500
                         , fontSize = 18.sp
                         , textAlign = TextAlign.Center
+                        , maxLines = 2
+                        , overflow = TextOverflow.Visible
+                        , softWrap = true
                         , color = Color.Black
                         , modifier = Modifier
-                            .padding(start = 2.dp)
+                            .height(60.dp)
                     )
                 }
-
+                Column(
+                    modifier = Modifier
+                        .height(320.dp)
+                        .background(Color.White)
+                        .fillMaxWidth()
+                ) {}
             }
         }
     }
@@ -119,10 +154,10 @@ open class FragmentProductDetail : FragmentCompose() {
 
     @Preview
     @Composable
-    fun profileContentPreview() {
+    fun productDetailPreview() {
         setImage(R.drawable.product01)
         setTitle("Guerlain")
         setDescription("Abeille Royale Double Renew & Repair Advanced Serum 345ml")
-        contentView()
+        productDetail()
     }
 }

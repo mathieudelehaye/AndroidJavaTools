@@ -122,10 +122,10 @@ class ProductBrowserView {
                 , Color.Black
             )
             , onClick = {
-        }
+            }
             , colors = ButtonDefaults.buttonColors(
-            backgroundColor = color
-        )
+                backgroundColor = color
+            )
         ) {
             Text(
                 text = title

@@ -115,6 +115,14 @@ public class Navigator {
         return mFragments.get(mShownFragment);
     }
 
+    public Fragment getFragment(String key) {
+        if (key.equals("")) {
+            return null;
+        }
+
+        return mFragments.get(key);
+    }
+
     public void showFragment(String key) {
         if (key.equals("")) {
             return;

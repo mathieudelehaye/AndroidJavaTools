@@ -37,9 +37,11 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import com.android.java.androidjavatools.Helpers
+import com.android.java.androidjavatools.controller.tabview.Navigator.NavigatorManager
 
 abstract class FragmentCompose : Fragment() {
     protected var mActivity : Activity? = null
+    protected var mNavigatorManager: NavigatorManager? = null
 
     override fun onCreateView(
         inflater: LayoutInflater
@@ -65,6 +67,7 @@ abstract class FragmentCompose : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.v("AndroidJavaTools", "Base view created at timestamp: "
             + Helpers.getTimestamp())
+        mNavigatorManager = mActivity as NavigatorManager
         super.onViewCreated(view, savedInstanceState)
     }
 

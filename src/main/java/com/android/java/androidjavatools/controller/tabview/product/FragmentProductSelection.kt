@@ -22,7 +22,6 @@
 package com.android.java.androidjavatools.controller.tabview.product
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -41,11 +40,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
-import com.android.java.androidjavatools.controller.tabview.Navigator
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
 import com.android.java.androidjavatools.controller.tabview.search.SuggestionsAdapter
 import com.android.java.androidjavatools.controller.template.FragmentComposeWithSearch
@@ -57,8 +56,6 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
     @OptIn(ExperimentalPagerApi::class)
     @Composable
     override fun contentView() {
-        val mNavigatorManager : Navigator.NavigatorManager = mActivity!! as Navigator.NavigatorManager
-
         var searchBox = SearchBox(mActivity as Activity, this, null)
         val adapter = SuggestionsAdapter(mActivity, searchBox, searchBox.getSearchableConfig())
         searchBox.setSuggestionsAdapter(adapter)
@@ -89,16 +86,18 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
             R.drawable.product04, R.drawable.product05)
         val titles = arrayOf("Guerlain", "Sisley", "YSL", "Emporio Armani")
         val descriptions = arrayOf(
-            "Abeille Royale Double R..."
-            , "Night Cream with Collagen..."
-            , "Touch Eclat Le Teint Foun..."
-            , "Because it's You EAU DE...")
+            "Abeille Royale Double Renew & Repair Advanced Serum 345ml"
+            , "Night Cream with Collagen with Maximum Hydration 500ml"
+            , "Touch Eclat Le Teint Foundation Infused with Light 100ml"
+            , "Because it's You EAU DE PARFUM Delicious and Sparkling 150ml")
 
         LazyVerticalGrid(
                 cells = GridCells.Fixed(2)
         ) {
             items(imageNumber) {index ->
                 val imageId = images[index % images.size]
+                val title = titles[index % titles.size]
+                val description = descriptions[index % titles.size]
 
                 Box(
                     modifier = Modifier
@@ -106,6 +105,12 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                 ) {
                     Card(
                         onClick = {
+                            val productDetailFragment
+                                = mNavigatorManager.navigator().getFragment("product") as FragmentProductDetail
+                            productDetailFragment.setImage(imageId)
+                            productDetailFragment.setTitle(title)
+                            productDetailFragment.setDescription(description)
+
                             mNavigatorManager.navigator().showFragment("product")
                         }
                         , modifier = Modifier
@@ -127,7 +132,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                                     , contentDescription = "Image with id $imageId"
                                     , contentScale = ContentScale.Fit
                                     , modifier = Modifier
-                                    .align(Alignment.Center)
+                                        .align(Alignment.Center)
                                 )
                             }
                             Box(
@@ -138,23 +143,25 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                             ) {
                                 Column {
                                     Text(
-                                        text = titles[index % titles.size]
+                                        text = title
                                         , fontWeight = FontWeight.W600
                                         , fontSize = 16.sp
                                         , textAlign = TextAlign.Center
                                         , color = Color.Blue
                                         , modifier = Modifier
-                                        .padding(start = 2.dp)
+                                            .padding(start = 2.dp)
                                     )
-
                                     Text(
                                         text = descriptions[index % titles.size]
                                         , fontWeight = FontWeight.W500
                                         , fontSize = 14.sp
-                                        , textAlign = TextAlign.Center
                                         , color = Color.Black
+                                        , textAlign = TextAlign.Center
+                                        , maxLines = 1
+                                        , overflow = TextOverflow.Clip
+                                        , softWrap = false
                                         , modifier = Modifier
-                                        .padding(start = 2.dp)
+                                            .padding(start = 2.dp)
                                     )
                                 }
                             }
@@ -167,8 +174,8 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
 
     @Preview
     @Composable
-    fun profileContentPreview() {
-        contentView()
+    fun productGridPagePreview() {
+        productGridPage()
     }
 
     override fun searchAndDisplayItems() {
