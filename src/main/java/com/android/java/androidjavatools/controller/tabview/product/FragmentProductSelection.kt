@@ -109,7 +109,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                                 = mNavigatorManager.navigator().getFragment("product") as FragmentProductDetail
                             productDetailFragment.setImage(imageId)
                             productDetailFragment.setTitle(title)
-                            productDetailFragment.setDescription(description)
+                            productDetailFragment.setSubtitle(description)
 
                             mNavigatorManager.navigator().showFragment("product")
                         }

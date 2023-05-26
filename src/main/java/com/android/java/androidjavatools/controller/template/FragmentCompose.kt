@@ -75,9 +75,9 @@ abstract class FragmentCompose : Fragment() {
         super.setUserVisibleHint(isVisibleToUser)
 
         if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Profile page becomes visible")
+            Log.d("AndroidJavaTools", "Compose page becomes visible")
         } else {
-            Log.d("AndroidJavaTools", "Profile page becomes hidden")
+            Log.d("AndroidJavaTools", "Compose page becomes hidden")
         }
     }
 

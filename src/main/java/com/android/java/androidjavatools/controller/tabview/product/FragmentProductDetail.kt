@@ -21,7 +21,6 @@
 
 package com.android.java.androidjavatools.controller.tabview.product
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -51,7 +50,7 @@ import com.android.java.androidjavatools.controller.template.FragmentCompose
 open class FragmentProductDetail : FragmentCompose() {
     private var mImage: MutableState<Int> = mutableStateOf(R.drawable.product01)
     private var mTitle: MutableState<String> = mutableStateOf("")
-    private var mDescription: MutableState<String> = mutableStateOf("")
+    private var mSubtitle: MutableState<String> = mutableStateOf("")
 
     @Composable
     override fun contentView() {
@@ -62,7 +61,7 @@ open class FragmentProductDetail : FragmentCompose() {
     fun productDetail() {
         var image by remember { mImage }
         var title by remember { mTitle }
-        var description by remember { mDescription }
+        var subtitle by remember { mSubtitle }
 
         Column {
             Column(
@@ -87,9 +86,10 @@ open class FragmentProductDetail : FragmentCompose() {
                         )
                         , shape = CircleShape
                         , onClick = {
-                            Toast.makeText(context, "Back clicked", Toast.LENGTH_SHORT).show()
+                            mNavigatorManager?.navigator()?.back()
                         }
                     ) {
+                        // TODO: improve Back button integration
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.chevron_left)
                             , contentDescription = "Back icon"
@@ -121,7 +121,7 @@ open class FragmentProductDetail : FragmentCompose() {
                         , color = Color.Blue
                     )
                     Text(
-                        text = description
+                        text = subtitle
                         , fontWeight = FontWeight.W500
                         , fontSize = 18.sp
                         , textAlign = TextAlign.Center
@@ -135,12 +135,18 @@ open class FragmentProductDetail : FragmentCompose() {
                 }
                 Column(
                     modifier = Modifier
-                        .height(320.dp)
                         .background(Color.White)
                         .fillMaxWidth()
-                ) {}
+                        .fillMaxHeight()
+                ) {
+                    productDescription()
+                }
             }
         }
+    }
+
+    @Composable
+    open fun productDescription() {
     }
 
     fun setImage(image: Int) {
@@ -151,8 +157,8 @@ open class FragmentProductDetail : FragmentCompose() {
         mTitle.value = title
     }
 
-    fun setDescription(description: String) {
-        mDescription.value = description
+    fun setSubtitle(text: String) {
+        mSubtitle.value = text
     }
 
     @Preview
@@ -160,7 +166,7 @@ open class FragmentProductDetail : FragmentCompose() {
     fun productDetailPreview() {
         setImage(R.drawable.product01)
         setTitle("Guerlain")
-        setDescription("Abeille Royale Double Renew & Repair Advanced Serum 345ml")
+        setSubtitle("Abeille Royale Double Renew & Repair Advanced Serum 345ml")
         productDetail()
     }
 }
