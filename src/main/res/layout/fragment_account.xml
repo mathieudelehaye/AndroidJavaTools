@@ -112,7 +112,7 @@
         android:id="@+id/register_password"
         android:layout_width="350dp"
         android:layout_height="50dp"
-        android:hint="Enter Password"
+        android:hint="Change Password"
         android:textSize="20sp"
         android:inputType="textPassword"
         android:layout_marginTop="32dp"
