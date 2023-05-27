@@ -137,7 +137,6 @@ open class FragmentProductDetail : FragmentCompose() {
                     modifier = Modifier
                         .background(Color.White)
                         .fillMaxWidth()
-                        .fillMaxHeight()
                 ) {
                     productDescription()
                 }
