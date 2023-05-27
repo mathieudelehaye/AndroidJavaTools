@@ -30,8 +30,13 @@ import com.android.java.androidjavatools.controller.tabview.Navigator
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.databinding.FragmentAccountBinding
 import com.android.java.androidjavatools.model.AppUser
+import com.android.java.androidjavatools.model.TaskCompletionManager
+import com.android.java.androidjavatools.model.UserInfoDBEntry
+import com.google.firebase.firestore.FirebaseFirestore
 
 abstract class FragmentAccount : FragmentCompose() {
+    private var mDatabase = FirebaseFirestore.getInstance()
+
     @Composable
     override fun contentView() {
         val mNavigatorManager : Navigator.NavigatorManager = mActivity!! as Navigator.NavigatorManager
@@ -63,6 +68,28 @@ abstract class FragmentAccount : FragmentCompose() {
 
         if (isVisibleToUser) {
             Log.d("AndroidJavaTools", "Account page becomes visible")
+
+            val entry = UserInfoDBEntry(mDatabase, AppUser.getInstance().id)
+
+            entry.readDBFields(object : TaskCompletionManager {
+                override fun onSuccess() {
+                    val currentUserFirstName = entry.firstName
+                    val currentUserLastName = entry.lastName
+                    val currentUserAddress = entry.address
+                    val currentUserCity = entry.city
+                    val currentUserPostcode = entry.postcode
+
+                    Log.d("AndroidJavaTools", "mdl setUserVisibleHint: "
+                        + "currentUserFirstName = $currentUserFirstName, "
+                        + "currentUserLastName = $currentUserLastName, "
+                        + "currentUserAddress = $currentUserAddress, "
+                        + "currentUserCity = $currentUserCity, "
+                        + "currentUserPostcode = $currentUserPostcode"
+                    )
+                }
+
+                override fun onFailure() {}
+            })
         } else {
             Log.d("AndroidJavaTools", "Account page becomes hidden")
         }

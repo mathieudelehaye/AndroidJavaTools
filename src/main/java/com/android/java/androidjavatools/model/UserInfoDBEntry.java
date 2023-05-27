@@ -69,8 +69,28 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
         dataChangeItem.put("device_id", false);
     }
 
+    public String getFirstName() {
+        return mData.get(0).get("first_name");
+    }
+
+    public String getLastName() {
+        return mData.get(0).get("last_name");
+    }
+
+    public String getAddress() {
+        return mData.get(0).get("address");
+    }
+
+    public String getCity() {
+        return mData.get(0).get("city");
+    }
+
+    public String getPostcode() {
+        return mData.get(0).get("first_name");
+    }
+
     public String getDeviceId() {
-        return (String)mData.get(0).get("device_id");
+        return (String)mData.get(0).get("post_code");
     }
 
     public void setDeviceId(String value) {
@@ -85,7 +105,7 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
             .set(mData.get(0))
             .addOnSuccessListener(aVoid -> {
                 Log.i("BeautyAndroid", "New info successfully written to the database for user: "
-                        + mKey.toString());
+                    + mKey.toString());
 
                 if (cbManager.length >= 1) {
                     cbManager[0].onSuccess();
@@ -98,6 +118,11 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
                     cbManager[0].onFailure();
                 }
             });
+    }
+
+    public boolean readDBFields(TaskCompletionManager... cbManager) {
+        String[] fields = { "first_name", "last_name", "address", "city", "post_code" };
+        return readDBFieldsForCurrentKey(fields, cbManager);
     }
 
     public void updateDBFields(TaskCompletionManager... cbManager) {
