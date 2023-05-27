@@ -73,9 +73,16 @@ open class FragmentProductDetail : FragmentCompose() {
                     modifier = Modifier
                         .background(Color.White)
                         .fillMaxWidth()
-                        .height(250.dp)
+                        .height(370.dp)
                         .border(width = 0.5.dp, Color.DarkGray)
                 ) {
+                    Image(
+                        painter = painterResource(id = image)
+                        , contentDescription = "Image with id $image"
+                        , contentScale = ContentScale.Fit
+                        , modifier = Modifier
+                        .align(Alignment.Center)
+                    )
                     Button(
                         modifier = Modifier
                             .width(width = 120.dp)
@@ -99,13 +106,6 @@ open class FragmentProductDetail : FragmentCompose() {
                                 .height(height = 60.dp)
                         )
                     }
-                    Image(
-                        painter = painterResource(id = image)
-                        , contentDescription = "Image with id $image"
-                        , contentScale = ContentScale.Fit
-                        , modifier = Modifier
-                            .align(Alignment.Center)
-                    )
                 }
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
