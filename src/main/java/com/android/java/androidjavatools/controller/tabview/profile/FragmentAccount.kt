@@ -22,7 +22,7 @@
 package com.android.java.androidjavatools.controller.tabview.profile
 
 import android.util.Log
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidViewBinding
@@ -37,20 +37,42 @@ import com.google.firebase.firestore.FirebaseFirestore
 abstract class FragmentAccount : FragmentCompose() {
     private var mDatabase = FirebaseFirestore.getInstance()
 
+    // state variables
+    private var mUserFirstName: MutableState<String> = mutableStateOf("")
+    private var mUserLastName: MutableState<String> = mutableStateOf("")
+    private var mUserAddress: MutableState<String> = mutableStateOf("")
+    private var mUserCity: MutableState<String> = mutableStateOf("")
+    private var mUserPostcode: MutableState<String> = mutableStateOf("")
+    private var mUserEmail: MutableState<String> = mutableStateOf("")
+
     @Composable
     override fun contentView() {
         val mNavigatorManager : Navigator.NavigatorManager = mActivity!! as Navigator.NavigatorManager
+
+        var firstName by remember { mUserFirstName }
+        var lastName by remember { mUserLastName }
+        var address by remember { mUserAddress }
+        var city by remember { mUserCity }
+        var postcode by remember { mUserPostcode }
+        var email by remember { mUserEmail }
 
         AndroidViewBinding(
             factory = FragmentAccountBinding::inflate,
             modifier = Modifier
         ) {
-            backRegister.setOnClickListener {
+            accountFirstName.setText(firstName)
+            accountLastName.setText(lastName)
+            accountAddress.setText(address)
+            accountCity.setText(city)
+            accountPostcode.setText(postcode)
+            accountEmail.setText(email)
+
+            accountBack.setOnClickListener {
                 // Go back to the Profile menu
                 mNavigatorManager.navigator().back()
             }
 
-            logOutRegister.setOnClickListener{
+            accountLogOut.setOnClickListener{
                 AppUser.getInstance().authenticate("", AppUser.AuthenticationType.NONE);
                 onLogout()
             }
@@ -73,19 +95,12 @@ abstract class FragmentAccount : FragmentCompose() {
 
             entry.readDBFields(object : TaskCompletionManager {
                 override fun onSuccess() {
-                    val currentUserFirstName = entry.firstName
-                    val currentUserLastName = entry.lastName
-                    val currentUserAddress = entry.address
-                    val currentUserCity = entry.city
-                    val currentUserPostcode = entry.postcode
-
-                    Log.d("AndroidJavaTools", "mdl setUserVisibleHint: "
-                        + "currentUserFirstName = $currentUserFirstName, "
-                        + "currentUserLastName = $currentUserLastName, "
-                        + "currentUserAddress = $currentUserAddress, "
-                        + "currentUserCity = $currentUserCity, "
-                        + "currentUserPostcode = $currentUserPostcode"
-                    )
+                    mUserFirstName.value = entry.firstName
+                    mUserLastName.value = entry.lastName
+                    mUserAddress.value = entry.address
+                    mUserCity.value = entry.city
+                    mUserPostcode.value = entry.postCode
+                    mUserEmail.value = entry.email
                 }
 
                 override fun onFailure() {}

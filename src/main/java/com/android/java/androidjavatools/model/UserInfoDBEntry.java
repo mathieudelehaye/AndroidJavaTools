@@ -47,11 +47,14 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
         mData = new ArrayList<>();
         var dataItem = new HashMap<String, String>();
         mData.add(dataItem);
+
         dataItem.put("first_name", "");
         dataItem.put("last_name", "");
         dataItem.put("address", "");
         dataItem.put("city", "");
         dataItem.put("post_code", "");
+        dataItem.put("email", "");
+
         dataItem.put("device_id", "");
 
         initializeDataChange();
@@ -61,11 +64,14 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
         mDataChanged = new ArrayList<>();
         var dataChangeItem = new HashMap<String, Boolean>();
         mDataChanged.add(dataChangeItem);
+
         dataChangeItem.put("first_name", false);
         dataChangeItem.put("last_name", false);
         dataChangeItem.put("address", false);
         dataChangeItem.put("city", false);
         dataChangeItem.put("post_code", false);
+        dataChangeItem.put("email", false);
+
         dataChangeItem.put("device_id", false);
     }
 
@@ -85,8 +91,12 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
         return mData.get(0).get("city");
     }
 
-    public String getPostcode() {
-        return mData.get(0).get("first_name");
+    public String getPostCode() {
+        return mData.get(0).get("post_code");
+    }
+
+    public String getEmail() {
+        return mData.get(0).get("email");
     }
 
     public String getDeviceId() {
@@ -121,7 +131,7 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
     }
 
     public boolean readDBFields(TaskCompletionManager... cbManager) {
-        String[] fields = { "first_name", "last_name", "address", "city", "post_code" };
+        String[] fields = { "first_name", "last_name", "address", "city", "post_code", "email" };
         return readDBFieldsForCurrentKey(fields, cbManager);
     }
 
