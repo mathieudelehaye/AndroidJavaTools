@@ -86,7 +86,7 @@
         app:layout_constraintStart_toStartOf="parent"
     />
     <EditText
-        android:id="@+id/account_postcode"
+        android:id="@+id/account_post_code"
         android:layout_width="167dp"
         android:layout_height="43dp"
         android:hint="Post code"

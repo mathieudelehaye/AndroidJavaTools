@@ -79,24 +79,54 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
         return mData.get(0).get("first_name");
     }
 
+    public void setFirstName(String value) {
+        mData.get(0).put("first_name", value);
+        mDataChanged.get(0).put("first_name", true);
+    }
+
     public String getLastName() {
         return mData.get(0).get("last_name");
+    }
+
+    public void setLastName(String value) {
+        mData.get(0).put("last_name", value);
+        mDataChanged.get(0).put("last_name", true);
     }
 
     public String getAddress() {
         return mData.get(0).get("address");
     }
 
+    public void setAddress(String value) {
+        mData.get(0).put("address", value);
+        mDataChanged.get(0).put("address", true);
+    }
+
     public String getCity() {
         return mData.get(0).get("city");
+    }
+
+    public void setCity(String value) {
+        mData.get(0).put("city", value);
+        mDataChanged.get(0).put("city", true);
     }
 
     public String getPostCode() {
         return mData.get(0).get("post_code");
     }
 
+    public void setPostCode(String value) {
+        mData.get(0).put("post_code", value);
+        mDataChanged.get(0).put("post_code", true);
+    }
+
     public String getEmail() {
         return mData.get(0).get("email");
+    }
+
+    public void setEmail(String value) {
+        mData.get(0).put("email", value);
+        mDataChanged.get(0).put("email", true);
     }
 
     public String getDeviceId() {

@@ -208,6 +208,7 @@ public class DBCollectionAccessor {
                 dataChangeItem.put(field, false);
             }
             dataItem.put("key", document.getId());
+            dataChangeItem.put("key", false);
         }
     }
 

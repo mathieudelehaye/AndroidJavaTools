@@ -22,6 +22,7 @@
 package com.android.java.androidjavatools.controller.tabview.profile
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,7 +36,8 @@ import com.android.java.androidjavatools.model.UserInfoDBEntry
 import com.google.firebase.firestore.FirebaseFirestore
 
 abstract class FragmentAccount : FragmentCompose() {
-    private var mDatabase = FirebaseFirestore.getInstance()
+    private val mDatabase = FirebaseFirestore.getInstance()
+    private val mDatabaseEntry = UserInfoDBEntry(mDatabase, AppUser.getInstance().id)
 
     // state variables
     private var mUserFirstName: MutableState<String> = mutableStateOf("")
@@ -53,7 +55,7 @@ abstract class FragmentAccount : FragmentCompose() {
         var lastName by remember { mUserLastName }
         var address by remember { mUserAddress }
         var city by remember { mUserCity }
-        var postcode by remember { mUserPostcode }
+        var postCode by remember { mUserPostcode }
         var email by remember { mUserEmail }
 
         AndroidViewBinding(
@@ -64,8 +66,55 @@ abstract class FragmentAccount : FragmentCompose() {
             accountLastName.setText(lastName)
             accountAddress.setText(address)
             accountCity.setText(city)
-            accountPostcode.setText(postcode)
+            accountPostCode.setText(postCode)
             accountEmail.setText(email)
+
+            accountConfirm.setOnClickListener {
+                // TODO: avoid repeating instructions and call a method instead
+                if (mDatabaseEntry.firstName != accountFirstName.text.toString()) {
+                    firstName = accountFirstName.text.toString()
+                    mDatabaseEntry.firstName = firstName
+                }
+
+                if (mDatabaseEntry.lastName != accountLastName.text.toString()) {
+                    lastName = accountLastName.text.toString()
+                    mDatabaseEntry.lastName = lastName
+                }
+
+                if (mDatabaseEntry.address != accountAddress.text.toString()) {
+                    address = accountAddress.text.toString()
+                    mDatabaseEntry.address = address
+                }
+
+                if (mDatabaseEntry.city != accountCity.text.toString()) {
+                    city = accountCity.text.toString()
+                    mDatabaseEntry.city = city
+                }
+
+                if (mDatabaseEntry.postCode != accountPostCode.text.toString()) {
+                    postCode = accountPostCode.text.toString()
+                    mDatabaseEntry.postCode = postCode
+                }
+
+                if (mDatabaseEntry.email != accountEmail.text.toString()) {
+                    email = accountEmail.text.toString()
+                    mDatabaseEntry.email = email
+                }
+
+                val dBUpdateCallback = object : TaskCompletionManager {
+                    override fun onSuccess() {
+                        Toast.makeText(context, "Data saved", Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onFailure() {
+                        TODO("Not yet implemented")
+                    }
+                }
+                mDatabaseEntry.updateDBFields(dBUpdateCallback)
+
+                // Go back to the Profile menu
+                mNavigatorManager.navigator().back()
+            }
 
             accountBack.setOnClickListener {
                 // Go back to the Profile menu
@@ -91,16 +140,14 @@ abstract class FragmentAccount : FragmentCompose() {
         if (isVisibleToUser) {
             Log.d("AndroidJavaTools", "Account page becomes visible")
 
-            val entry = UserInfoDBEntry(mDatabase, AppUser.getInstance().id)
-
-            entry.readDBFields(object : TaskCompletionManager {
+            mDatabaseEntry.readDBFields(object : TaskCompletionManager {
                 override fun onSuccess() {
-                    mUserFirstName.value = entry.firstName
-                    mUserLastName.value = entry.lastName
-                    mUserAddress.value = entry.address
-                    mUserCity.value = entry.city
-                    mUserPostcode.value = entry.postCode
-                    mUserEmail.value = entry.email
+                    mUserFirstName.value = mDatabaseEntry.firstName
+                    mUserLastName.value = mDatabaseEntry.lastName
+                    mUserAddress.value = mDatabaseEntry.address
+                    mUserCity.value = mDatabaseEntry.city
+                    mUserPostcode.value = mDatabaseEntry.postCode
+                    mUserEmail.value = mDatabaseEntry.email
                 }
 
                 override fun onFailure() {}
