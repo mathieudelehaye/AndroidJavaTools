@@ -22,6 +22,7 @@
 package com.android.java.androidjavatools.controller.tabview.product
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -48,9 +49,12 @@ import com.android.java.androidjavatools.R
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
 import com.android.java.androidjavatools.controller.tabview.search.SuggestionsAdapter
 import com.android.java.androidjavatools.controller.template.FragmentComposeWithSearch
+import com.android.java.androidjavatools.model.ProductInfo
+import com.android.java.androidjavatools.model.TaskCompletionManager
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.firebase.firestore.FirebaseFirestore
 
 open class FragmentProductSelection : FragmentComposeWithSearch() {
     @OptIn(ExperimentalPagerApi::class)
@@ -176,6 +180,30 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
     @Composable
     fun productGridPagePreview() {
         productGridPage()
+    }
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+
+        if (isVisibleToUser) {
+            Log.d("AndroidJavaTools", "Product detail page becomes visible")
+
+            val productInfo = ProductInfo(FirebaseFirestore.getInstance())
+            productInfo.SetValueBasedFilter(arrayOf("popular"), arrayOf("true"))
+
+            productInfo.readDBFieldsForCurrentFilter(arrayOf("title"), object : TaskCompletionManager {
+                override fun onSuccess() {
+                    for (i in 0 until productInfo.data.size) {
+                        val title = productInfo.getTitleAtIndex(i)
+                        Log.d("AndroidJavaTools", "mdl title = $title")
+                    }
+                }
+
+                override fun onFailure() {}
+            })
+        } else {
+            Log.d("AndroidJavaTools", "Product detail page becomes hidden")
+        }
     }
 
     override fun searchAndDisplayItems() {
