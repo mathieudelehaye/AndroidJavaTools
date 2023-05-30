@@ -49,6 +49,7 @@ import com.android.java.androidjavatools.R
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
 import com.android.java.androidjavatools.controller.tabview.search.SuggestionsAdapter
 import com.android.java.androidjavatools.controller.template.FragmentComposeWithSearch
+import com.android.java.androidjavatools.controller.template.backButton
 import com.android.java.androidjavatools.model.ProductInfo
 import com.android.java.androidjavatools.model.TaskCompletionManager
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -57,6 +58,14 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.firebase.firestore.FirebaseFirestore
 
 open class FragmentProductSelection : FragmentComposeWithSearch() {
+    companion object {
+        private var mFilterField = ""
+
+        fun setFilterField(value : String) {
+            mFilterField = value
+        }
+    }
+
     @OptIn(ExperimentalPagerApi::class)
     @Composable
     override fun contentView() {
@@ -65,7 +74,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
         searchBox.setSuggestionsAdapter(adapter)
 
         Column {
-            Spacer(modifier = Modifier.height(56.dp))
+            productSelectionHeader()
 
             searchBox.show()
 
@@ -80,6 +89,35 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                 productGridPage()
             }
         }
+    }
+
+    @Composable
+    fun productSelectionHeader() {
+        Column {
+            Spacer(modifier = Modifier.height(5.dp))
+            Row {
+                Spacer(modifier = Modifier.width(40.dp))
+                backButton(mNavigatorManager)
+                Spacer(modifier = Modifier.width(10.dp))
+                Column {
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Text(
+                        text = "Choose Samples"
+                        , fontWeight = FontWeight.W600
+                        , fontSize = 28.sp
+                        , color = Color.Black
+                    )
+                }
+
+            }
+            Spacer(modifier = Modifier.height(5.dp))
+        }
+    }
+
+    @Preview
+    @Composable
+    fun productSelectionHeaderPreview() {
+        productSelectionHeader()
     }
 
     @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
@@ -189,7 +227,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
             Log.d("AndroidJavaTools", "Product detail page becomes visible")
 
             val productInfo = ProductInfo(FirebaseFirestore.getInstance())
-            productInfo.SetValueBasedFilter(arrayOf("popular"), arrayOf("true"))
+            productInfo.SetValueBasedFilter(arrayOf(mFilterField), arrayOf("true"))
 
             productInfo.readDBFieldsForCurrentFilter(arrayOf("title"), object : TaskCompletionManager {
                 override fun onSuccess() {
