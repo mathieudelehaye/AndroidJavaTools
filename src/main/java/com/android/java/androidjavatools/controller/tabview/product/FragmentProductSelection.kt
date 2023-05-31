@@ -86,7 +86,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                     initialPage = Int.MAX_VALUE / 2
                 )
             ) { page ->
-                productGridPage()
+//                productGridPage()
             }
         }
     }
@@ -120,10 +120,35 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
         productSelectionHeader()
     }
 
-    @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+    @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    fun productGridPage() {
-        val imageNumber = 4
+    fun productGridPage(imageNumber: Int, images : IntArray, titles : Array<String>, descriptions : Array<String>) {
+        if (imageNumber > 4) {
+            Log.e("AndroidJavaTools", "Cannot display a product grid page with more than 4 items")
+            return
+        }
+
+        LazyVerticalGrid(
+            cells = GridCells.Fixed(2)
+        ) {
+            items(imageNumber) {index ->
+                val imageId = images[index % imageNumber]
+                val title = titles[index % imageNumber]
+                val description = descriptions[index % imageNumber]
+
+                Box(
+                    modifier = Modifier
+                        .padding(3.dp)
+                ) {
+                    productCard(imageId, title, description)
+                }
+            }
+        }
+    }
+
+    @Preview
+    @Composable
+    fun productGridPagePreview() {
         val images = intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
             R.drawable.product04, R.drawable.product05)
         val titles = arrayOf("Guerlain", "Sisley", "YSL", "Emporio Armani")
@@ -133,91 +158,83 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
             , "Touch Eclat Le Teint Foundation Infused with Light 100ml"
             , "Because it's You EAU DE PARFUM Delicious and Sparkling 150ml")
 
-        LazyVerticalGrid(
-                cells = GridCells.Fixed(2)
-        ) {
-            items(imageNumber) {index ->
-                val imageId = images[index % images.size]
-                val title = titles[index % titles.size]
-                val description = descriptions[index % titles.size]
-
-                Box(
-                    modifier = Modifier
-                        .padding(3.dp)
-                ) {
-                    Card(
-                        onClick = {
-                            val productDetailFragment
-                                = mNavigatorManager.navigator().getFragment("product") as FragmentProductDetail
-                            productDetailFragment.setImage(imageId)
-                            productDetailFragment.setTitle(title)
-                            productDetailFragment.setSubtitle(description)
-
-                            mNavigatorManager.navigator().showFragment("product")
-                        }
-                        , modifier = Modifier
-                            .background(Color.White)
-                            .width(200.dp)
-                            .height(200.dp)
-                            .border(width = 1.dp, Color.DarkGray)
-                        , elevation = 6.dp
-                    ) {
-                        Column {
-                            Box(
-                                modifier = Modifier
-                                    .background(Color.White)
-                                    .width(200.dp)
-                                    .height(155.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = imageId)
-                                    , contentDescription = "Image with id $imageId"
-                                    , contentScale = ContentScale.Fit
-                                    , modifier = Modifier
-                                        .align(Alignment.Center)
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .background(Color(0xFFF1F1F4))
-                                    .width(200.dp)
-                                    .height(45.dp)
-                            ) {
-                                Column {
-                                    Text(
-                                        text = title
-                                        , fontWeight = FontWeight.W600
-                                        , fontSize = 16.sp
-                                        , textAlign = TextAlign.Center
-                                        , color = Color.Blue
-                                        , modifier = Modifier
-                                            .padding(start = 2.dp)
-                                    )
-                                    Text(
-                                        text = descriptions[index % titles.size]
-                                        , fontWeight = FontWeight.W500
-                                        , fontSize = 14.sp
-                                        , color = Color.Black
-                                        , textAlign = TextAlign.Center
-                                        , maxLines = 1
-                                        , overflow = TextOverflow.Clip
-                                        , softWrap = false
-                                        , modifier = Modifier
-                                            .padding(start = 2.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        productGridPage(titles.size, images, titles, descriptions)
     }
 
     @Preview
     @Composable
-    fun productGridPagePreview() {
-        productGridPage()
+    fun productCardPreview() {
+        productCard(R.drawable.product01, "Guerlain",
+            "Abeille Royale Double Renew & Repair Advanced Serum 345ml")
+    }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    @Composable
+    fun productCard(imageId: Int, title: String, description: String) {
+        Card(
+            onClick = {
+                val productDetailFragment
+                    = mNavigatorManager.navigator().getFragment("product") as FragmentProductDetail
+                productDetailFragment.setImage(imageId)
+                productDetailFragment.setTitle(title)
+                productDetailFragment.setSubtitle(description)
+
+                mNavigatorManager.navigator().showFragment("product")
+            }
+            , modifier = Modifier
+            .background(Color.White)
+            .width(200.dp)
+            .height(200.dp)
+            .border(width = 1.dp, Color.DarkGray)
+            , elevation = 6.dp
+        ) {
+            Column {
+                Box(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .width(200.dp)
+                        .height(155.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = imageId)
+                        , contentDescription = "Image with id $imageId"
+                        , contentScale = ContentScale.Fit
+                        , modifier = Modifier
+                        .align(Alignment.Center)
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .background(Color(0xFFF1F1F4))
+                        .width(200.dp)
+                        .height(45.dp)
+                ) {
+                    Column {
+                        Text(
+                            text = title
+                            , fontWeight = FontWeight.W600
+                            , fontSize = 16.sp
+                            , textAlign = TextAlign.Center
+                            , color = Color.Blue
+                            , modifier = Modifier
+                            .padding(start = 2.dp)
+                        )
+                        Text(
+                            text = description
+                            , fontWeight = FontWeight.W500
+                            , fontSize = 14.sp
+                            , color = Color.Black
+                            , textAlign = TextAlign.Center
+                            , maxLines = 1
+                            , overflow = TextOverflow.Clip
+                            , softWrap = false
+                            , modifier = Modifier
+                            .padding(start = 2.dp)
+                        )
+                    }
+                }
+            }
+        }
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
