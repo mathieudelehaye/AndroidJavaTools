@@ -33,7 +33,7 @@ import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -66,9 +66,22 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
         }
     }
 
+    // TODO: download the images from the DB
+    private var mProductImages: MutableState<Array<Int>> = mutableStateOf(emptyArray())
+    private var mProductTitles: MutableState<Array<String>> = mutableStateOf(emptyArray())
+    private var mProductSubtitles: MutableState<Array<String>> = mutableStateOf(emptyArray())
+
     @OptIn(ExperimentalPagerApi::class)
     @Composable
     override fun contentView() {
+        var productImages by remember { mProductImages }
+        var productTitles by remember { mProductTitles }
+        var productSubtitles by remember { mProductSubtitles }
+
+        val products = productTitles.size
+        val pages: Int = (products / 5) + 1
+        Log.d("AndroidJavaTools", "Product selection updated: $products product(s), $pages page(s)")
+
         var searchBox = SearchBox(mActivity as Activity, this, null)
         val adapter = SuggestionsAdapter(mActivity, searchBox, searchBox.getSearchableConfig())
         searchBox.setSuggestionsAdapter(adapter)
@@ -81,12 +94,24 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
             Spacer(modifier = Modifier.height(45.dp))
 
             HorizontalPager(
-                count = Int.MAX_VALUE,
+                count = pages,
                 state = rememberPagerState(
-                    initialPage = Int.MAX_VALUE / 2
+                    initialPage = 0
                 )
             ) { page ->
-//                productGridPage()
+                val pageProducts =  if (page < pages - 1) 4 else (products % 5)
+                val startIndex = page * 4
+                val endIndex = page * 4 + pageProducts
+
+                Log.d("AndroidJavaTools", "Page $page has $pageProducts products, fom index $startIndex " +
+                    "to $endIndex")
+
+                productGridPage(
+                    pageProducts,
+                    productImages.copyOfRange(startIndex, endIndex)
+                    , productTitles.copyOfRange(startIndex, endIndex)
+                    , productSubtitles.copyOfRange(startIndex, endIndex)
+                )
             }
         }
     }
@@ -122,8 +147,8 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    fun productGridPage(imageNumber: Int, images : IntArray, titles : Array<String>, descriptions : Array<String>) {
-        if (imageNumber > 4) {
+    fun productGridPage(productNumber: Int, images : Array<Int>, titles : Array<String>, descriptions : Array<String>) {
+        if (productNumber > 4) {
             Log.e("AndroidJavaTools", "Cannot display a product grid page with more than 4 items")
             return
         }
@@ -131,10 +156,10 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
         LazyVerticalGrid(
             cells = GridCells.Fixed(2)
         ) {
-            items(imageNumber) {index ->
-                val imageId = images[index % imageNumber]
-                val title = titles[index % imageNumber]
-                val description = descriptions[index % imageNumber]
+            items(productNumber) { index ->
+                val imageId = images[index % productNumber]
+                val title = titles[index % productNumber]
+                val description = descriptions[index % productNumber]
 
                 Box(
                     modifier = Modifier
@@ -149,7 +174,8 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
     @Preview
     @Composable
     fun productGridPagePreview() {
-        val images = intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
+        val images =
+                intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
             R.drawable.product04, R.drawable.product05)
         val titles = arrayOf("Guerlain", "Sisley", "YSL", "Emporio Armani")
         val descriptions = arrayOf(
@@ -158,7 +184,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
             , "Touch Eclat Le Teint Foundation Infused with Light 100ml"
             , "Because it's You EAU DE PARFUM Delicious and Sparkling 150ml")
 
-        productGridPage(titles.size, images, titles, descriptions)
+        productGridPage(titles.size, images.toTypedArray(), titles, descriptions)
     }
 
     @Preview
@@ -241,23 +267,39 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
         super.setUserVisibleHint(isVisibleToUser)
 
         if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Product detail page becomes visible")
+            Log.d("AndroidJavaTools", "Product selection page becomes visible")
 
             val productInfo = ProductInfo(FirebaseFirestore.getInstance())
             productInfo.SetValueBasedFilter(arrayOf(mFilterField), arrayOf("true"))
 
-            productInfo.readDBFieldsForCurrentFilter(arrayOf("title"), object : TaskCompletionManager {
+            productInfo.readDBFieldsForCurrentFilter(arrayOf("title", "subtitle"), object : TaskCompletionManager {
                 override fun onSuccess() {
-                    for (i in 0 until productInfo.data.size) {
-                        val title = productInfo.getTitleAtIndex(i)
-                        Log.d("AndroidJavaTools", "mdl title = $title")
+                    val products = productInfo.data.size
+
+                    val allImages = intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
+                        R.drawable.product04)
+
+                    val imageList = mutableListOf<Int>()
+                    val titleList = mutableListOf<String>()
+                    val subtitleList = mutableListOf<String>()
+
+                    for (i in 0 until      products) {
+                        imageList.add(allImages[i % allImages.size])
+                        titleList.add(productInfo.getTitleAtIndex(i)!!)
+                        subtitleList.add(productInfo.getSubtitleAtIndex(i)!!)
                     }
+
+                    mProductImages.value = imageList.toTypedArray()
+                    mProductTitles.value = titleList.toTypedArray()
+                    mProductSubtitles.value = subtitleList.toTypedArray()
+
+                    Log.d("AndroidJavaTools", "Found $products items for filter `$mFilterField`")
                 }
 
                 override fun onFailure() {}
             })
         } else {
-            Log.d("AndroidJavaTools", "Product detail page becomes hidden")
+            Log.d("AndroidJavaTools", "Product selection page becomes hidden")
         }
     }
 

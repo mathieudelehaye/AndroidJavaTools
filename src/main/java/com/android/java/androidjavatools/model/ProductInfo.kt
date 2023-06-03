@@ -34,4 +34,10 @@ class ProductInfo : DBCollectionAccessor {
         return if (productTitle != null
             && productTitle != "?") "$productTitle " else ""
     }
+
+    fun getSubtitleAtIndex(i: Int): String? {
+        val productDescription = mData[i]["subtitle"]
+        return if (productDescription != null
+            && productDescription != "?") "$productDescription " else ""
+    }
 }
