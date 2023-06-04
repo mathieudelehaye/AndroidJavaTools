@@ -21,10 +21,12 @@
 
 package com.android.java.androidjavatools.controller.tabview.product
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -41,8 +43,15 @@ import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.controller.template.backButton
+import com.android.java.androidjavatools.controller.template.buttonWithText
+import com.android.java.androidjavatools.model.AppUser
+import com.android.java.androidjavatools.model.TaskCompletionManager
+import com.android.java.androidjavatools.model.UserInfoDBEntry
+import com.google.firebase.firestore.FirebaseFirestore
 
 open class FragmentProductDetail : FragmentCompose() {
+    private val mDatabase = FirebaseFirestore.getInstance()
+    private val mDatabaseEntry = UserInfoDBEntry(mDatabase, AppUser.getInstance().id)
     private var mImage: MutableState<Int> = mutableStateOf(R.drawable.product01)
     private var mTitle: MutableState<String> = mutableStateOf("")
     private var mSubtitle: MutableState<String> = mutableStateOf("")
@@ -118,6 +127,39 @@ open class FragmentProductDetail : FragmentCompose() {
                         .fillMaxWidth()
                 ) {
                     productDescription()
+
+                    Spacer(modifier = Modifier
+                            .height(5.dp)
+                    )
+                    Divider(color = Color.LightGray, thickness = 2.dp)
+                    Spacer(modifier = Modifier
+                            .height(5.dp)
+                    )
+                    Row {
+                        Spacer(modifier = Modifier.width(40.dp))
+                        buttonWithText("Buy Now", Color.Green, width = 150.dp, radius = 30.dp) {}
+                        Spacer(modifier = Modifier.width(30.dp))
+                        // Orange color
+                        buttonWithText("Freebies", Color(0xFFD0A038), width = 150.dp, radius = 30.dp) {
+                            mDatabaseEntry.readDBFields(object : TaskCompletionManager {
+                                override fun onSuccess() {
+                                    val address = mDatabaseEntry.address
+                                    val city = mDatabaseEntry.city
+                                    val postcode = mDatabaseEntry.postCode
+
+                                    val fullAddress = "$address $city $postcode"
+
+                                    Toast.makeText(context, "Sample ordered at address: $fullAddress",
+                                        Toast.LENGTH_SHORT).show()
+                                }
+
+                                override fun onFailure() {}
+                            })
+                        }
+                    }
+                    Spacer(modifier = Modifier
+                            .height(5.dp)
+                    )
                 }
             }
         }
