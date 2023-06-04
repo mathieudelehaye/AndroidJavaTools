@@ -24,32 +24,29 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mainActivityLayout"
+    android:id="@+id/main_activity_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
-    tools:context="com.beautyorder.androidclient.controller.tabview.EBTabViewActivity"
+    tools:context="com.android.java.androidjavatools.controller.tabview.TabViewActivity"
 >
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:theme="@style/Theme.BeautyAndroid.AppBarOverlay"
+        android:id="@+id/main_activity_app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
     />
+
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/main_toolbar"
+        android:id="@+id/main_activity_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/white"
-        app:popupTheme="@style/Theme.BeautyAndroid.PopupOverlay"
         app:layout_anchorGravity="center"
-        app:layout_anchor="@+id/appBarLayout"
+        app:layout_anchor="@+id/main_activity_app_bar_layout"
     >
 
         <ImageView
-            android:id="@+id/search_box_icon"
-            android:src="@drawable/brand_logo"
+            android:id="@+id/main_activity_icon"
             android:scaleX=".6"
             android:scaleY=".6"
             android:layout_gravity="center"
