@@ -51,6 +51,7 @@ fun buttonWithText(
     , width: Dp = 188.dp
     , height: Dp =  60.dp
     , radius: Dp = 15.dp
+    , onClick: () -> Unit
 ) {
     Button(
         modifier = Modifier
@@ -62,6 +63,7 @@ fun buttonWithText(
             , Color.Black
         )
         , onClick = {
+            onClick()
         }
         , colors = ButtonDefaults.buttonColors(
             backgroundColor = color
@@ -79,7 +81,7 @@ fun buttonWithText(
 @Preview
 @Composable
 fun buttonWithTextPreview() {
-    buttonWithText("Hello", Color.Blue)
+    buttonWithText("Hello", Color.Blue) {}
 }
 
 @Composable
