@@ -30,19 +30,34 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DBCollectionAccessor {
+    public enum SearchFilterType {
+        RANGE,
+        VALUE
+    }
+
     private class SearchFilter {
+        private SearchFilterType mType;
         private String[] mFields;
         private double[] mMinRanges;
         private double[] mMaxRanges;
+        private String[] mValues;
 
-        public SearchFilter(String[] fields, double[] minRanges, double[] maxRanges) {
+        public SearchFilter(String[] fields, double[] minRanges, double[] maxRanges, String[] values,
+            SearchFilterType type) {
+
             mFields = fields;
             mMinRanges = minRanges;
             mMaxRanges = maxRanges;
+            mValues = values;
+            mType = type;
         }
 
         public int getRanges() {
             return mMaxRanges.length;
+        }
+
+        public int getValues() {
+            return mValues.length;
         }
 
         public String getFieldAtIndex(int i) {
@@ -53,8 +68,16 @@ public class DBCollectionAccessor {
             return mMinRanges[i];
         }
 
-        public double getMaxRangeAtIndex(int i$) {
-            return mMaxRanges[i$];
+        public double getMaxRangeAtIndex(int i) {
+            return mMaxRanges[i];
+        }
+
+        public String getValue(int i) {
+            return mValues[i];
+        }
+
+        public SearchFilterType getType() {
+            return mType;
         }
     }
 
@@ -93,8 +116,12 @@ public class DBCollectionAccessor {
         mKey.append(value);
     }
 
-    public void SetFilter(String[] fields, double[] minRanges, double[] maxRanges) {
-        mFilter = new SearchFilter(fields, minRanges, maxRanges);
+    public void SetRangeBasedFilter(String[] fields, double[] minRanges, double[] maxRanges) {
+        mFilter = new SearchFilter(fields, minRanges, maxRanges, new String[]{}, SearchFilterType.RANGE);
+    }
+
+    public void SetValueBasedFilter(String[] fields, String[] values) {
+        mFilter = new SearchFilter(fields, new double[]{}, new double[]{}, values, SearchFilterType.VALUE);
     }
 
     public boolean readDBFieldsForCurrentKey(String[] fields, TaskCompletionManager... cbManager) {
@@ -129,9 +156,14 @@ public class DBCollectionAccessor {
     }
 
     public boolean readDBFieldsForCurrentFilter(String[] fields, TaskCompletionManager... cbManager) {
+        return (mFilter.mType == SearchFilterType.RANGE) ?
+            readDBFieldsForCurrentRangeFilter(fields, cbManager) :
+            readDBFieldsForCurrentValueFilter(fields, cbManager);
+    }
 
+    private boolean readDBFieldsForCurrentRangeFilter(String[] fields, TaskCompletionManager... cbManager) {
         if (mFilter == null && mFilter.getRanges() < 1) {
-            Log.w("AJT", "Try to read with no valid filter the fields from the DB collection: "
+            Log.w("AJT", "Try to read with no valid range filter the fields from the DB collection: "
                 + mCollectionName);
             return false;
         }
@@ -160,6 +192,38 @@ public class DBCollectionAccessor {
             });
 
         return true;
+    }
+
+    private boolean readDBFieldsForCurrentValueFilter(String[] fields, TaskCompletionManager... cbManager) {
+        if (mFilter == null) {
+            Log.w("AJT", "Try to read with no valid value filter the fields from the DB collection: "
+                + mCollectionName);
+            return false;
+        }
+
+        String firstFilterField = mFilter.getFieldAtIndex(0);
+
+        mDatabase.collection(mCollectionName)
+            .whereEqualTo(firstFilterField, Boolean.valueOf(mFilter.getValue(0)))
+            .get()
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+
+                    readResultFields(task.getResult(), fields, mFilter);
+
+                    if (cbManager.length >= 1) {
+                        cbManager[0].onSuccess();
+                    }
+                } else {
+                    Log.e("AJT", "Error reading documents: ", task.getException());
+
+                    if (cbManager.length >= 1) {
+                        cbManager[0].onFailure();
+                    }
+                }
+            });
+
+        return false;
     }
 
     private void readResultFields(QuerySnapshot result, String[] fields, SearchFilter filter) {
@@ -214,12 +278,26 @@ public class DBCollectionAccessor {
 
     private boolean filterDocument(QueryDocumentSnapshot document, SearchFilter filter) {
         // The filter item at index 0 has been used for the query
-        for(int i = 1; i < filter.getRanges(); i++) {
-            final var fieldValue = (double)document.getData().get(filter.getFieldAtIndex(i));
+        switch(filter.getType()) {
+            case VALUE:
+                for(int i = 1; i < filter.getRanges(); i++) {
+                    final var fieldValue = (double)document.getData().get(filter.getFieldAtIndex(i));
 
-            if (fieldValue < filter.getMinRangeAtIndex(i) || fieldValue > filter.getMaxRangeAtIndex(i)) {
-                return false;
-            }
+                    if (fieldValue < filter.getMinRangeAtIndex(i) || fieldValue > filter.getMaxRangeAtIndex(i)) {
+                        return false;
+                    }
+                }
+                break;
+            case RANGE:
+            default:
+                for(int i = 1; i < filter.getValues(); i++) {
+                    final var fieldValue = String.valueOf(document.getData().get(filter.getFieldAtIndex(i)));
+
+                    if (!fieldValue.equals(filter.getValue(i))) {
+                        return false;
+                    }
+                }
+                break;
         }
 
         return true;

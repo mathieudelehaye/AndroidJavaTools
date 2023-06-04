@@ -25,19 +25,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -46,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
 import com.android.java.androidjavatools.controller.template.FragmentCompose
+import com.android.java.androidjavatools.controller.template.backButton
 
 open class FragmentProductDetail : FragmentCompose() {
     private var mImage: MutableState<Int> = mutableStateOf(R.drawable.product01)
@@ -83,28 +78,12 @@ open class FragmentProductDetail : FragmentCompose() {
                         , modifier = Modifier
                         .align(Alignment.Center)
                     )
-                    Button(
-                        modifier = Modifier
-                            .width(width = 120.dp)
-                            .height(height = 120.dp)
-                            .padding(30.dp)
-                        , colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Black
-                        )
-                        , shape = CircleShape
-                        , onClick = {
-                            mNavigatorManager?.navigator()?.back()
+                    Column {
+                        Spacer(modifier = Modifier.height(25.dp))
+                        Row {
+                            Spacer(modifier = Modifier.width(25.dp))
+                            backButton(mNavigatorManager)
                         }
-                    ) {
-                        // TODO: improve Back button integration
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.chevron_left)
-                            , contentDescription = "Back icon"
-                            , tint = Color.White
-                            , modifier = Modifier
-                                .width(width = 60.dp)
-                                .height(height = 60.dp)
-                        )
                     }
                 }
                 Column(

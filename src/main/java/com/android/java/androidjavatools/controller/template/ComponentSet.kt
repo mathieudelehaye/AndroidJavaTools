@@ -24,18 +24,25 @@ package com.android.java.androidjavatools.controller.template
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.android.java.androidjavatools.R
+import com.android.java.androidjavatools.controller.tabview.Navigator.NavigatorManager
 
 @Composable
 fun buttonWithText(
@@ -67,4 +74,44 @@ fun buttonWithText(
             , textAlign = TextAlign.Center
         )
     }
+}
+
+@Preview
+@Composable
+fun buttonWithTextPreview() {
+    buttonWithText("Hello", Color.Blue)
+}
+
+@Composable
+fun backButton(
+    navigatorManager : NavigatorManager?
+) {
+    Button(
+        modifier = Modifier
+            .width(width = 50.dp)
+            .height(height = 50.dp)
+        , colors = ButtonDefaults.buttonColors(
+        backgroundColor = Color.Black
+    )
+        , shape = CircleShape
+        , onClick = {
+            navigatorManager?.navigator()?.back()
+        }
+    ) {
+        // TODO: improve Back button integration
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.chevron_left)
+            , contentDescription = "Back icon"
+            , tint = Color.White
+            , modifier = Modifier
+            .width(width = 60.dp)
+            .height(height = 60.dp)
+        )
+    }
+}
+
+@Preview
+@Composable
+fun backButtonPreview() {
+    backButton(null)
 }

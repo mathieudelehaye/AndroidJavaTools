@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    activity_main.xml
+
+    Created by Mathieu Delehaye on 1/12/2022.
+
+    BeautyAndroid: An Android app to order and recycle cosmetics.
+
+    Copyright © 2022 Mathieu Delehaye. All rights reserved.
+
+
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+    Public License as published by
+    the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS
+    FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+    You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+    <https://www.gnu.org/licenses/>.
+-->
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_activity_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.android.java.androidjavatools.controller.tabview.TabViewActivity"
+>
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/main_activity_app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+    />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/main_activity_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        app:layout_anchorGravity="center"
+        app:layout_anchor="@+id/main_activity_app_bar_layout"
+    >
+
+        <ImageView
+            android:id="@+id/main_activity_icon"
+            android:scaleX=".6"
+            android:scaleY=".6"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+        />
+    </androidx.appcompat.widget.Toolbar>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

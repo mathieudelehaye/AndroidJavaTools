@@ -1,5 +1,5 @@
 //
-//  ProductBrowserView.java
+//  ProductBrowserView.kt
 //
 //  Created by Mathieu Delehaye on 19/05/2023.
 //
@@ -28,7 +28,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -40,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
 import com.android.java.androidjavatools.controller.tabview.Navigator
+import com.android.java.androidjavatools.controller.tabview.product.FragmentProductSelection
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
 import com.android.java.androidjavatools.controller.template.FragmentWithSearch
 import com.android.java.androidjavatools.controller.template.buttonWithText
@@ -100,8 +100,14 @@ class ProductBrowserView {
             }
 
             Spacer(modifier = Modifier.height(5.dp))
-            browserPager("Sustainable Brands", images)
-            browserPager("Popular on ECOBEAUTY", images)
+            browserPager("Sustainable Brands", images) {
+                FragmentProductSelection.setFilterField("sustainable")
+                mNavigatorManager!!.navigator().showFragment("products")
+            }
+            browserPager("Popular on ECOBEAUTY", images) {
+                FragmentProductSelection.setFilterField("popular")
+                mNavigatorManager!!.navigator().showFragment("products")
+            }
         }
     }
 
@@ -114,8 +120,9 @@ class ProductBrowserView {
     @Composable
     fun browserPager(
         title: String
-        , images: IntArray)
-    {
+        , images: IntArray
+        , onClick: () -> Unit
+    ) {
         Column {
             Spacer(modifier = Modifier.height(5.dp))
             Row {
@@ -129,7 +136,9 @@ class ProductBrowserView {
                     , style = MaterialTheme.typography.h1
                 )
             }
-            infinitePager(images)
+            infinitePager(images) {
+                onClick()
+            }
             Spacer(modifier = Modifier.height(10.dp))
             Divider(color = Color.LightGray, thickness = 2.dp)
         }
@@ -140,13 +149,14 @@ class ProductBrowserView {
     fun previewBrowserPager() {
         val images = intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
             R.drawable.product04, R.drawable.product05)
-        browserPager("Browse by Functions", images)
+        browserPager("Browse by Functions", images) {}
     }
 
-    @OptIn(ExperimentalPagerApi::class)
+    @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
     @Composable
     fun infinitePager(
-        images: IntArray
+        images: IntArray,
+        onClick: () -> Unit
     ) {
         // Add padding around our message
         HorizontalPager(
@@ -155,8 +165,11 @@ class ProductBrowserView {
                 initialPage = Int.MAX_VALUE / 2
             )
         ) { page ->
-            Box(
-                modifier = Modifier
+            Card(
+                onClick = {
+                    onClick()
+                }
+                , modifier = Modifier
                     .background(Color.White)
                     .border(width = 2.dp, Color.DarkGray)
                     .width(191.dp)
@@ -166,8 +179,6 @@ class ProductBrowserView {
                     contentDescription = "Contact profile picture"
                     , painter = painterResource(images[page % 5])
                     , contentScale = ContentScale.FillHeight
-                    , modifier = Modifier
-                        .align(Alignment.Center)
                 )
             }
         }
