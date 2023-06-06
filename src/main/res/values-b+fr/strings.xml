@@ -22,6 +22,9 @@
 
 <resources>
     <string name="lib_name">AndroidJavaTools</string>
+    <string name="anonymous_uid">anonymous-uid</string>
+    <string name="app_uid">app-uid</string>
+    <string name="device_id">device-id</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="save_button">Save</string>

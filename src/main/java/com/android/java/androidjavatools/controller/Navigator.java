@@ -19,13 +19,14 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.controller.tabview;
+package com.android.java.androidjavatools.controller;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import com.android.java.androidjavatools.controller.tabview.FragmentTabView;
 import java.util.HashMap;
 import java.util.Stack;
 

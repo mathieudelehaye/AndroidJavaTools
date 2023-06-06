@@ -38,7 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
-import com.android.java.androidjavatools.controller.tabview.Navigator
+import com.android.java.androidjavatools.controller.Navigator
 import com.android.java.androidjavatools.controller.tabview.product.FragmentProductSelection
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
 import com.android.java.androidjavatools.controller.template.FragmentWithSearch

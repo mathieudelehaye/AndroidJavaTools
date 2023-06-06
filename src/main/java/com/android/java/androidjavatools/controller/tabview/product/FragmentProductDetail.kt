@@ -21,6 +21,7 @@
 
 package com.android.java.androidjavatools.controller.tabview.product
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -41,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
+import com.android.java.androidjavatools.controller.auth.AuthenticateActivity
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.controller.template.backButton
 import com.android.java.androidjavatools.controller.template.buttonWithText
@@ -129,11 +131,11 @@ open class FragmentProductDetail : FragmentCompose() {
                     productDescription()
 
                     Spacer(modifier = Modifier
-                            .height(5.dp)
+                        .height(5.dp)
                     )
                     Divider(color = Color.LightGray, thickness = 2.dp)
                     Spacer(modifier = Modifier
-                            .height(5.dp)
+                        .height(5.dp)
                     )
                     Row {
                         Spacer(modifier = Modifier.width(40.dp))
@@ -143,14 +145,20 @@ open class FragmentProductDetail : FragmentCompose() {
                         buttonWithText("Freebies", Color(0xFFD0A038), width = 150.dp, radius = 30.dp) {
                             mDatabaseEntry.readDBFields(object : TaskCompletionManager {
                                 override fun onSuccess() {
-                                    val address = mDatabaseEntry.address
-                                    val city = mDatabaseEntry.city
-                                    val postcode = mDatabaseEntry.postCode
 
-                                    val fullAddress = "$address $city $postcode"
+                                    if (!isUserConnected()) {
+                                        // show connection dialog
+                                        startActivity(Intent(context, AuthenticateActivity::class.java))
+                                    } else {
+                                        val address = mDatabaseEntry.address
+                                        val city = mDatabaseEntry.city
+                                        val postcode = mDatabaseEntry.postCode
 
-                                    Toast.makeText(context, "Sample ordered at address: $fullAddress",
-                                        Toast.LENGTH_SHORT).show()
+                                        val fullAddress = "$address $city $postcode"
+
+                                        Toast.makeText(context, "Sample ordered at address: $fullAddress",
+                                            Toast.LENGTH_SHORT).show()
+                                    }
                                 }
 
                                 override fun onFailure() {}
@@ -158,7 +166,7 @@ open class FragmentProductDetail : FragmentCompose() {
                         }
                     }
                     Spacer(modifier = Modifier
-                            .height(5.dp)
+                        .height(5.dp)
                     )
                 }
             }
@@ -179,6 +187,11 @@ open class FragmentProductDetail : FragmentCompose() {
 
     fun setSubtitle(text: String) {
         mSubtitle.value = text
+    }
+
+    fun isUserConnected(): Boolean {
+        return (AppUser.getInstance().authenticationType
+            == AppUser.AuthenticationType.REGISTERED)
     }
 
     @Preview
