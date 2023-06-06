@@ -61,4 +61,9 @@ public class AppUser {
         mId.setLength(0);
         mId.append(_uid);
     }
+
+    public void logOut() {
+        mAuthenticationType = AuthenticationType.NONE;
+        mId.setLength(0);
+    }
 }

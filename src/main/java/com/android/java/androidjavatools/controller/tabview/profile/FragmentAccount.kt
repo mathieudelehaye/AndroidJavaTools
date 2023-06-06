@@ -21,6 +21,8 @@
 
 package com.android.java.androidjavatools.controller.tabview.profile
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.*
@@ -33,6 +35,7 @@ import com.android.java.androidjavatools.databinding.FragmentAccountBinding
 import com.android.java.androidjavatools.model.AppUser
 import com.android.java.androidjavatools.model.TaskCompletionManager
 import com.android.java.androidjavatools.model.UserInfoDBEntry
+import com.android.java.androidjavatools.R
 import com.google.firebase.firestore.FirebaseFirestore
 
 abstract class FragmentAccount : FragmentCompose() {
@@ -122,7 +125,13 @@ abstract class FragmentAccount : FragmentCompose() {
             }
 
             accountLogOut.setOnClickListener{
-                AppUser.getInstance().authenticate("", AppUser.AuthenticationType.NONE);
+                AppUser.getInstance().logOut()
+
+                // Delete the app current user
+                val pref: SharedPreferences = (mActivity!! as Context).getSharedPreferences(
+                    getString(R.string.lib_name), Context.MODE_PRIVATE)
+                pref.edit().putString(getString(R.string.app_uid), "").commit()
+
                 onLogout()
             }
         }
