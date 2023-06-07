@@ -21,7 +21,7 @@
 
 package com.android.java.androidjavatools.controller.tabview.product
 
-import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,7 +42,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
-import com.android.java.androidjavatools.controller.auth.AuthenticateActivity
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.controller.template.backButton
 import com.android.java.androidjavatools.controller.template.buttonWithText
@@ -51,7 +50,7 @@ import com.android.java.androidjavatools.model.TaskCompletionManager
 import com.android.java.androidjavatools.model.UserInfoDBEntry
 import com.google.firebase.firestore.FirebaseFirestore
 
-open class FragmentProductDetail : FragmentCompose() {
+abstract class FragmentProductDetail : FragmentCompose() {
     private val mDatabase = FirebaseFirestore.getInstance()
     private val mDatabaseEntry = UserInfoDBEntry(mDatabase, AppUser.getInstance().id)
     private var mImage: MutableState<Int> = mutableStateOf(R.drawable.product01)
@@ -147,8 +146,10 @@ open class FragmentProductDetail : FragmentCompose() {
                                 override fun onSuccess() {
 
                                     if (!isUserConnected()) {
-                                        // show connection dialog
-                                        startActivity(Intent(context, AuthenticateActivity::class.java))
+                                        Log.v("AndroidJavaTools", "User not connected when ordering samples:"
+                                            + " starting the authentication activity")
+
+                                        startAuthActivity()
                                     } else {
                                         val address = mDatabaseEntry.address
                                         val city = mDatabaseEntry.city
@@ -193,6 +194,8 @@ open class FragmentProductDetail : FragmentCompose() {
         return (AppUser.getInstance().authenticationType
             == AppUser.AuthenticationType.REGISTERED)
     }
+
+    protected abstract fun startAuthActivity()
 
     @Preview
     @Composable
