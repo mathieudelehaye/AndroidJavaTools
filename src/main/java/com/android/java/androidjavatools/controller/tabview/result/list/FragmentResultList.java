@@ -29,7 +29,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import androidx.annotation.NonNull;
 import com.android.java.androidjavatools.Helpers;
-import com.android.java.androidjavatools.controller.tabview.dialog.FragmentHelpDialog;
+import com.android.java.androidjavatools.controller.tabview.profile.FragmentHelpDialog;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchProvider;

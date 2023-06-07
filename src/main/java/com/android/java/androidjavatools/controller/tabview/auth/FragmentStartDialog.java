@@ -1,7 +1,7 @@
 //
-//  FragmentLoginDialog.java
+//  FragmentStartDialog.java
 //
-//  Created by Mathieu Delehaye on 4/02/2023.
+//  Created by Mathieu Delehaye on 3/02/2023.
 //
 //  AndroidJavaTools: A framework to develop Android apps in Java.
 //
@@ -19,12 +19,12 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.controller.auth.dialog;
+package com.android.java.androidjavatools.controller.tabview.auth;
 
 import android.app.Dialog;
 import android.os.Bundle;
 
-public abstract class FragmentLoginDialog extends FragmentAuthenticateDialog {
+public abstract class FragmentStartDialog extends FragmentAuthenticateDialog {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return super.onCreateDialog(savedInstanceState);

@@ -39,7 +39,7 @@ import com.android.java.androidjavatools.controller.tabview.result.FragmentResul
 import com.android.java.androidjavatools.databinding.FragmentMapBinding;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.model.ResultItemInfo;
-import com.android.java.androidjavatools.controller.tabview.dialog.FragmentHelpDialog;
+import com.android.java.androidjavatools.controller.tabview.profile.FragmentHelpDialog;
 import com.android.java.androidjavatools.R;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;

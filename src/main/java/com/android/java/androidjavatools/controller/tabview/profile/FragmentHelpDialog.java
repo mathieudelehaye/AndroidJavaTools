@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.controller.tabview.dialog;
+package com.android.java.androidjavatools.controller.tabview.profile;
 
 import android.app.Dialog;
 import android.graphics.Color;

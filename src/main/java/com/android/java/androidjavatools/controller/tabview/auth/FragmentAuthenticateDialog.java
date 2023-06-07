@@ -19,10 +19,9 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.controller.auth.dialog;
+package com.android.java.androidjavatools.controller.tabview.auth;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -30,6 +29,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import com.android.java.androidjavatools.model.AuthManager;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class FragmentAuthenticateDialog extends DialogFragment {
@@ -47,15 +47,11 @@ public abstract class FragmentAuthenticateDialog extends DialogFragment {
         return initializeGUI(dialog);
     }
 
-    // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        // Verify that the host activity implements the callback interface
+    public void setAuthManager(AuthManager manager) {
+        // Verify that the passed manager implements the callback interface
         try {
             // Instantiate the NoticeDialogListener so we can send events to the host
-            mListener = (AuthenticateDialogListener) context;
+            mListener = manager;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(getActivity().toString()

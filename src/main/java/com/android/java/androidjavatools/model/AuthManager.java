@@ -1,5 +1,5 @@
 //
-//  AuthenticateActivity.java
+//  AuthManager.java
 //
 //  Created by Mathieu Delehaye on 4/02/2023.
 //
@@ -19,14 +19,14 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.controller.auth;
+package com.android.java.androidjavatools.model;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -37,11 +37,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import com.android.java.androidjavatools.controller.Navigator;
-import com.android.java.androidjavatools.model.AppUser;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.R;
-import com.android.java.androidjavatools.controller.auth.dialog.AuthenticateDialogListener;
-import com.android.java.androidjavatools.model.TaskCompletionManager;
+import com.android.java.androidjavatools.controller.tabview.auth.AuthenticateDialogListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,26 +53,26 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static android.content.Context.TELEPHONY_SERVICE;
 
-public abstract class AuthenticateActivity extends ActivityWithStart implements AuthenticateDialogListener,
-    Navigator.NavigatorManager {
+public abstract class AuthManager implements AuthenticateDialogListener {
 
+    protected Activity mActivity ;
+    protected SharedPreferences mSharedPref;
     protected FirebaseFirestore mDatabase;
     protected Navigator mNavigator;
     private FirebaseAuth mAuth;
     private StringBuilder mDeviceId;
     private StringBuilder mPrefUserId;
-    private AuthenticateActivity mThis;
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        Log.i("BeautyAndroid", "Sign-up activity started");
+    public AuthManager(Activity activity) {
+        mActivity = activity;
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_authenticate);
+        // Read the app preferences
+        mSharedPref = activity.getSharedPreferences(
+            activity.getString(R.string.lib_name), Context.MODE_PRIVATE);
 
-        mThis = this;
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
 
@@ -82,7 +80,7 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
             Manifest.permission.ACCESS_FINE_LOCATION
         };
         requestPermissionsIfNecessary(
-            this,
+            mActivity,
             // if you need to show the current location, uncomment the line below
             // WRITE_EXTERNAL_STORAGE is required in order to show the map
             permissions
@@ -94,10 +92,59 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
         if (!lastUId.equals("") && Helpers.isEmail(lastUId)) {
             startAppWithUser(lastUId, AppUser.AuthenticationType.REGISTERED);
         }
+    }
 
-        createNavigator();
+    public String getAnonymousUidFromPreferences() {
+        if (mSharedPref == null) {
+            Log.w("AJT", "Try to get the anonymous uid from the app preferences but "
+                + "view not created");
+            return "";
+        }
 
-        showStartDialog();
+        var anonymousUid = new StringBuilder();
+        anonymousUid.append(mSharedPref.getString(mActivity.getString(R.string.anonymous_uid), ""));
+
+        if (!anonymousUid.toString().equals("")) {
+            var uid = anonymousUid.toString();
+
+            // Reuse the anonymous uid if it already exists in the app preferences
+            Log.v("AJT", "Anonymous uid loaded from the app preferences: "
+                + uid);
+
+            return uid;
+        } else {
+            return "";
+        }
+    }
+
+    public void setAnonymousUidToPreferences(String value) {
+        if (mSharedPref == null) {
+            Log.w("AJT", "Try to set the anonymous uid to the app preferences but "
+                + "view not created");
+            return;
+        }
+
+        Log.v("AJT", "Anonymous uid stored to the app preferences: "
+            + value);
+
+        mSharedPref.edit().putString(mActivity.getString(R.string.anonymous_uid), value)
+            .commit();
+    }
+
+    public void startAppWithUser(String _uid, AppUser.AuthenticationType _userType) {
+
+        if (mSharedPref == null) {
+            Log.w("AJT", "Try to start the app with a user but no preference loaded");
+            return;
+        }
+
+        // Store the uid in the app preferences
+        mSharedPref.edit().putString(mActivity.getString(R.string.app_uid), _uid)
+            .commit();
+        Log.v("AJT", "Latest uid stored to the app preferences: " + _uid);
+
+        // Update the current app user
+        AppUser.getInstance().authenticate(_uid, _userType);
     }
 
     @Override
@@ -157,7 +204,7 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
                         } else {
                             Log.e("BeautyAndroid", "Email is not verified");
 
-                            Toast.makeText(mThis, "Email not verified",
+                            Toast.makeText(mActivity, "Email not verified",
                                 Toast.LENGTH_SHORT).show();
                         }
                     } else {
@@ -168,8 +215,8 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
                         String completeMessage = exception.getMessage();
                         String error = exception.getErrorCode();
 
-                        Toast.makeText(mThis, !completeMessage.isEmpty() ? completeMessage : "Authentication failed",
-                            Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mActivity, !completeMessage.isEmpty() ? completeMessage :
+                            "Authentication failed", Toast.LENGTH_SHORT).show();
                     }
                 });
         }
@@ -237,7 +284,7 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
                                 if (task1.isSuccessful()) {
                                     Log.d("BeautyAndroid", "Verification email sent.");
 
-                                    Toast toast = Toast.makeText(mThis, "Verification email sent",
+                                    Toast toast = Toast.makeText(mActivity, "Verification email sent",
                                     Toast.LENGTH_SHORT);
                                     toast.show();
                                 }
@@ -265,7 +312,7 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
                                 : "Authentication failed.");
                         }
 
-                        Toast.makeText(mThis, messageCause, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mActivity, messageCause, Toast.LENGTH_SHORT).show();
                     }
                 });
         }
@@ -286,7 +333,7 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
                         if (task.isSuccessful()) {
                             Log.d("BeautyAndroid", "Password reset email sent.");
 
-                            Toast toast = Toast.makeText(mThis, "Password reset email sent",
+                            Toast toast = Toast.makeText(mActivity, "Password reset email sent",
                                 Toast.LENGTH_SHORT);
                             toast.show();
                         } else {
@@ -296,20 +343,6 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
                 });
         }
     }
-
-    public Navigator navigator() {
-        return mNavigator;
-    }
-
-    public void onNavigation(String dest, String orig) {
-    }
-
-    public void toggleTabSwiping(boolean enable) {
-    }
-
-    protected abstract void createNavigator();
-
-    protected abstract void showStartDialog();
 
     protected abstract void onSignup(Map<String, String> credentials);
 
@@ -367,7 +400,7 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
 
                     if (anonymousUId.length() == 0) {
                         Log.v("BeautyAndroid", "No userInfos entry found in the DB for the device: "
-                                + mDeviceId);
+                            + mDeviceId);
 
                         // Create an anonymous user
                         tryAndCreateAutoUserId();
@@ -376,7 +409,7 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
 
                     final String anonymousUidText = anonymousUId.toString();
                     Log.v("BeautyAndroid", "Anonymous uid read from the database: " + anonymousUidText
-                            + ", matching the device id: " + mDeviceId);
+                        + ", matching the device id: " + mDeviceId);
 
                     setAnonymousUidToPreferences(anonymousUidText);
 
@@ -420,17 +453,17 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
                         uid.append(UUID.nameUUIDFromBytes(hash).toString());
 
                         onAnonymousUserCreation(uid.toString(), date, new TaskCompletionManager() {
-                                @Override
-                                public void onSuccess() {
-                                }
+                            @Override
+                            public void onSuccess() {
+                            }
 
-                                @Override
-                                public void onFailure() {
-                                    // If the user id wasn't created in the database, try to generate another one
-                                    // and to write it again
-                                    tryAndCreateAutoUserId();
-                                }
-                            });
+                            @Override
+                            public void onFailure() {
+                                // If the user id wasn't created in the database, try to generate another one
+                                // and to write it again
+                                tryAndCreateAutoUserId();
+                            }
+                        });
 
                     } catch (NoSuchAlgorithmException e) {
                         Log.e("BeautyAndroid", e.toString());
@@ -440,7 +473,7 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
     }
 
     private void getPreferenceIds() {
-        final Context ctxt = this;
+        final Context ctxt = mActivity;
 
         if (ctxt == null) {
             Log.w("BeautyAndroid", "No context to get the app preferences");
@@ -449,7 +482,7 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
 
         // Get the last uid
         mPrefUserId = new StringBuilder();
-        mPrefUserId.append(mSharedPref.getString(getString(R.string.app_uid), ""));
+        mPrefUserId.append(mSharedPref.getString(mActivity.getString(R.string.app_uid), ""));
 
         if (!mPrefUserId.toString().equals("")) {
             Log.v("BeautyAndroid", "Latest uid loaded from the app preferences: " + mPrefUserId.toString());
@@ -457,7 +490,7 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
 
         // Get the device id
         mDeviceId = new StringBuilder("");
-        mDeviceId.append(mSharedPref.getString(getString(R.string.device_id), ""));
+        mDeviceId.append(mSharedPref.getString(mActivity.getString(R.string.device_id), ""));
 
         if (!mDeviceId.toString().equals("")) {
             Log.v("BeautyAndroid", "The device id was read from the app preferences: " + mDeviceId.toString());
@@ -471,15 +504,15 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // From Android 10
             mDeviceId.append(Settings.Secure.getString(
-                mThis.getContentResolver(),
+                mActivity.getContentResolver(),
                 Settings.Secure.ANDROID_ID));
         } else {
-            var telephonyManager = (TelephonyManager) mThis.getSystemService(Context.TELEPHONY_SERVICE);
+            var telephonyManager = (TelephonyManager) mActivity.getSystemService(TELEPHONY_SERVICE);
             if (telephonyManager.getDeviceId() != null) {
                 mDeviceId.append(telephonyManager.getDeviceId());
             } else {
                 mDeviceId.append(Settings.Secure.getString(
-                    mThis.getContentResolver(),
+                    mActivity.getContentResolver(),
                     Settings.Secure.ANDROID_ID));
             }
         }
@@ -487,9 +520,9 @@ public abstract class AuthenticateActivity extends ActivityWithStart implements 
         if (mDeviceId.toString().equals("")) {
             Log.e("BeautyAndroid", "Cannot determine the device id. Use a fake one instead");
             mDeviceId.append("1234");
-            mSharedPref.edit().putString(getString(R.string.device_id), mDeviceId.toString()).commit();
+            mSharedPref.edit().putString(mActivity.getString(R.string.device_id), mDeviceId.toString()).commit();
         } else {
-            mSharedPref.edit().putString(getString(R.string.device_id), mDeviceId.toString()).commit();
+            mSharedPref.edit().putString(mActivity.getString(R.string.device_id), mDeviceId.toString()).commit();
             Log.v("BeautyAndroid", "The device id was found on the device and written to the app "
                 + "preferences: " + mDeviceId.toString());
         }
