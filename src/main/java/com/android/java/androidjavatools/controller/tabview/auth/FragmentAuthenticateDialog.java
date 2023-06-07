@@ -39,14 +39,6 @@ public abstract class FragmentAuthenticateDialog extends DialogFragment {
     protected FragmentAuthenticateDialog mThis;
     protected View mContainerView;
 
-    @NotNull
-    @Override
-    public Dialog onCreateDialog(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        mThis = this;
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
-        return initializeGUI(dialog);
-    }
-
     public void setAuthManager(AuthManager manager) {
         // Verify that the passed manager implements the callback interface
         try {
@@ -57,6 +49,14 @@ public abstract class FragmentAuthenticateDialog extends DialogFragment {
             throw new ClassCastException(getActivity().toString()
                 + " must implement AuthenticateDialogListener");
         }
+    }
+
+    @NotNull
+    @Override
+    public Dialog onCreateDialog(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        mThis = this;
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        return initializeGUI(dialog);
     }
 
     protected abstract Dialog initializeGUI(Dialog parentDialog);
