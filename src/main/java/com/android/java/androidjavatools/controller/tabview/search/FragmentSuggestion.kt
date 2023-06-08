@@ -83,7 +83,7 @@ abstract class FragmentSuggestion : FragmentWithSearch() {
                                 _: AdapterView<*>?, _: View?, position: Int, _: Long ->
 
                                 query = (adapter.getItem(position) as Cursor).getString(1)
-                                Log.d("AndroidJavaTools",
+                                Log.d("AJT",
                                     "Search query set from tapped suggestion to: $query")
                             }
                         })
@@ -93,7 +93,7 @@ abstract class FragmentSuggestion : FragmentWithSearch() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.v("AndroidJavaTools", "Suggestion view created at timestamp: "
+        Log.v("AJT", "Suggestion view created at timestamp: "
             + Helpers.getTimestamp())
         super.onViewCreated(view, savedInstanceState)
         mContext = activity as Context
@@ -103,7 +103,7 @@ abstract class FragmentSuggestion : FragmentWithSearch() {
         super.setUserVisibleHint(isVisibleToUser)
 
         if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Suggestions page becomes visible")
+            Log.d("AJT", "Suggestions page becomes visible")
 
             // Give the focus to the edit text view
             mHasQueryFocus.value = true
@@ -111,7 +111,7 @@ abstract class FragmentSuggestion : FragmentWithSearch() {
             // Clear the edit text content
             mQuery.value = ""
         } else {
-            Log.d("AndroidJavaTools", "Suggestions page becomes hidden")
+            Log.d("AJT", "Suggestions page becomes hidden")
 
             // Remove the focus from the edit text view
             mHasQueryFocus.value = false

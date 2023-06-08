@@ -132,12 +132,12 @@ class SearchBox: FilterListener {
                 if (!hasFocus) {
                     return@setOnFocusChangeListener
                 }
-                Log.d("AndroidJavaTools", "View $v has focus")
+                Log.d("AJT", "View $v has focus")
 
                 // Possibly show the Suggestions fragment
                 if (mSuggestionsContainer) {
                     // Return if already shown
-                    Log.v("AndroidJavaTools", "View has already the focus")
+                    Log.v("AJT", "View has already the focus")
                     return@setOnFocusChangeListener
                 }
                 mNavigatorManager!!.navigator().showFragment("suggestion")
@@ -158,7 +158,7 @@ class SearchBox: FilterListener {
                 if (event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
 
                     val query: String = searchViewQuery.text.toString()
-                    Log.v("AndroidJavaTools", "Search query validated by pressing enter: $query")
+                    Log.v("AJT", "Search query validated by pressing enter: $query")
 
                     mContainer!!.runSearch(query)
                 }

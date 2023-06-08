@@ -65,7 +65,7 @@ abstract class FragmentCompose : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.v("AndroidJavaTools", "Base view created at timestamp: "
+        Log.v("AJT", "Base view created at timestamp: "
             + Helpers.getTimestamp())
         mNavigatorManager = mActivity as NavigatorManager
         super.onViewCreated(view, savedInstanceState)
@@ -75,9 +75,9 @@ abstract class FragmentCompose : Fragment() {
         super.setUserVisibleHint(isVisibleToUser)
 
         if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Compose page becomes visible")
+            Log.d("AJT", "Compose page becomes visible")
         } else {
-            Log.d("AndroidJavaTools", "Compose page becomes hidden")
+            Log.d("AJT", "Compose page becomes hidden")
         }
     }
 

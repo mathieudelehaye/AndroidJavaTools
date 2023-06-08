@@ -144,7 +144,7 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
         mDatabase.collection("userInfos").document(mKey.toString())
             .set(mData.get(0))
             .addOnSuccessListener(aVoid -> {
-                Log.i("BeautyAndroid", "New info successfully written to the database for user: "
+                Log.i("AJT", "New info successfully written to the database for user: "
                     + mKey.toString());
 
                 if (cbManager.length >= 1) {
@@ -152,7 +152,7 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
                 }
             })
             .addOnFailureListener(e -> {
-                Log.e("BeautyAndroid", "Error writing user info to the database: ", e);
+                Log.e("AJT", "Error writing user info to the database: ", e);
 
                 if (cbManager.length >= 1) {
                     cbManager[0].onFailure();
@@ -194,7 +194,7 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
                     cbManager[0].onSuccess();
                 }
             } else {
-                Log.e("BeautyAndroid", "Error updating documents: ", task.getException());
+                Log.e("AJT", "Error updating documents: ", task.getException());
 
                 if (cbManager.length >= 1) {
                     cbManager[0].onFailure();

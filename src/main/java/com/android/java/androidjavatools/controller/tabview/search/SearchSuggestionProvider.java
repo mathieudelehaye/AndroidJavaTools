@@ -42,7 +42,7 @@ public class SearchSuggestionProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         final String userInput = selectionArgs[0];
-        Log.v("AndroidJavaTools", "Received the query: " + userInput);
+        Log.v("AJT", "Received the query: " + userInput);
 
         String[] columns = {"_ID", SearchManager.SUGGEST_COLUMN_TEXT_1};
         var cursor = new MatrixCursor(columns);

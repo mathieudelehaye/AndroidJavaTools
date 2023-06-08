@@ -63,7 +63,7 @@ public abstract class FragmentCamera extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.v("AndroidJavaTools", "Camera view created at timestamp: "
+        Log.v("AJT", "Camera view created at timestamp: "
             + Helpers.getTimestamp());
 
         super.onViewCreated(view, savedInstanceState);
@@ -103,7 +103,7 @@ public abstract class FragmentCamera extends Fragment {
 
         if (isVisibleToUser) {
             mIsViewVisible = true;
-            Log.d("AndroidJavaTools", "Camera view becomes visible");
+            Log.d("AJT", "Camera view becomes visible");
 
             requestCamera();
         } else {

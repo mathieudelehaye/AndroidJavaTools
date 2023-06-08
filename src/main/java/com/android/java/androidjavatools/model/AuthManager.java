@@ -149,13 +149,13 @@ public abstract class AuthManager implements AuthenticateDialogListener {
 
     @Override
     public void onDialogAnonymousSigninClick(DialogFragment dialog) {
-        Log.v("BeautyAndroid", "Anonymous sign-in button pressed");
+        Log.v("AJT", "Anonymous sign-in button pressed");
         dialog.dismiss();
 
         String anonymousUid = getAnonymousUidFromPreferences();
         if (!anonymousUid.equals("")) {
             // Reuse the anonymous uid if it already exists in the app preferences
-            Log.v("BeautyAndroid", "Anonymous uid reused: " + anonymousUid);
+            Log.v("AJT", "Anonymous uid reused: " + anonymousUid);
 
             startAppWithUser(anonymousUid, AppUser.AuthenticationType.NOT_REGISTERED);
         } else {
@@ -190,7 +190,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
-                        Log.d("BeautyAndroid", "signInWithEmail:success");
+                        Log.d("AJT", "signInWithEmail:success");
 
                         // Check if the user email is verified
                         FirebaseUser dbUser = mAuth.getCurrentUser();
@@ -202,14 +202,14 @@ public abstract class AuthManager implements AuthenticateDialogListener {
                             dialog.dismiss();
                             startAppWithUser(emailText, AppUser.AuthenticationType.REGISTERED);
                         } else {
-                            Log.e("BeautyAndroid", "Email is not verified");
+                            Log.e("AJT", "Email is not verified");
 
                             Toast.makeText(mActivity, "Email not verified",
                                 Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         // If sign in fails, display a message to the user.
-                        Log.w("BeautyAndroid", "signInWithEmail:failure", task.getException());
+                        Log.w("AJT", "signInWithEmail:failure", task.getException());
 
                         final var exception = (FirebaseAuthException)task.getException();
                         String completeMessage = exception.getMessage();
@@ -262,7 +262,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
-                        Log.d("BeautyAndroid", "createUserWithEmail:success");
+                        Log.d("AJT", "createUserWithEmail:success");
 
                         FirebaseUser user = mAuth.getCurrentUser();
 
@@ -282,7 +282,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
                         user.sendEmailVerification()
                             .addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
-                                    Log.d("BeautyAndroid", "Verification email sent.");
+                                    Log.d("AJT", "Verification email sent.");
 
                                     Toast toast = Toast.makeText(mActivity, "Verification email sent",
                                     Toast.LENGTH_SHORT);
@@ -293,7 +293,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
                         onSignup(userInfoMap);
                     } else {
                         // If sign in fails, display a message to the user.
-                        Log.w("BeautyAndroid", "createUserWithEmail:failure", task.getException());
+                        Log.w("AJT", "createUserWithEmail:failure", task.getException());
 
                         final var exception = (FirebaseAuthException) task.getException();
                         String completeMessage = exception.getMessage();
@@ -331,13 +331,13 @@ public abstract class AuthManager implements AuthenticateDialogListener {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Log.d("BeautyAndroid", "Password reset email sent.");
+                            Log.d("AJT", "Password reset email sent.");
 
                             Toast toast = Toast.makeText(mActivity, "Password reset email sent",
                                 Toast.LENGTH_SHORT);
                             toast.show();
                         } else {
-                            Log.w("BeautyAndroid", "Password reset didn't work.");
+                            Log.w("AJT", "Password reset didn't work.");
                         }
                     }
                 });
@@ -362,7 +362,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
             }
         }
         if (permissionsToRequest.size() > 0) {
-            Log.d("BeautyAndroid", "Request permissions");
+            Log.d("AJT", "Request permissions");
 
             ActivityCompat.requestPermissions(
                 (Activity)context,
@@ -382,7 +382,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (!task.isSuccessful()) {
-                        Log.e("BeautyAndroid", "Unsuccessful search for a userInfos DB entry matching the "
+                        Log.e("AJT", "Unsuccessful search for a userInfos DB entry matching the "
                             + "device");
                     }
 
@@ -399,7 +399,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
                     }
 
                     if (anonymousUId.length() == 0) {
-                        Log.v("BeautyAndroid", "No userInfos entry found in the DB for the device: "
+                        Log.v("AJT", "No userInfos entry found in the DB for the device: "
                             + mDeviceId);
 
                         // Create an anonymous user
@@ -408,7 +408,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
                     }
 
                     final String anonymousUidText = anonymousUId.toString();
-                    Log.v("BeautyAndroid", "Anonymous uid read from the database: " + anonymousUidText
+                    Log.v("AJT", "Anonymous uid read from the database: " + anonymousUidText
                         + ", matching the device id: " + mDeviceId);
 
                     setAnonymousUidToPreferences(anonymousUidText);
@@ -466,7 +466,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
                         });
 
                     } catch (NoSuchAlgorithmException e) {
-                        Log.e("BeautyAndroid", e.toString());
+                        Log.e("AJT", e.toString());
                     }
                 }
             });
@@ -476,7 +476,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
         final Context ctxt = mActivity;
 
         if (ctxt == null) {
-            Log.w("BeautyAndroid", "No context to get the app preferences");
+            Log.w("AJT", "No context to get the app preferences");
             return;
         }
 
@@ -485,7 +485,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
         mPrefUserId.append(mSharedPref.getString(mActivity.getString(R.string.app_uid), ""));
 
         if (!mPrefUserId.toString().equals("")) {
-            Log.v("BeautyAndroid", "Latest uid loaded from the app preferences: " + mPrefUserId.toString());
+            Log.v("AJT", "Latest uid loaded from the app preferences: " + mPrefUserId.toString());
         }
 
         // Get the device id
@@ -493,7 +493,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
         mDeviceId.append(mSharedPref.getString(mActivity.getString(R.string.device_id), ""));
 
         if (!mDeviceId.toString().equals("")) {
-            Log.v("BeautyAndroid", "The device id was read from the app preferences: " + mDeviceId.toString());
+            Log.v("AJT", "The device id was read from the app preferences: " + mDeviceId.toString());
         } else {
             // If not found in the app preferences, read the device id and store it there
             readPhoneId();
@@ -518,12 +518,12 @@ public abstract class AuthManager implements AuthenticateDialogListener {
         }
 
         if (mDeviceId.toString().equals("")) {
-            Log.e("BeautyAndroid", "Cannot determine the device id. Use a fake one instead");
+            Log.e("AJT", "Cannot determine the device id. Use a fake one instead");
             mDeviceId.append("1234");
             mSharedPref.edit().putString(mActivity.getString(R.string.device_id), mDeviceId.toString()).commit();
         } else {
             mSharedPref.edit().putString(mActivity.getString(R.string.device_id), mDeviceId.toString()).commit();
-            Log.v("BeautyAndroid", "The device id was found on the device and written to the app "
+            Log.v("AJT", "The device id was found on the device and written to the app "
                 + "preferences: " + mDeviceId.toString());
         }
     }

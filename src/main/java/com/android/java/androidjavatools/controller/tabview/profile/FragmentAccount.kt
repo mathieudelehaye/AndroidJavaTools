@@ -147,7 +147,7 @@ abstract class FragmentAccount : FragmentCompose() {
         super.setUserVisibleHint(isVisibleToUser)
 
         if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Account page becomes visible")
+            Log.d("AJT", "Account page becomes visible")
 
             mDatabaseEntry.readDBFields(object : TaskCompletionManager {
                 override fun onSuccess() {
@@ -162,7 +162,7 @@ abstract class FragmentAccount : FragmentCompose() {
                 override fun onFailure() {}
             })
         } else {
-            Log.d("AndroidJavaTools", "Account page becomes hidden")
+            Log.d("AJT", "Account page becomes hidden")
         }
     }
 

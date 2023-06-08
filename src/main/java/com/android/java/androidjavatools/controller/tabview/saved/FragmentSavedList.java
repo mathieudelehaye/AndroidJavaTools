@@ -81,7 +81,7 @@ public abstract class FragmentSavedList extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Saved view becomes visible");
+            Log.d("AJT", "Saved view becomes visible");
 
             mListAdapter.notifyDataSetChanged();
         }
@@ -98,7 +98,7 @@ public abstract class FragmentSavedList extends Fragment {
     }
 
     private void toggleToolbar(Boolean visible) {
-        Log.v("AndroidJavaTools", "Saved page toolbar " + (visible ? "shown" : "hidden"));
+        Log.v("AJT", "Saved page toolbar " + (visible ? "shown" : "hidden"));
 
         mToolbar.setVisibility(visible ? View.VISIBLE : View.GONE);
     }

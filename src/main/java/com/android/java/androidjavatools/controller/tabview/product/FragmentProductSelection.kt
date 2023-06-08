@@ -80,7 +80,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
 
         val products = productTitles.size
         val pages: Int = (products / 5) + 1
-        Log.d("AndroidJavaTools", "Product selection updated: $products product(s), $pages page(s)")
+        Log.d("AJT", "Product selection updated: $products product(s), $pages page(s)")
 
         var searchBox = SearchBox(mActivity as Activity, this, null)
         val adapter = SuggestionsAdapter(mActivity, searchBox, searchBox.getSearchableConfig())
@@ -103,7 +103,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                 val startIndex = page * 4
                 val endIndex = page * 4 + pageProducts
 
-                Log.d("AndroidJavaTools", "Page $page has $pageProducts products, fom index $startIndex " +
+                Log.d("AJT", "Page $page has $pageProducts products, fom index $startIndex " +
                     "to $endIndex")
 
                 productGridPage(
@@ -149,7 +149,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
     @Composable
     fun productGridPage(productNumber: Int, images : Array<Int>, titles : Array<String>, descriptions : Array<String>) {
         if (productNumber > 4) {
-            Log.e("AndroidJavaTools", "Cannot display a product grid page with more than 4 items")
+            Log.e("AJT", "Cannot display a product grid page with more than 4 items")
             return
         }
 
@@ -267,7 +267,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
         super.setUserVisibleHint(isVisibleToUser)
 
         if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Product selection page becomes visible")
+            Log.d("AJT", "Product selection page becomes visible")
 
             val productInfo = ProductInfo(FirebaseFirestore.getInstance())
             productInfo.SetValueBasedFilter(arrayOf(mFilterField), arrayOf("true"))
@@ -293,13 +293,13 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                     mProductTitles.value = titleList.toTypedArray()
                     mProductSubtitles.value = subtitleList.toTypedArray()
 
-                    Log.d("AndroidJavaTools", "Found $products items for filter `$mFilterField`")
+                    Log.d("AJT", "Found $products items for filter `$mFilterField`")
                 }
 
                 override fun onFailure() {}
             })
         } else {
-            Log.d("AndroidJavaTools", "Product selection page becomes hidden")
+            Log.d("AJT", "Product selection page becomes hidden")
         }
     }
 

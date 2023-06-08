@@ -146,7 +146,7 @@ abstract class FragmentProductDetail : FragmentCompose() {
                                 override fun onSuccess() {
 
                                     if (!isUserConnected()) {
-                                        Log.v("AndroidJavaTools", "User not connected when ordering samples:"
+                                        Log.v("AJT", "User not connected when ordering samples:"
                                             + " starting the authentication activity")
 
                                         startAuthActivity()

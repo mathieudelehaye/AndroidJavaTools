@@ -68,7 +68,7 @@ public abstract class FragmentWithSearch extends Fragment {
 
     protected void showResult(ResultItemInfo item) {
         final String title = item.getTitle();
-        Log.d("AndroidJavaTools", "Result to show: " + title);
+        Log.d("AJT", "Result to show: " + title);
         mResultProvider.setSelectedResultItem(item);
         mNavigatorManager.navigator().showFragment("detail");
     }

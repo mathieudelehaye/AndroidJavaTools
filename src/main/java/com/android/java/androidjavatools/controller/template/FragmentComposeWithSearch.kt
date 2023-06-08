@@ -63,7 +63,7 @@ abstract class FragmentComposeWithSearch() : FragmentWithSearch() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.v("AndroidJavaTools", "Base view created at timestamp: "
+        Log.v("AJT", "Base view created at timestamp: "
                 + Helpers.getTimestamp())
         super.onViewCreated(view, savedInstanceState)
     }
@@ -72,9 +72,9 @@ abstract class FragmentComposeWithSearch() : FragmentWithSearch() {
         super.setUserVisibleHint(isVisibleToUser)
 
         if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Profile page becomes visible")
+            Log.d("AJT", "Profile page becomes visible")
         } else {
-            Log.d("AndroidJavaTools", "Profile page becomes hidden")
+            Log.d("AJT", "Profile page becomes hidden")
         }
     }
 

@@ -46,7 +46,7 @@ public class Navigator {
 
     public Navigator(NavigatorManager manager, int contentLayoutId) {
         if (!(manager instanceof AppCompatActivity)) {
-            Log.e("AndroidJavaTools", "Navigator manager must be an activity");
+            Log.e("AJT", "Navigator manager must be an activity");
         }
 
         mManager = manager;
@@ -59,14 +59,14 @@ public class Navigator {
             return;
         }
 
-        Log.v("AndroidJavaTools", "Try to create a navigable fragment with the key: " + key);
+        Log.v("AJT", "Try to create a navigable fragment with the key: " + key);
 
         if (!mFragments.containsKey(key)) {
             try {
                 var fragment = (Fragment)fragmentType.newInstance();
 
                 mFragments.put(key, fragment);
-                Log.v("AndroidJavaTools", "Fragment created and added to the navigator registry");
+                Log.v("AJT", "Fragment created and added to the navigator registry");
 
                 mFragmentManager
                     .beginTransaction()
@@ -74,14 +74,14 @@ public class Navigator {
                     .hide(fragment)
                     .commit();
 
-                Log.v("AndroidJavaTools", "Fragment added to the fragment manager");
+                Log.v("AJT", "Fragment added to the fragment manager");
             } catch (IllegalAccessException iAE) {
-                Log.e("AndroidJavaTools", String.valueOf(iAE));
+                Log.e("AJT", String.valueOf(iAE));
             } catch (InstantiationException iE) {
-                Log.e("AndroidJavaTools", String.valueOf(iE));
+                Log.e("AJT", String.valueOf(iE));
             }
         } else {
-            Log.w("AndroidJavaTools", "Fragment already existing");
+            Log.w("AJT", "Fragment already existing");
         }
     }
 
@@ -91,13 +91,13 @@ public class Navigator {
             return;
         }
 
-        Log.v("AndroidJavaTools", "Try to update a navigable fragment with the key: " + key);
+        Log.v("AJT", "Try to update a navigable fragment with the key: " + key);
 
         if (mFragments.containsKey(key)) {
             final Fragment oldFragment = mFragments.get(key);
 
             mFragments.put(key, newFragment);
-            Log.v("AndroidJavaTools", "Fragment updated into the navigator registry");
+            Log.v("AJT", "Fragment updated into the navigator registry");
 
             mFragmentManager
                 .beginTransaction()
@@ -106,9 +106,9 @@ public class Navigator {
                 .hide(newFragment)
                 .commit();
 
-            Log.w("AndroidJavaTools", "Fragment updated in the fragment manager");
+            Log.w("AJT", "Fragment updated in the fragment manager");
         } else {
-            Log.w("AndroidJavaTools", "Fragment not existing");
+            Log.w("AJT", "Fragment not existing");
         }
     }
 
@@ -132,7 +132,7 @@ public class Navigator {
         Fragment fragmentToShow = mFragments.get(key);
 
         if (fragmentToShow == null) {
-            Log.w("AndroidJavaTools", "No registered fragment to show for the key: " + key);
+            Log.w("AJT", "No registered fragment to show for the key: " + key);
             return;
         }
 
@@ -141,7 +141,7 @@ public class Navigator {
             mFragments.get(mShownFragment).setUserVisibleHint(false);
 
             mPrevFragments.push(mShownFragment);
-            Log.v("AndroidJavaTools", "Fragment pushed to the previous fragment stack: "
+            Log.v("AJT", "Fragment pushed to the previous fragment stack: "
                 + mPrevFragments.peek());
 
             hideFragment(mShownFragment);
@@ -154,25 +154,25 @@ public class Navigator {
 
         mShownFragment = key;
         fragmentToShow.setUserVisibleHint(true);
-        Log.v("AndroidJavaTools", "Shown fragment updated to " + mShownFragment);
+        Log.v("AJT", "Shown fragment updated to " + mShownFragment);
     }
 
     public void back() {
         if (mPrevFragments.empty()) {
-            Log.w("AndroidJavaTools", "Cannot navigate back, as previous fragment stack empty");
+            Log.w("AJT", "Cannot navigate back, as previous fragment stack empty");
             return;
         }
 
         final String prevFragmentKey = mPrevFragments.pop();
-        Log.v("AndroidJavaTools", "Fragment popped from the previous fragment stack: " + prevFragmentKey);
+        Log.v("AJT", "Fragment popped from the previous fragment stack: " + prevFragmentKey);
 
         if (prevFragmentKey == null || prevFragmentKey.equals("")) {
-            Log.w("AndroidJavaTools", "Cannot navigate back, as previous fragment null or empty");
+            Log.w("AJT", "Cannot navigate back, as previous fragment null or empty");
         }
 
         Fragment fragmentToShow = mFragments.get(prevFragmentKey);
         if (fragmentToShow == null) {
-            Log.w("AndroidJavaTools", "No registered fragment to show for the key: " + prevFragmentKey);
+            Log.w("AJT", "No registered fragment to show for the key: " + prevFragmentKey);
             return;
         }
 
@@ -188,12 +188,12 @@ public class Navigator {
 
         mShownFragment = prevFragmentKey;
         fragmentToShow.setUserVisibleHint(true);
-        Log.d("AndroidJavaTools", "Navigated back to the fragment of type " + prevFragmentKey);
+        Log.d("AJT", "Navigated back to the fragment of type " + prevFragmentKey);
     }
 
     public void toggleTabSwiping(boolean enable) {
         if (!mFragments.containsKey("tab")) {
-            Log.w("AndroidJavaTools", "Cannot toggle tab swiping, as no Tab fragment registered in the "
+            Log.w("AJT", "Cannot toggle tab swiping, as no Tab fragment registered in the "
                 + "navigator");
             return;
         }
@@ -209,7 +209,7 @@ public class Navigator {
 
     private void hideFragment(String fragment) {
         if (!mFragments.containsKey(fragment)) {
-            Log.w("AndroidJavaTools", "Cannot hide fragment, as none created for the provided key: "
+            Log.w("AJT", "Cannot hide fragment, as none created for the provided key: "
                 + fragment);
             return;
         }

@@ -65,7 +65,7 @@ public abstract class FragmentResultDetail extends Fragment {
 
     @SuppressLint({"ResourceAsColor", "UseCompatTextViewDrawableApis"})
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.v("AndroidJavaTools", "Result detail view created at timestamp: "
+        Log.v("AJT", "Result detail view created at timestamp: "
             + Helpers.getTimestamp());
 
         super.onViewCreated(view, savedInstanceState);
@@ -104,7 +104,7 @@ public abstract class FragmentResultDetail extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Result detail view becomes visible");
+            Log.d("AJT", "Result detail view becomes visible");
 
             updateDetails();
             updateSavedButton();
