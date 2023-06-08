@@ -154,7 +154,7 @@ public class Navigator {
 
         mShownFragment = key;
         fragmentToShow.setUserVisibleHint(true);
-        Log.v("AJT", "Shown fragment updated to " + mShownFragment);
+        Log.v("AJT", "Shown fragment updated to: " + mShownFragment);
     }
 
     public void back() {
