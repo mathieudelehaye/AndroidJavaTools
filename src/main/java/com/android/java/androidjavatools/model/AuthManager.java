@@ -88,12 +88,19 @@ public abstract class AuthManager implements AuthenticateDialogListener {
             // WRITE_EXTERNAL_STORAGE is required in order to show the map
             permissions
         );
+    }
 
-        // Navigate to the app screen if there is a registered uid in the app preferences
+    public void checkPreferenceUserAndStart() {
         getPreferenceIds();
+
         var lastUId = mPrefUserId.toString();
+
         if (!lastUId.equals("") && Helpers.isEmail(lastUId)) {
+            // If there is a registered uid in the app preferences, start the app with the Tab activity
             startAppWithUser(lastUId, AppUser.AuthenticationType.REGISTERED);
+        } else {
+            // Otherwise, show the start authentication fragment
+            mNavigatorManager.navigator().showFragment("start");
         }
     }
 
