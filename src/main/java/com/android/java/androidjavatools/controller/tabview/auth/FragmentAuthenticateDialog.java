@@ -22,17 +22,22 @@
 package com.android.java.androidjavatools.controller.tabview.auth;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import com.android.java.androidjavatools.controller.Navigator;
 import com.android.java.androidjavatools.model.AuthManager;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class FragmentAuthenticateDialog extends DialogFragment {
+    protected Context mContext;
+    protected Navigator.NavigatorManager mNavigatorManager;
 
     // Use this instance of the interface to deliver action events from the dialog modal
     protected AuthenticateDialogListener mListener;
@@ -78,5 +83,13 @@ public abstract class FragmentAuthenticateDialog extends DialogFragment {
         dialog.setCanceledOnTouchOutside(false);
 
         return dialog;
+    }
+
+    @Override
+    public void onAttach (Context context) {
+        super.onAttach(context);
+
+        mContext = context;
+        mNavigatorManager = (Navigator.NavigatorManager)mContext;
     }
 }

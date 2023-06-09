@@ -109,12 +109,18 @@ public abstract class FragmentTabView extends Fragment {
         if (isVisibleToUser) {
             Log.d("AJT", "Tab view becomes visible");
 
-            if(mActivity != null) {
-                ((FragmentHome)FragmentManager.findFragment(mActivity.findViewById(R.id.rp_history_title)))
-                    .updateRecentResults();
-                ((FragmentHome)FragmentManager.findFragment(mActivity.findViewById(R.id.rp_history_title)))
-                    .updateRecentSearches();
+            if(mActivity == null) {
+                return;
             }
+
+            final View homeFragmentView = mActivity.findViewById(R.id.rp_history_title);
+            if (homeFragmentView == null) {
+                return;
+            }
+
+            final var fragmentHome = (FragmentHome)FragmentManager.findFragment(homeFragmentView);
+            fragmentHome.updateRecentResults();
+            fragmentHome.updateRecentSearches();
         }
     }
 }

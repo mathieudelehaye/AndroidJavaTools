@@ -24,6 +24,7 @@ package com.android.java.androidjavatools.controller;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import com.android.java.androidjavatools.controller.tabview.FragmentTabView;
@@ -68,13 +69,16 @@ public class Navigator {
                 mFragments.put(key, fragment);
                 Log.v("AJT", "Fragment created and added to the navigator registry");
 
-                mFragmentManager
-                    .beginTransaction()
-                    .add(mContentLayoutId, fragment)
-                    .hide(fragment)
-                    .commit();
+                // Only add non-dialog fragments to the manager
+                if (!(fragment instanceof DialogFragment)) {
+                    mFragmentManager
+                        .beginTransaction()
+                        .add(mContentLayoutId, fragment)
+                        .hide(fragment)
+                        .commit();
 
-                Log.v("AJT", "Fragment added to the fragment manager");
+                    Log.v("AJT", "Fragment added to the fragment manager");
+                }
             } catch (IllegalAccessException iAE) {
                 Log.e("AJT", String.valueOf(iAE));
             } catch (InstantiationException iE) {
@@ -99,14 +103,17 @@ public class Navigator {
             mFragments.put(key, newFragment);
             Log.v("AJT", "Fragment updated into the navigator registry");
 
-            mFragmentManager
-                .beginTransaction()
-                .remove(oldFragment)
-                .replace(mContentLayoutId, newFragment)
-                .hide(newFragment)
-                .commit();
+            // Only update non-dialog fragments to the manager
+            if (!(oldFragment instanceof DialogFragment)) {
+                mFragmentManager
+                    .beginTransaction()
+                    .remove(oldFragment)
+                    .replace(mContentLayoutId, newFragment)
+                    .hide(newFragment)
+                    .commit();
 
-            Log.w("AJT", "Fragment updated in the fragment manager");
+                Log.w("AJT", "Fragment updated in the fragment manager");
+            }
         } else {
             Log.w("AJT", "Fragment not existing");
         }
@@ -147,10 +154,17 @@ public class Navigator {
             hideFragment(mShownFragment);
         }
 
-        mFragmentManager
-            .beginTransaction()
-            .show(fragmentToShow)
-            .commit();
+        if (fragmentToShow instanceof DialogFragment) {
+            // Dialog fragment
+            DialogFragment dialog = (DialogFragment)fragmentToShow;
+            dialog.show(mFragmentManager, "FragmentStartDialog");
+        } else {
+            // Other fragment
+            mFragmentManager
+                .beginTransaction()
+                .show(fragmentToShow)
+                .commit();
+        }
 
         mShownFragment = key;
         fragmentToShow.setUserVisibleHint(true);
@@ -181,10 +195,16 @@ public class Navigator {
             hideFragment(mShownFragment);
         }
 
-        mFragmentManager
-            .beginTransaction()
-            .show(mFragments.get(prevFragmentKey))
-            .commit();
+        if (fragmentToShow instanceof DialogFragment) {
+            // Dialog fragment
+            DialogFragment dialog = (DialogFragment)fragmentToShow;
+            dialog.show(mFragmentManager, "FragmentStartDialog");
+        } else {
+            mFragmentManager
+                .beginTransaction()
+                .show(fragmentToShow)
+                .commit();
+        }
 
         mShownFragment = prevFragmentKey;
         fragmentToShow.setUserVisibleHint(true);
@@ -213,12 +233,17 @@ public class Navigator {
                 + fragment);
             return;
         }
-        Fragment fragmentToHide = mFragments.get(fragment);
 
-        mFragmentManager
-            .beginTransaction()
-            .hide(fragmentToHide)
-            .commit();
+        Fragment fragmentToHide = mFragments.get(fragment);
+        if (fragmentToHide instanceof DialogFragment) {
+            DialogFragment dialog = (DialogFragment)fragmentToHide;
+            dialog.dismiss();
+        } else {
+            mFragmentManager
+                .beginTransaction()
+                .hide(fragmentToHide)
+                .commit();
+        }
 
         fragmentToHide.setUserVisibleHint(false);
     }

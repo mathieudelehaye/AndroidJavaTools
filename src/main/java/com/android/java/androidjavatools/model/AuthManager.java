@@ -33,6 +33,7 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
@@ -57,16 +58,16 @@ import static android.content.Context.TELEPHONY_SERVICE;
 
 public abstract class AuthManager implements AuthenticateDialogListener {
 
-    protected Activity mActivity ;
+    protected AppCompatActivity mActivity ;
     protected SharedPreferences mSharedPref;
     protected FirebaseFirestore mDatabase;
-    protected Navigator mNavigator;
+    protected Navigator.NavigatorManager mNavigatorManager;
     private FirebaseAuth mAuth;
     private StringBuilder mDeviceId;
     private StringBuilder mPrefUserId;
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
 
-    public AuthManager(Activity activity) {
+    public AuthManager(AppCompatActivity activity) {
         mActivity = activity;
 
         // Read the app preferences
@@ -75,6 +76,8 @@ public abstract class AuthManager implements AuthenticateDialogListener {
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseFirestore.getInstance();
+
+        mNavigatorManager = (Navigator.NavigatorManager)mActivity;
 
         String[] permissions = {
             Manifest.permission.ACCESS_FINE_LOCATION
@@ -145,6 +148,8 @@ public abstract class AuthManager implements AuthenticateDialogListener {
 
         // Update the current app user
         AppUser.getInstance().authenticate(_uid, _userType);
+
+        mNavigatorManager.navigator().showFragment("tab");
     }
 
     @Override
