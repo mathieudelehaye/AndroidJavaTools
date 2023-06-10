@@ -52,7 +52,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 abstract class FragmentProductDetail : FragmentCompose() {
     private val mDatabase = FirebaseFirestore.getInstance()
-    private val mDatabaseEntry = UserInfoDBEntry(mDatabase, AppUser.getInstance().id)
+    private val mUserInfoDBEntry = UserInfoDBEntry(mDatabase, AppUser.getInstance().id)
     private var mImage: MutableState<Int> = mutableStateOf(R.drawable.product01)
     private var mTitle: MutableState<String> = mutableStateOf("")
     private var mSubtitle: MutableState<String> = mutableStateOf("")
@@ -142,28 +142,28 @@ abstract class FragmentProductDetail : FragmentCompose() {
                         Spacer(modifier = Modifier.width(30.dp))
                         // Orange color
                         buttonWithText("Freebies", Color(0xFFD0A038), width = 150.dp, radius = 30.dp) {
-                            mDatabaseEntry.readDBFields(object : TaskCompletionManager {
-                                override fun onSuccess() {
+                            if (!isUserConnected()) {
+                                Log.v("AJT", "User not connected when ordering samples:"
+                                    + " starting the authentication activity")
 
-                                    if (!isUserConnected()) {
-                                        Log.v("AJT", "User not connected when ordering samples:"
-                                            + " starting the authentication activity")
-
-                                        startAuthActivity()
-                                    } else {
-                                        val address = mDatabaseEntry.address
-                                        val city = mDatabaseEntry.city
-                                        val postcode = mDatabaseEntry.postCode
+                                mNavigatorManager?.navigator()?.showFragment("start");
+                            } else {
+                                mUserInfoDBEntry.setKey(AppUser.getInstance().id);
+                                mUserInfoDBEntry.readDBFields(object : TaskCompletionManager {
+                                    override fun onSuccess() {
+                                        val address = mUserInfoDBEntry.address
+                                        val city = mUserInfoDBEntry.city
+                                        val postcode = mUserInfoDBEntry.postCode
 
                                         val fullAddress = "$address $city $postcode"
 
                                         Toast.makeText(context, "Sample ordered at address: $fullAddress",
                                             Toast.LENGTH_SHORT).show()
                                     }
-                                }
 
-                                override fun onFailure() {}
-                            })
+                                    override fun onFailure() {}
+                                })
+                            }
                         }
                     }
                     Spacer(modifier = Modifier
@@ -192,10 +192,9 @@ abstract class FragmentProductDetail : FragmentCompose() {
 
     fun isUserConnected(): Boolean {
         return (AppUser.getInstance().authenticationType
-            == AppUser.AuthenticationType.REGISTERED)
+            == AppUser.AuthenticationType.REGISTERED) &&
+            (!AppUser.getInstance().id.equals(""));
     }
-
-    protected abstract fun startAuthActivity()
 
     @Preview
     @Composable

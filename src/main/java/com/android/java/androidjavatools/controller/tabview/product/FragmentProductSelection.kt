@@ -270,7 +270,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
             Log.d("AJT", "Product selection page becomes visible")
 
             val productInfo = ProductInfo(FirebaseFirestore.getInstance())
-            productInfo.SetValueBasedFilter(arrayOf(mFilterField), arrayOf("true"))
+            productInfo.setValueBasedFilter(arrayOf(mFilterField), arrayOf("true"))
 
             productInfo.readDBFieldsForCurrentFilter(arrayOf("title", "subtitle"), object : TaskCompletionManager {
                 override fun onSuccess() {

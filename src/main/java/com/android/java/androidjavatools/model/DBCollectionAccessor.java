@@ -83,7 +83,7 @@ public class DBCollectionAccessor {
 
     protected FirebaseFirestore mDatabase;
     protected String mCollectionName;
-    protected StringBuilder mKey = new StringBuilder();
+    protected String mKey;
     protected SearchFilter mFilter;
 
     // TODO: use a polymorphic type for `mData` and `mDataChanged` in order to avoid the map list.
@@ -111,29 +111,28 @@ public class DBCollectionAccessor {
         mCollectionName = collection;
     }
 
-    public void SetKey(String value) {
-        mKey.setLength(0);
-        mKey.append(value);
+    public void setKey(String value) {
+        mKey = value;
     }
 
-    public void SetRangeBasedFilter(String[] fields, double[] minRanges, double[] maxRanges) {
+    public void setRangeBasedFilter(String[] fields, double[] minRanges, double[] maxRanges) {
         mFilter = new SearchFilter(fields, minRanges, maxRanges, new String[]{}, SearchFilterType.RANGE);
     }
 
-    public void SetValueBasedFilter(String[] fields, String[] values) {
+    public void setValueBasedFilter(String[] fields, String[] values) {
         mFilter = new SearchFilter(fields, new double[]{}, new double[]{}, values, SearchFilterType.VALUE);
     }
 
     public boolean readDBFieldsForCurrentKey(String[] fields, TaskCompletionManager... cbManager) {
 
-        if (mKey == null || mKey.toString().equals("")) {
+        if (mKey == null || mKey.equals("")) {
             Log.w("AJT", "Try to read with no valid key the fields from the DB collection: "
                 + mCollectionName);
             return false;
         }
 
         mDatabase.collection(mCollectionName)
-            .whereEqualTo("__name__", mKey.toString())
+            .whereEqualTo("__name__", mKey)
             .get()
             .addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {

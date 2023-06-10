@@ -26,7 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 open class ProductDBEntry : DBCollectionAccessor {
 
     constructor(database: FirebaseFirestore, collection: String, key: String) : super(database, collection){
-        mKey.append(key)
+        mKey = key
         mData = ArrayList()
 
         val dataItem = HashMap<String, String>()

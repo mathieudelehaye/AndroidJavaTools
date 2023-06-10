@@ -160,7 +160,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
     }
 
     @Override
-    public void onDialogAnonymousSigninClick(DialogFragment dialog) {
+    public void onDialogAnonymousSignInClick(DialogFragment dialog) {
         Log.v("AJT", "Anonymous sign-in button pressed");
         dialog.dismiss();
 
@@ -176,7 +176,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
     }
 
     @Override
-    public void onDialogRegisteredSigninClick(DialogFragment dialog, SigningDialogCredentialViews credentials) {
+    public void onDialogRegisteredSignInClick(DialogFragment dialog, SigningDialogCredentialViews credentials) {
 
         boolean navigate = true;
 
@@ -235,7 +235,7 @@ public abstract class AuthManager implements AuthenticateDialogListener {
     }
 
     @Override
-    public void onDialogSignupClick(DialogFragment dialog, SigningDialogCredentialViews credentials) {
+    public void onDialogSignUpClick(DialogFragment dialog, SigningDialogCredentialViews credentials) {
         EditText email = credentials.getEmail();
         String emailText = email.getText().toString();
 

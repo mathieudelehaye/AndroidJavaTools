@@ -31,7 +31,6 @@ public interface AuthenticateDialogListener {
     class SigningDialogCredentialViews {
         private EditText mEmail;
         private EditText mPassword;
-
         private EditText mRepeatPassword;
 
         public SigningDialogCredentialViews(EditText email, EditText password, EditText repeatPassword) {
@@ -53,8 +52,8 @@ public interface AuthenticateDialogListener {
         }
     };
 
-    void onDialogAnonymousSigninClick(DialogFragment dialog);
-    void onDialogRegisteredSigninClick(DialogFragment dialog, SigningDialogCredentialViews credentials);
-    void onDialogSignupClick(DialogFragment dialog, SigningDialogCredentialViews credentials);
+    void onDialogAnonymousSignInClick(DialogFragment dialog);
+    void onDialogRegisteredSignInClick(DialogFragment dialog, SigningDialogCredentialViews credentials);
+    void onDialogSignUpClick(DialogFragment dialog, SigningDialogCredentialViews credentials);
     void onDialogResetPasswordClick(DialogFragment dialog, SigningDialogCredentialViews credentials);
 }

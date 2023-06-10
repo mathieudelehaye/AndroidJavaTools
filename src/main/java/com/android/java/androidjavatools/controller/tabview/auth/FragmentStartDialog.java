@@ -66,7 +66,7 @@ public abstract class FragmentStartDialog extends FragmentAuthenticateDialog {
             Log.e("EBT", "No view found for the anonymous sign-in button on start dialog");
             return null;
         }
-        mAnonymousLogIn.setOnClickListener(view -> mListener.onDialogAnonymousSigninClick(mThis));
+        mAnonymousLogIn.setOnClickListener(view -> mListener.onDialogAnonymousSignInClick(mThis));
 
         if (mEmailSignUp == null) {
             Log.e("EBT", "No view found when setting the email sign-up button");
