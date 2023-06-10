@@ -49,6 +49,7 @@ abstract class FragmentCompose : Fragment() {
         , savedInstanceState: Bundle?
     ): View {
         mActivity = requireActivity()
+        mNavigatorManager = mActivity!! as NavigatorManager
 
         return ComposeView(mActivity!!).apply {
 
