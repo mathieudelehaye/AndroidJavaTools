@@ -23,10 +23,99 @@ package com.android.java.androidjavatools.controller.tabview.auth;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import com.android.java.androidjavatools.model.AuthManager;
 
 public abstract class FragmentLoginDialog extends FragmentAuthenticateDialog {
+    protected Button mAnonymousLogIn;
+    protected Button mFacebookLogIn;
+    protected Button mGoogleLogIn;
+    protected Button mConfirmLogIn;
+    protected Button mResetPassword;
+    protected Button mEmailSignUp;
+    protected EditText mRegisteredEmail;
+    protected EditText mRegisteredPassword;
+
+    public FragmentLoginDialog(AuthManager manager, Integer layoutId) {
+        super(manager, layoutId);
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return super.onCreateDialog(savedInstanceState);
+    }
+
+    protected abstract Button getAnonymousLogIn();
+    protected abstract Button getFacebookLogIn();
+    protected abstract Button getGoogleLogIn();
+    protected abstract Button getConfirmLogIn();
+    protected abstract Button getResetPassword();
+    protected abstract Button getEmailSignUp();
+    protected abstract EditText getRegisteredEmail();
+    protected abstract EditText getRegisteredPassword();
+
+    @Override
+    protected Dialog initializeGUI(Dialog parentDialog) {
+        // Do not use the parent dialog
+
+        Dialog dialog = buildDialogFromLayout();
+
+        mAnonymousLogIn = getAnonymousLogIn();
+        mFacebookLogIn = getFacebookLogIn();
+        mGoogleLogIn = getGoogleLogIn();
+        mConfirmLogIn = getConfirmLogIn();
+        mResetPassword = getResetPassword();
+        mEmailSignUp = getEmailSignUp();
+        mRegisteredEmail = getRegisteredEmail();
+        mRegisteredPassword = getRegisteredPassword();
+
+        if (mAnonymousLogIn == null) {
+            Log.e("EBT", "No view found for the anonymous sign-in button on login dialog");
+            return null;
+        }
+        mAnonymousLogIn.setOnClickListener(view -> mListener.onDialogAnonymousSigninClick(mThis));
+
+        if (mFacebookLogIn == null) {
+            Log.e("EBT", "No view found when setting the Facebook sign-in button");
+            return null;
+        }
+        mFacebookLogIn.setOnClickListener(view -> Toast.makeText(getContext(),
+            "Facebook sign-in not yet available", Toast.LENGTH_SHORT).show());
+
+        if (mGoogleLogIn == null) {
+            Log.e("EBT", "No view found when setting the Google sign-in button");
+            return null;
+        }
+        mGoogleLogIn.setOnClickListener(view -> Toast.makeText(getContext(),
+            "Google sign-in not yet available", Toast.LENGTH_SHORT).show());
+
+        if (mConfirmLogIn == null) {
+            Log.e("EBT", "No view found for the confirm button on login dialog");
+            return null;
+        }
+        mConfirmLogIn.setOnClickListener(view -> mListener.onDialogRegisteredSigninClick(mThis,
+            new AuthenticateDialogListener.SigningDialogCredentialViews(mRegisteredEmail, mRegisteredPassword,
+                null)));
+
+        if (mResetPassword == null) {
+            Log.e("EBT", "No view found for the reset password button on login dialog");
+            return null;
+        }
+        mResetPassword.setOnClickListener(view -> mListener.onDialogResetPasswordClick(mThis,
+            new AuthenticateDialogListener.SigningDialogCredentialViews(mRegisteredEmail, mRegisteredPassword,
+                null)));
+
+        if (mEmailSignUp == null) {
+            Log.e("EBT", "No view found for the sign-up button on login dialog");
+            return null;
+        }
+        mEmailSignUp.setOnClickListener(view -> {
+            mNavigatorManager.navigator().showFragment("signup");
+        });
+
+        return dialog;
     }
 }

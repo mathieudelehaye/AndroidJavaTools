@@ -23,10 +23,81 @@ package com.android.java.androidjavatools.controller.tabview.auth;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.Toast;
+import com.android.java.androidjavatools.model.AuthManager;
 
 public abstract class FragmentStartDialog extends FragmentAuthenticateDialog {
+    protected Button mAnonymousLogIn;
+    protected Button mEmailSignUp;
+    protected Button mFacebookLogIn;
+    protected Button mGoogleLogIn;
+    protected Button mRegisteredLogIn;
+
+    public FragmentStartDialog(AuthManager manager, Integer layoutId) {
+        super(manager, layoutId);
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return super.onCreateDialog(savedInstanceState);
+    }
+
+    protected abstract Button getAnonymousLogIn();
+    protected abstract Button getEmailSignUp();
+    protected abstract Button getFacebookLogIn();
+    protected abstract Button getGoogleLogIn();
+    protected abstract Button getRegisteredLogIn();
+
+    @Override
+    protected Dialog initializeGUI(Dialog parentDialog) {
+        // Do not use the parent dialog
+
+        Dialog dialog = buildDialogFromLayout();
+
+        mAnonymousLogIn = getAnonymousLogIn();
+        mEmailSignUp = getEmailSignUp();
+        mFacebookLogIn = getFacebookLogIn();
+        mGoogleLogIn = getGoogleLogIn();
+        mRegisteredLogIn = getRegisteredLogIn();
+
+        if (mAnonymousLogIn == null) {
+            Log.e("EBT", "No view found for the anonymous sign-in button on start dialog");
+            return null;
+        }
+        mAnonymousLogIn.setOnClickListener(view -> mListener.onDialogAnonymousSigninClick(mThis));
+
+        if (mEmailSignUp == null) {
+            Log.e("EBT", "No view found when setting the email sign-up button");
+            return null;
+        }
+        mEmailSignUp.setOnClickListener(view -> {
+            mNavigatorManager.navigator().showFragment("signup");
+        });
+
+        if (mFacebookLogIn == null) {
+            Log.e("EBT", "No view found when setting the Facebook sign-up button");
+            return null;
+        }
+        mFacebookLogIn.setOnClickListener(view -> Toast.makeText(getContext(),
+            "Facebook sign-up not yet available", Toast.LENGTH_SHORT).show());
+
+        if (mGoogleLogIn == null) {
+            Log.e("EBT", "No view found when setting the Google sign-up button");
+            return null;
+        }
+        mGoogleLogIn.setOnClickListener(view -> Toast.makeText(getContext(),
+            "Google sign-up not yet available", Toast.LENGTH_SHORT).show());
+
+        if (mRegisteredLogIn == null) {
+            Log.e("EBT", "No view found when setting the registered sign-in button");
+            return null;
+        }
+        mRegisteredLogIn.setOnClickListener(view -> {
+            mNavigatorManager.navigator().showFragment("login");
+        });
+
+        return dialog;
     }
 }

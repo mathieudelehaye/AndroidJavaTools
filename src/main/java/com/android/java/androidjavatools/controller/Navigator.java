@@ -28,10 +28,24 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import com.android.java.androidjavatools.controller.tabview.FragmentTabView;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
 public class Navigator {
+    public static class FragmentArgument
+    {
+        private Class<?> mType;
+        private Object mValue;
+
+        public FragmentArgument(Class<?> type, Object value) {
+            mType = type;
+            mValue = value;
+        }
+    };
+
     public interface NavigatorManager {
         Navigator navigator();
         void onNavigation(@NonNull String dest, @NonNull String orig);
@@ -55,34 +69,53 @@ public class Navigator {
         mContentLayoutId = contentLayoutId;
     }
 
-    public void createFragment(String key, Class<?> fragmentType) {
+    public void createFragment(String key, Class<?> fragmentType, FragmentArgument... constructorArguments) {
         if (key.equals("")) {
             return;
         }
 
-        Log.v("AJT", "Try to create a navigable fragment with the key: " + key);
-
         if (!mFragments.containsKey(key)) {
+            Log.v("AJT", "Try to create a navigable fragment with the key: " + key);
+
+            // Split argument struct data
+            final var argumentTypes = new ArrayList<Class<?>>();
+            final var argumentValues = new ArrayList<>();
+
+            for (int i = 0; i < constructorArguments.length; i++) {
+                var argument= constructorArguments[i];
+                argumentTypes.add(argument.mType);
+                argumentValues.add(argument.mValue);
+            }
+
+            Fragment fragment;
+
             try {
-                var fragment = (Fragment)fragmentType.newInstance();
+                // Create fragment instance
+                Constructor<?> fragmentConstructor = fragmentType
+                    .getConstructor(argumentTypes.toArray(new Class<?>[0]));
 
-                mFragments.put(key, fragment);
-                Log.v("AJT", "Fragment created and added to the navigator registry");
+                fragment = (Fragment)fragmentConstructor.newInstance(argumentValues.toArray());
+            } catch (IllegalAccessException |
+                InvocationTargetException |
+                InstantiationException |
+                NoSuchMethodException e) {
 
-                // Only add non-dialog fragments to the manager
-                if (!(fragment instanceof DialogFragment)) {
-                    mFragmentManager
-                        .beginTransaction()
-                        .add(mContentLayoutId, fragment)
-                        .hide(fragment)
-                        .commit();
+                Log.e("AJT", e.toString());
+                return;
+            }
 
-                    Log.v("AJT", "Fragment added to the fragment manager");
-                }
-            } catch (IllegalAccessException iAE) {
-                Log.e("AJT", String.valueOf(iAE));
-            } catch (InstantiationException iE) {
-                Log.e("AJT", String.valueOf(iE));
+            mFragments.put(key, fragment);
+            Log.v("AJT", "Fragment created and added to the navigator registry");
+
+            // Only add non-dialog fragments to the manager
+            if (!(fragment instanceof DialogFragment)) {
+                mFragmentManager
+                    .beginTransaction()
+                    .add(mContentLayoutId, fragment)
+                    .hide(fragment)
+                    .commit();
+
+                Log.v("AJT", "Fragment added to the fragment manager");
             }
         } else {
             Log.w("AJT", "Fragment already existing");

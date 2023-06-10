@@ -27,7 +27,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
@@ -41,19 +40,13 @@ public abstract class FragmentAuthenticateDialog extends DialogFragment {
 
     // Use this instance of the interface to deliver action events from the dialog modal
     protected AuthenticateDialogListener mListener;
+    protected int mLayoutId;
     protected FragmentAuthenticateDialog mThis;
     protected View mContainerView;
 
-    public void setAuthManager(AuthManager manager) {
-        // Verify that the passed manager implements the callback interface
-        try {
-            // Instantiate the NoticeDialogListener so we can send events to the host
-            mListener = manager;
-        } catch (ClassCastException e) {
-            // The activity doesn't implement the interface, throw exception
-            throw new ClassCastException(getActivity().toString()
-                + " must implement AuthenticateDialogListener");
-        }
+    public FragmentAuthenticateDialog(AuthManager manager, Integer layoutId) {
+        mListener = manager;
+        mLayoutId = layoutId;
     }
 
     @NotNull
@@ -61,19 +54,20 @@ public abstract class FragmentAuthenticateDialog extends DialogFragment {
     public Dialog onCreateDialog(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         mThis = this;
         Dialog dialog = super.onCreateDialog(savedInstanceState);
+
+        // Inflate the content layout, so the derived fragments can configure the widgets
+        var inflater = requireActivity().getLayoutInflater();
+        mContainerView = inflater.inflate(mLayoutId, null);
+
         return initializeGUI(dialog);
     }
 
     protected abstract Dialog initializeGUI(Dialog parentDialog);
 
-    protected Dialog buildDialogFromLayout(int layout_id) {
+    protected Dialog buildDialogFromLayout() {
         // Use the Builder class for convenient dialog construction
         var builder = new AlertDialog.Builder(getActivity());
 
-        // Get the layout inflater
-        var inflater = requireActivity().getLayoutInflater();
-
-        mContainerView = inflater.inflate(layout_id, null);
         builder.setView(mContainerView);
 
         // Set the background as transparent and prevent the dialog from cancelling
