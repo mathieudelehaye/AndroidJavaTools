@@ -57,6 +57,7 @@ import java.util.regex.Pattern;
 import static android.content.Context.TELEPHONY_SERVICE;
 
 public abstract class AuthManager implements AuthenticateDialogListener {
+    private static String mAppFirstFragment = "tab";
 
     protected AppCompatActivity mActivity ;
     protected SharedPreferences mSharedPref;
@@ -66,6 +67,11 @@ public abstract class AuthManager implements AuthenticateDialogListener {
     private StringBuilder mDeviceId;
     private StringBuilder mPrefUserId;
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
+
+    public static void setAppFirstFragment(String name) {
+        mAppFirstFragment = name;
+        Log.d("AJT", "First fragment after authentication set to: " + mAppFirstFragment);
+    }
 
     public AuthManager(AppCompatActivity activity) {
         mActivity = activity;
@@ -149,14 +155,13 @@ public abstract class AuthManager implements AuthenticateDialogListener {
         }
 
         // Store the uid in the app preferences
-        mSharedPref.edit().putString(mActivity.getString(R.string.app_uid), _uid)
-            .commit();
+        mSharedPref.edit().putString(mActivity.getString(R.string.app_uid), _uid).commit();
         Log.v("AJT", "Latest uid stored to the app preferences: " + _uid);
 
         // Update the current app user
         AppUser.getInstance().authenticate(_uid, _userType);
 
-        mNavigatorManager.navigator().showFragment("tab");
+        mNavigatorManager.navigator().showFragment(mAppFirstFragment);
     }
 
     @Override

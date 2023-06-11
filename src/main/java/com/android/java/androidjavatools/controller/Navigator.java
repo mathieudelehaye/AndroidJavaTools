@@ -58,6 +58,12 @@ public class Navigator {
     private HashMap<String, Fragment> mFragments = new HashMap<>();
     private String mShownFragment;
     Stack<String> mPrevFragments = new Stack<>();
+    private boolean mNavigationRecording = true;
+
+    public void setNavigationRecording(boolean value) {
+        Log.d("AJT", "Navigation recording set to: " + value);
+        mNavigationRecording = value;
+    }
 
     public Navigator(NavigatorManager manager, int contentLayoutId) {
         if (!(manager instanceof AppCompatActivity)) {
@@ -180,9 +186,11 @@ public class Navigator {
             mManager.onNavigation(key, mShownFragment);
             mFragments.get(mShownFragment).setUserVisibleHint(false);
 
-            mPrevFragments.push(mShownFragment);
-            Log.v("AJT", "Fragment pushed to the previous fragment stack: "
-                + mPrevFragments.peek());
+            if (mNavigationRecording) {
+                mPrevFragments.push(mShownFragment);
+                Log.v("AJT", "Fragment pushed to the previous fragment stack: "
+                    + mPrevFragments.peek());
+            }
 
             hideFragment(mShownFragment);
         }

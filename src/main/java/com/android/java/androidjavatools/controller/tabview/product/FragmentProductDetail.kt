@@ -46,6 +46,7 @@ import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.controller.template.backButton
 import com.android.java.androidjavatools.controller.template.buttonWithText
 import com.android.java.androidjavatools.model.AppUser
+import com.android.java.androidjavatools.model.AuthManager
 import com.android.java.androidjavatools.model.TaskCompletionManager
 import com.android.java.androidjavatools.model.UserInfoDBEntry
 import com.google.firebase.firestore.FirebaseFirestore
@@ -146,8 +147,18 @@ abstract class FragmentProductDetail : FragmentCompose() {
                                 Log.v("AJT", "User not connected when ordering samples:"
                                     + " starting the authentication activity")
 
-                                mNavigatorManager?.navigator()?.showFragment("start");
+                                // After authentication, navigate back to the Product detail fragment
+                                AuthManager.setAppFirstFragment("product")
+                                // Stop recording the navigation while authenticating
+                                mNavigatorManager?.navigator()?.setNavigationRecording(false)
+
+                                mNavigatorManager?.navigator()?.showFragment("start")
                             } else {
+                                // Restore the first fragment to show after authentication
+                                AuthManager.setAppFirstFragment("tab")
+                                // Restore the navigation recording
+                                mNavigatorManager?.navigator()?.setNavigationRecording(true)
+
                                 mUserInfoDBEntry.setKey(AppUser.getInstance().id);
                                 mUserInfoDBEntry.readDBFields(object : TaskCompletionManager {
                                     override fun onSuccess() {
@@ -190,12 +201,6 @@ abstract class FragmentProductDetail : FragmentCompose() {
         mSubtitle.value = text
     }
 
-    fun isUserConnected(): Boolean {
-        return (AppUser.getInstance().authenticationType
-            == AppUser.AuthenticationType.REGISTERED) &&
-            (!AppUser.getInstance().id.equals(""));
-    }
-
     @Preview
     @Composable
     fun productDetailPreview() {
@@ -203,5 +208,11 @@ abstract class FragmentProductDetail : FragmentCompose() {
         setTitle("Guerlain")
         setSubtitle("Abeille Royale Double Renew & Repair Advanced Serum 345ml")
         productDetail()
+    }
+
+    private fun isUserConnected(): Boolean {
+        return (AppUser.getInstance().authenticationType
+            == AppUser.AuthenticationType.REGISTERED) &&
+            (!AppUser.getInstance().id.equals(""));
     }
 }
