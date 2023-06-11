@@ -27,7 +27,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import com.android.java.androidjavatools.controller.template.Navigator
 import com.android.java.androidjavatools.controller.template.FragmentCompose
@@ -135,12 +134,6 @@ abstract class FragmentAccount : FragmentCompose() {
                 onLogout()
             }
         }
-    }
-
-    @Preview
-    @Composable
-    fun accountContentView() {
-        contentView()
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {

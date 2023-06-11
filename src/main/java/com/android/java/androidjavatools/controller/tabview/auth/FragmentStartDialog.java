@@ -63,13 +63,13 @@ public abstract class FragmentStartDialog extends FragmentAuthenticateDialog {
         mRegisteredLogIn = getRegisteredLogIn();
 
         if (mAnonymousLogIn == null) {
-            Log.e("EBT", "No view found for the anonymous sign-in button on start dialog");
+            Log.e("AJT", "No view found for the anonymous sign-in button on start dialog");
             return null;
         }
         mAnonymousLogIn.setOnClickListener(view -> mListener.onDialogAnonymousSignInClick(mThis));
 
         if (mEmailSignUp == null) {
-            Log.e("EBT", "No view found when setting the email sign-up button");
+            Log.e("AJT", "No view found when setting the email sign-up button");
             return null;
         }
         mEmailSignUp.setOnClickListener(view -> {
@@ -77,21 +77,21 @@ public abstract class FragmentStartDialog extends FragmentAuthenticateDialog {
         });
 
         if (mFacebookLogIn == null) {
-            Log.e("EBT", "No view found when setting the Facebook sign-up button");
+            Log.e("AJT", "No view found when setting the Facebook sign-up button");
             return null;
         }
         mFacebookLogIn.setOnClickListener(view -> Toast.makeText(getContext(),
             "Facebook sign-up not yet available", Toast.LENGTH_SHORT).show());
 
         if (mGoogleLogIn == null) {
-            Log.e("EBT", "No view found when setting the Google sign-up button");
+            Log.e("AJT", "No view found when setting the Google sign-up button");
             return null;
         }
         mGoogleLogIn.setOnClickListener(view -> Toast.makeText(getContext(),
             "Google sign-up not yet available", Toast.LENGTH_SHORT).show());
 
         if (mRegisteredLogIn == null) {
-            Log.e("EBT", "No view found when setting the registered sign-in button");
+            Log.e("AJT", "No view found when setting the registered sign-in button");
             return null;
         }
         mRegisteredLogIn.setOnClickListener(view -> {
