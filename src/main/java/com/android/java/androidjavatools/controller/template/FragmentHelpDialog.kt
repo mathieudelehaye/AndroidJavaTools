@@ -33,8 +33,9 @@ import androidx.fragment.app.DialogFragment
 import com.android.java.androidjavatools.databinding.FragmentHelpDialogBinding
 import com.android.java.androidjavatools.R
 
-class FragmentHelpDialog (text : String): DialogFragment() {
-    private var mTextToDisplay: String? = text
+class FragmentHelpDialog (text : String, onClose: () -> Unit = {}): DialogFragment() {
+    private val mTextToDisplay: String? = text
+    private val mOnClose: () -> Unit = onClose
 
     @SuppressLint("ResourceAsColor")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -56,6 +57,8 @@ class FragmentHelpDialog (text : String): DialogFragment() {
 
                     closeHelpDialog.setOnClickListener {
                         dialog?.dismiss()
+
+                        mOnClose()
                     }
 
                     descriptionHelpDialog.text = mTextToDisplay
@@ -65,7 +68,7 @@ class FragmentHelpDialog (text : String): DialogFragment() {
 
         val dialog = builder.setView(rootView).create()
 
-        // Set the window background transparent, so the custom background is visible
+        // Set the custom background
         dialog.window!!.setBackgroundDrawableResource(R.drawable.dialog_background)
 
         return dialog

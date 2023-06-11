@@ -166,9 +166,11 @@ abstract class FragmentProductDetail : FragmentCompose() {
                                         val city = mUserInfoDBEntry.city
                                         val postcode = mUserInfoDBEntry.postCode
 
-                                        val dialogText = ("Sample ordered at address: $address $city $postcode")
-                                        val dialogFragment = FragmentHelpDialog(dialogText)
-                                        dialogFragment.show(childFragmentManager, "Order confirmation dialog")
+                                        FragmentHelpDialog(
+                                            "Sample ordered at address: $address $city $postcode") {
+
+                                            mNavigatorManager?.navigator()?.back()
+                                        }.show(childFragmentManager, "Order confirmation dialog")
                                     }
 
                                     override fun onFailure() {}

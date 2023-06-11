@@ -142,7 +142,7 @@ public abstract class FragmentResult extends FragmentWithSearch {
             } else {
                 String dialogText = "Please wait until the app has found your position"
                     + "No search until user position is found";
-                var dialogFragment = new FragmentHelpDialog(dialogText);
+                var dialogFragment = new FragmentHelpDialog(dialogText, () -> null);
                 dialogFragment.show(getChildFragmentManager(), "Searching position dialog");
             }
         }

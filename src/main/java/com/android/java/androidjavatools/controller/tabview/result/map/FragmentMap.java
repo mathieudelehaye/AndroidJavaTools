@@ -318,7 +318,7 @@ public class FragmentMap extends FragmentResult {
         if (mIsViewVisible && mSharedPref != null) {
             if (!Boolean.parseBoolean(mSharedPref.getString("map_help_displayed", "false"))) {
                 mSharedPref.edit().putString("map_help_displayed", "true").commit();
-                var dialogFragment = new FragmentHelpDialog(getString(R.string.map_help));
+                var dialogFragment = new FragmentHelpDialog(getString(R.string.map_help), () -> null);
                 dialogFragment.show(getChildFragmentManager(), "Map help dialog");
             }
         }
