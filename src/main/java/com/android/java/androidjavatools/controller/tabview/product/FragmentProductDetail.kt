@@ -22,7 +22,6 @@
 package com.android.java.androidjavatools.controller.tabview.product
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
+import com.android.java.androidjavatools.controller.template.FragmentHelpDialog
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.controller.template.backButton
 import com.android.java.androidjavatools.controller.template.buttonWithText
@@ -166,10 +166,9 @@ abstract class FragmentProductDetail : FragmentCompose() {
                                         val city = mUserInfoDBEntry.city
                                         val postcode = mUserInfoDBEntry.postCode
 
-                                        val fullAddress = "$address $city $postcode"
-
-                                        Toast.makeText(context, "Sample ordered at address: $fullAddress",
-                                            Toast.LENGTH_SHORT).show()
+                                        val dialogText = ("Sample ordered at address: $address $city $postcode")
+                                        val dialogFragment = FragmentHelpDialog(dialogText)
+                                        dialogFragment.show(childFragmentManager, "Order confirmation dialog")
                                     }
 
                                     override fun onFailure() {}

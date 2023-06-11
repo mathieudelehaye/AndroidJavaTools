@@ -32,7 +32,7 @@ import android.view.View;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import com.android.java.androidjavatools.Helpers;
-import com.android.java.androidjavatools.controller.tabview.profile.FragmentHelpDialog;
+import com.android.java.androidjavatools.controller.template.FragmentHelpDialog;
 import com.android.java.androidjavatools.controller.template.FragmentWithSearch;
 import com.android.java.androidjavatools.controller.template.SearchProvider;
 import com.android.java.androidjavatools.model.SearchResult;

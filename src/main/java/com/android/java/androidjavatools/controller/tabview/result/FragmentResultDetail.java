@@ -39,7 +39,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.android.java.androidjavatools.Helpers;
-import com.android.java.androidjavatools.controller.Navigator;
+import com.android.java.androidjavatools.controller.template.Navigator;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.databinding.FragmentResultDetailBinding;
 import com.android.java.androidjavatools.model.ResultItemInfo;

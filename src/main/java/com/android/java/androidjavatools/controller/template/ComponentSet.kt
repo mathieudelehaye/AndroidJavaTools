@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
-import com.android.java.androidjavatools.controller.Navigator.NavigatorManager
+import com.android.java.androidjavatools.controller.template.Navigator.NavigatorManager
 
 @Composable
 fun buttonWithText(

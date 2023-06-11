@@ -30,7 +30,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import com.android.java.androidjavatools.controller.Navigator;
+import com.android.java.androidjavatools.controller.template.Navigator;
 import com.android.java.androidjavatools.model.AuthManager;
 import org.jetbrains.annotations.NotNull;
 

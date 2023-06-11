@@ -24,7 +24,7 @@ package com.android.java.androidjavatools.controller.tabview.result.list
 import android.app.Activity
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.android.java.androidjavatools.controller.Navigator.NavigatorManager
+import com.android.java.androidjavatools.controller.template.Navigator.NavigatorManager
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
 import com.android.java.androidjavatools.controller.template.FragmentWithSearch
 import com.android.java.androidjavatools.databinding.FragmentResultListBinding

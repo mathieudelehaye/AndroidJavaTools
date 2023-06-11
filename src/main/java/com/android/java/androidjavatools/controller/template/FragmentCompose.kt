@@ -37,7 +37,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import com.android.java.androidjavatools.Helpers
-import com.android.java.androidjavatools.controller.Navigator.NavigatorManager
+import com.android.java.androidjavatools.controller.template.Navigator.NavigatorManager
 
 abstract class FragmentCompose : Fragment() {
     protected var mActivity : Activity? = null

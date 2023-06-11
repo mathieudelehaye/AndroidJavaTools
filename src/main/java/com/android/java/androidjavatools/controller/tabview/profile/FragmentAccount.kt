@@ -29,7 +29,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidViewBinding
-import com.android.java.androidjavatools.controller.Navigator
+import com.android.java.androidjavatools.controller.template.Navigator
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.databinding.FragmentAccountBinding
 import com.android.java.androidjavatools.model.AppUser

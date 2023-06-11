@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.controller;
+package com.android.java.androidjavatools.controller.template;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
