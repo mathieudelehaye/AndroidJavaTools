@@ -39,7 +39,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.android.java.androidjavatools.Helpers;
-import com.android.java.androidjavatools.controller.tabview.Navigator;
+import com.android.java.androidjavatools.controller.template.Navigator;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.databinding.FragmentResultDetailBinding;
 import com.android.java.androidjavatools.model.ResultItemInfo;
@@ -65,7 +65,7 @@ public abstract class FragmentResultDetail extends Fragment {
 
     @SuppressLint({"ResourceAsColor", "UseCompatTextViewDrawableApis"})
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.v("AndroidJavaTools", "Result detail view created at timestamp: "
+        Log.v("AJT", "Result detail view created at timestamp: "
             + Helpers.getTimestamp());
 
         super.onViewCreated(view, savedInstanceState);
@@ -104,7 +104,7 @@ public abstract class FragmentResultDetail extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Result detail view becomes visible");
+            Log.d("AJT", "Result detail view becomes visible");
 
             updateDetails();
             updateSavedButton();

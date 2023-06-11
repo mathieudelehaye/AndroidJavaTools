@@ -37,7 +37,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import com.android.java.androidjavatools.Helpers
-import com.android.java.androidjavatools.controller.tabview.Navigator.NavigatorManager
+import com.android.java.androidjavatools.controller.template.Navigator.NavigatorManager
 
 abstract class FragmentCompose : Fragment() {
     protected var mActivity : Activity? = null
@@ -49,6 +49,7 @@ abstract class FragmentCompose : Fragment() {
         , savedInstanceState: Bundle?
     ): View {
         mActivity = requireActivity()
+        mNavigatorManager = mActivity!! as NavigatorManager
 
         return ComposeView(mActivity!!).apply {
 
@@ -65,7 +66,7 @@ abstract class FragmentCompose : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.v("AndroidJavaTools", "Base view created at timestamp: "
+        Log.v("AJT", "Base view created at timestamp: "
             + Helpers.getTimestamp())
         mNavigatorManager = mActivity as NavigatorManager
         super.onViewCreated(view, savedInstanceState)
@@ -75,9 +76,9 @@ abstract class FragmentCompose : Fragment() {
         super.setUserVisibleHint(isVisibleToUser)
 
         if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Compose page becomes visible")
+            Log.d("AJT", "Compose page becomes visible")
         } else {
-            Log.d("AndroidJavaTools", "Compose page becomes hidden")
+            Log.d("AJT", "Compose page becomes hidden")
         }
     }
 

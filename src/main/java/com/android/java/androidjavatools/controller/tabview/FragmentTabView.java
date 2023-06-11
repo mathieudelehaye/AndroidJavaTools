@@ -52,7 +52,7 @@ public abstract class FragmentTabView extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.v("AndroidJavaTools", "App view created at timestamp: "
+        Log.v("AJT", "App view created at timestamp: "
             + Helpers.getTimestamp());
 
         super.onViewCreated(view, savedInstanceState);
@@ -75,7 +75,7 @@ public abstract class FragmentTabView extends Fragment {
 
     @Override
     public void onResume() {
-        Log.v("AndroidJavaTools", "Tab view fragment resumed");
+        Log.v("AJT", "Tab view fragment resumed");
 
         super.onResume();
     }
@@ -88,7 +88,7 @@ public abstract class FragmentTabView extends Fragment {
     public void enableTabSwiping() {
         // Enable swiping gesture for the view pager
         if (mViewPager.isFakeDragging()) {
-            Log.v("AndroidJavaTools", "Tab swiping enabled from the current page on");
+            Log.v("AJT", "Tab swiping enabled from the current page on");
             mViewPager.setSwipingEnabled(true);
             mViewPager.endFakeDrag();
         }
@@ -97,7 +97,7 @@ public abstract class FragmentTabView extends Fragment {
     public void disableTabSwiping() {
         // Disable the swiping gesture for the view pager
         if (!mViewPager.isFakeDragging()) {
-            Log.v("AndroidJavaTools", "Tab swiping disabled from the current page on");
+            Log.v("AJT", "Tab swiping disabled from the current page on");
             mViewPager.setSwipingEnabled(false);
             mViewPager.beginFakeDrag();
         }
@@ -107,14 +107,20 @@ public abstract class FragmentTabView extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Tab view becomes visible");
+            Log.d("AJT", "Tab view becomes visible");
 
-            if(mActivity != null) {
-                ((FragmentHome)FragmentManager.findFragment(mActivity.findViewById(R.id.rp_history_title)))
-                    .updateRecentResults();
-                ((FragmentHome)FragmentManager.findFragment(mActivity.findViewById(R.id.rp_history_title)))
-                    .updateRecentSearches();
+            if(mActivity == null) {
+                return;
             }
+
+            final View homeFragmentView = mActivity.findViewById(R.id.rp_history_title);
+            if (homeFragmentView == null) {
+                return;
+            }
+
+            final var fragmentHome = (FragmentHome)FragmentManager.findFragment(homeFragmentView);
+            fragmentHome.updateRecentResults();
+            fragmentHome.updateRecentSearches();
         }
     }
 }

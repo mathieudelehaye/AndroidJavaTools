@@ -39,7 +39,7 @@ import com.android.java.androidjavatools.controller.tabview.result.FragmentResul
 import com.android.java.androidjavatools.databinding.FragmentMapBinding;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.model.ResultItemInfo;
-import com.android.java.androidjavatools.controller.tabview.dialog.FragmentHelpDialog;
+import com.android.java.androidjavatools.controller.template.FragmentHelpDialog;
 import com.android.java.androidjavatools.R;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -82,7 +82,7 @@ public class FragmentMap extends FragmentResult {
 
     @SuppressLint("ResourceAsColor")
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.v("AndroidJavaTools", "Map view created at timestamp: "
+        Log.v("AJT", "Map view created at timestamp: "
             + Helpers.getTimestamp());
 
         super.onViewCreated(view, savedInstanceState);
@@ -116,7 +116,7 @@ public class FragmentMap extends FragmentResult {
                 // if more than 25% of the screen, it's probably a keyboard
                 if (!mKeyboardDisplayed) {
                     mKeyboardDisplayed = true;
-                    Log.v("AndroidJavaTools", "Keyboard displayed");
+                    Log.v("AJT", "Keyboard displayed");
 
                     ViewGroup.LayoutParams mapLayoutParams = mapLayout.getLayoutParams();
                     mapLayoutParams.height = mMapReducedHeight;
@@ -125,7 +125,7 @@ public class FragmentMap extends FragmentResult {
             } else {
                 if (mKeyboardDisplayed) {
                     mKeyboardDisplayed = false;
-                    Log.v("AndroidJavaTools", "Keyboard hidden");
+                    Log.v("AJT", "Keyboard hidden");
 
                     ViewGroup.LayoutParams params = mapLayout.getLayoutParams();
                     params.height = mMapInitialHeight;
@@ -137,7 +137,7 @@ public class FragmentMap extends FragmentResult {
         mBinding.mapUserLocation.setOnClickListener(view1 -> {
 
             if(mUserLocation != null) {
-                Log.d("AndroidJavaTools", "Change map focus to user location");
+                Log.d("AJT", "Change map focus to user location");
 
                 mMapController.animateTo(mUserLocation);
                 setZoomLevel(14);
@@ -172,8 +172,8 @@ public class FragmentMap extends FragmentResult {
         if (isVisibleToUser) {
             mIsViewVisible = true;
 
-            Log.d("AndroidJavaTools", "Map view becomes visible");
-            Log.v("AndroidJavaTools", "Map view becomes visible at timestamp: "
+            Log.d("AJT", "Map view becomes visible");
+            Log.v("AJT", "Map view becomes visible at timestamp: "
                 + Helpers.getTimestamp());
 
             changeSearchSwitch(ResultPageType.LIST);
@@ -199,7 +199,7 @@ public class FragmentMap extends FragmentResult {
         View rootView = getView();
 
         if (rootView == null) {
-            Log.w("AndroidJavaTools", "Cannot toggle the details view, as no root view available");
+            Log.w("AJT", "Cannot toggle the details view, as no root view available");
         }
 
         View detailLayout = rootView.findViewById(R.id.detail_map_layout);
@@ -246,7 +246,7 @@ public class FragmentMap extends FragmentResult {
                     new ItemizedIconOverlay.OnItemGestureListener<>() {
                         @Override
                         public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                            Log.i("AndroidJavaTools", "Single tap");
+                            Log.i("AJT", "Single tap");
                             mMapController.animateTo(item.getPoint());
 
                             showDetails(result.get(index));
@@ -285,13 +285,13 @@ public class FragmentMap extends FragmentResult {
 
     private void setZoomInKilometer(double radiusInKilometer) {
         final int zoomLevel = computeZoomLevelForRadius(radiusInKilometer * 1000);
-        Log.v("AndroidJavaTools", "Map zoom set to level " + String.valueOf(zoomLevel)
+        Log.v("AJT", "Map zoom set to level " + String.valueOf(zoomLevel)
             + " for radius of " + String.valueOf(radiusInKilometer) + " km");
         mMapController.setZoom(zoomLevel);
     }
 
     private void setZoomLevel(int level) {
-        Log.v("AndroidJavaTools", "Map zoom set to level " + String.valueOf(level));
+        Log.v("AJT", "Map zoom set to level " + String.valueOf(level));
         mMapController.setZoom(level);
     }
 
@@ -318,7 +318,7 @@ public class FragmentMap extends FragmentResult {
         if (mIsViewVisible && mSharedPref != null) {
             if (!Boolean.parseBoolean(mSharedPref.getString("map_help_displayed", "false"))) {
                 mSharedPref.edit().putString("map_help_displayed", "true").commit();
-                var dialogFragment = new FragmentHelpDialog(getString(R.string.map_help));
+                var dialogFragment = new FragmentHelpDialog(getString(R.string.map_help), () -> null);
                 dialogFragment.show(getChildFragmentManager(), "Map help dialog");
             }
         }

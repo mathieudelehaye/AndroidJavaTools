@@ -38,7 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
-import com.android.java.androidjavatools.controller.tabview.Navigator
+import com.android.java.androidjavatools.controller.template.Navigator
 import com.android.java.androidjavatools.controller.tabview.product.FragmentProductSelection
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
 import com.android.java.androidjavatools.controller.template.FragmentWithSearch
@@ -94,9 +94,11 @@ class ProductBrowserView {
             Spacer(modifier = Modifier.height(45.dp))
             Row {
                 Spacer(modifier = Modifier.width(15.dp))
-                buttonWithText("Free Samples", Color(0xFF3FA3BD))    // Light blue
+                // Light blue color
+                buttonWithText("Free Samples", Color(0xFF3FA3BD)) {}
                 Spacer(modifier = Modifier.width(5.dp))
-                buttonWithText("Free Products", Color(0xFFD0A038))     // Orange
+                // Orange color
+                buttonWithText("Free Products", Color(0xFFD0A038)) {}
             }
 
             Spacer(modifier = Modifier.height(5.dp))
@@ -114,7 +116,7 @@ class ProductBrowserView {
     @Preview
     @Composable
     fun previewBrowserButton() {
-        buttonWithText("Free Samples", Color(0xFF3FA3BD))
+        buttonWithText("Free Samples", Color(0xFF3FA3BD)) {}
     }
 
     @Composable

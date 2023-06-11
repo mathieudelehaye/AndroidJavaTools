@@ -21,18 +21,21 @@
 
 package com.android.java.androidjavatools.controller.tabview.profile
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidViewBinding
-import com.android.java.androidjavatools.controller.tabview.Navigator
+import com.android.java.androidjavatools.controller.template.Navigator
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.databinding.FragmentAccountBinding
 import com.android.java.androidjavatools.model.AppUser
 import com.android.java.androidjavatools.model.TaskCompletionManager
 import com.android.java.androidjavatools.model.UserInfoDBEntry
+import com.android.java.androidjavatools.R
 import com.google.firebase.firestore.FirebaseFirestore
 
 abstract class FragmentAccount : FragmentCompose() {
@@ -122,7 +125,13 @@ abstract class FragmentAccount : FragmentCompose() {
             }
 
             accountLogOut.setOnClickListener{
-                AppUser.getInstance().authenticate("", AppUser.AuthenticationType.NONE);
+                AppUser.getInstance().logOut()
+
+                // Delete the app current user
+                val pref: SharedPreferences = (mActivity!! as Context).getSharedPreferences(
+                    getString(R.string.lib_name), Context.MODE_PRIVATE)
+                pref.edit().putString(getString(R.string.app_uid), "").commit()
+
                 onLogout()
             }
         }
@@ -138,7 +147,7 @@ abstract class FragmentAccount : FragmentCompose() {
         super.setUserVisibleHint(isVisibleToUser)
 
         if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Account page becomes visible")
+            Log.d("AJT", "Account page becomes visible")
 
             mDatabaseEntry.readDBFields(object : TaskCompletionManager {
                 override fun onSuccess() {
@@ -153,7 +162,7 @@ abstract class FragmentAccount : FragmentCompose() {
                 override fun onFailure() {}
             })
         } else {
-            Log.d("AndroidJavaTools", "Account page becomes hidden")
+            Log.d("AJT", "Account page becomes hidden")
         }
     }
 

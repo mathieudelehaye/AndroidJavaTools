@@ -29,7 +29,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import androidx.annotation.NonNull;
 import com.android.java.androidjavatools.Helpers;
-import com.android.java.androidjavatools.controller.tabview.dialog.FragmentHelpDialog;
+import com.android.java.androidjavatools.controller.template.FragmentHelpDialog;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchProvider;
@@ -61,7 +61,7 @@ public abstract class FragmentResultList extends FragmentResult {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.v("AndroidJavaTools", "Result list view created at timestamp: "
+        Log.v("AJT", "Result list view created at timestamp: "
             + Helpers.getTimestamp());
 
         super.onViewCreated(view, savedInstanceState);
@@ -78,7 +78,7 @@ public abstract class FragmentResultList extends FragmentResult {
         searchForResults(new TaskCompletionManager() {
             @Override
             public void onSuccess() {
-                Log.v("AndroidJavaTools", "Results received from database at timestamp: "
+                Log.v("AJT", "Results received from database at timestamp: "
                     + Helpers.getTimestamp());
 
                 var resultList = (ListView) getView().findViewById(R.id.result_list_view);
@@ -120,7 +120,7 @@ public abstract class FragmentResultList extends FragmentResult {
         if (isVisibleToUser) {
             mIsViewVisible = true;
 
-            Log.d("AndroidJavaTools", "Result list view becomes visible");
+            Log.d("AJT", "Result list view becomes visible");
 
             changeSearchSwitch(ResultPageType.MAP);
 
@@ -143,7 +143,7 @@ public abstract class FragmentResultList extends FragmentResult {
         if (mIsViewVisible && mSharedPref != null) {
             if (!Boolean.parseBoolean(mSharedPref.getString("list_help_displayed", "false"))) {
                 mSharedPref.edit().putString("list_help_displayed", "true").commit();
-                var dialogFragment = new FragmentHelpDialog(getString(R.string.list_help));
+                var dialogFragment = new FragmentHelpDialog(getString(R.string.list_help), () -> null);
                 dialogFragment.show(getChildFragmentManager(), "List help dialog");
             }
         }

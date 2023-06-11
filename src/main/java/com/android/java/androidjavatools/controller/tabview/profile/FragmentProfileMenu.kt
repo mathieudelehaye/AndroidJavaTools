@@ -21,6 +21,7 @@
 
 package com.android.java.androidjavatools.controller.tabview.profile
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,7 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,7 +42,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
-import com.android.java.androidjavatools.controller.tabview.Navigator
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.model.AppUser
 
@@ -51,13 +51,14 @@ data class MenuItem(
 )
 
 open class FragmentProfileMenu : FragmentCompose() {
-    private val signedInUser = AppUser.getInstance().authenticationType == AppUser.AuthenticationType.REGISTERED
-    private val userName : String =  if (signedInUser) AppUser.getInstance().id else "Anonymous user"
+    private val mSignedInUser : MutableState<Boolean> = mutableStateOf(false)
+    private val mUserName : MutableState<String> = mutableStateOf("")
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     override fun contentView() {
-        val mNavigatorManager : Navigator.NavigatorManager = mActivity!! as Navigator.NavigatorManager
+        val signedInUser by remember { mSignedInUser }
+        val userName by remember { mUserName }
 
         Column (
             modifier = Modifier
@@ -99,9 +100,9 @@ open class FragmentProfileMenu : FragmentCompose() {
                     Card(
                         onClick = {
                             when (index) {
-                                0 -> mNavigatorManager.navigator().showFragment("account")
-                                1 -> mNavigatorManager.navigator().showFragment("help")
-                                else -> mNavigatorManager.navigator().showFragment("terms")
+                                0 -> mNavigatorManager?.navigator()?.showFragment("account")
+                                1 -> mNavigatorManager?.navigator()?.showFragment("help")
+                                else -> mNavigatorManager?.navigator()?.showFragment("terms")
                             }
                         }
                         , modifier = Modifier.padding(8.dp)
@@ -139,5 +140,18 @@ open class FragmentProfileMenu : FragmentCompose() {
     fun profileContentPreview() {
         AppUser.getInstance().authenticate("mathieu.delehaye@gmail.com", AppUser.AuthenticationType.REGISTERED)
         contentView()
+    }
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+
+        if (isVisibleToUser) {
+            Log.d("AJT", "Account page becomes visible")
+
+            mSignedInUser.value = AppUser.getInstance().authenticationType == AppUser.AuthenticationType.REGISTERED
+            mUserName.value = if (mSignedInUser.value) AppUser.getInstance().id else "Anonymous user"
+        } else {
+            Log.d("AJT", "Account page becomes hidden")
+        }
     }
 }

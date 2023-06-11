@@ -31,7 +31,7 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
     public UserInfoDBEntry(FirebaseFirestore database, String key, Map<String, String> data) {
         super(database, "userInfos");
 
-        mKey.append(key);
+        mKey = key;
         mData = new ArrayList<>();
         mData.add(data);
 
@@ -42,7 +42,7 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
 
         super(database, "userInfos");
 
-        mKey.append(key);
+        mKey = key;
 
         mData = new ArrayList<>();
         var dataItem = new HashMap<String, String>();
@@ -130,7 +130,7 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
     }
 
     public String getDeviceId() {
-        return (String)mData.get(0).get("post_code");
+        return mData.get(0).get("post_code");
     }
 
     public void setDeviceId(String value) {
@@ -141,18 +141,18 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
     public void createAllDBFields(TaskCompletionManager... cbManager) {
 
         // Add userInfos table entry to the database matching the app user
-        mDatabase.collection("userInfos").document(mKey.toString())
+        mDatabase.collection("userInfos").document(mKey)
             .set(mData.get(0))
             .addOnSuccessListener(aVoid -> {
-                Log.i("BeautyAndroid", "New info successfully written to the database for user: "
-                    + mKey.toString());
+                Log.i("AJT", "New info successfully written to the database for user: "
+                    + mKey);
 
                 if (cbManager.length >= 1) {
                     cbManager[0].onSuccess();
                 }
             })
             .addOnFailureListener(e -> {
-                Log.e("BeautyAndroid", "Error writing user info to the database: ", e);
+                Log.e("AJT", "Error writing user info to the database: ", e);
 
                 if (cbManager.length >= 1) {
                     cbManager[0].onFailure();
@@ -169,7 +169,7 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
         // Get a new write batch
         WriteBatch batch = mDatabase.batch();
 
-        DocumentReference ref = mDatabase.collection("userInfos").document(mKey.toString());
+        DocumentReference ref = mDatabase.collection("userInfos").document(mKey);
 
         var changedKeys = new ArrayList<String>();
 
@@ -194,7 +194,7 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
                     cbManager[0].onSuccess();
                 }
             } else {
-                Log.e("BeautyAndroid", "Error updating documents: ", task.getException());
+                Log.e("AJT", "Error updating documents: ", task.getException());
 
                 if (cbManager.length >= 1) {
                     cbManager[0].onFailure();

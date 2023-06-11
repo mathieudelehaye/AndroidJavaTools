@@ -44,7 +44,7 @@ public abstract class FragmentTerms extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Log.v("AndroidJavaTools", "Terms view created at timestamp: "
+        Log.v("AJT", "Terms view created at timestamp: "
             + Helpers.getTimestamp());
 
         super.onViewCreated(view, savedInstanceState);

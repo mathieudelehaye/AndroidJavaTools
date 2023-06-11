@@ -21,10 +21,12 @@
 
 package com.android.java.androidjavatools.controller.tabview.product
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,10 +41,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
+import com.android.java.androidjavatools.controller.template.FragmentHelpDialog
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.controller.template.backButton
+import com.android.java.androidjavatools.controller.template.buttonWithText
+import com.android.java.androidjavatools.model.AppUser
+import com.android.java.androidjavatools.model.AuthManager
+import com.android.java.androidjavatools.model.TaskCompletionManager
+import com.android.java.androidjavatools.model.UserInfoDBEntry
+import com.google.firebase.firestore.FirebaseFirestore
 
-open class FragmentProductDetail : FragmentCompose() {
+abstract class FragmentProductDetail : FragmentCompose() {
+    protected val mDatabase = FirebaseFirestore.getInstance()
+    protected open val mUserInfoDBEntry = UserInfoDBEntry(mDatabase, AppUser.getInstance().id)
+
+    private var mKey: String = ""
     private var mImage: MutableState<Int> = mutableStateOf(R.drawable.product01)
     private var mTitle: MutableState<String> = mutableStateOf("")
     private var mSubtitle: MutableState<String> = mutableStateOf("")
@@ -118,6 +131,60 @@ open class FragmentProductDetail : FragmentCompose() {
                         .fillMaxWidth()
                 ) {
                     productDescription()
+
+                    Spacer(modifier = Modifier
+                        .height(5.dp)
+                    )
+                    Divider(color = Color.LightGray, thickness = 2.dp)
+                    Spacer(modifier = Modifier
+                        .height(5.dp)
+                    )
+                    Row {
+                        Spacer(modifier = Modifier.width(40.dp))
+                        buttonWithText("Buy Now", Color.Green, width = 150.dp, radius = 30.dp) {}
+                        Spacer(modifier = Modifier.width(30.dp))
+                        // Orange color
+                        buttonWithText("Freebies", Color(0xFFD0A038), width = 150.dp, radius = 30.dp) {
+                            if (!isUserConnected()) {
+                                Log.v("AJT", "User not connected when ordering samples:"
+                                    + " starting the authentication activity")
+
+                                // After authentication, navigate back to the Product detail fragment
+                                AuthManager.setAppFirstFragment("product")
+                                // Stop recording the navigation while authenticating
+                                mNavigatorManager?.navigator()?.setNavigationRecording(false)
+
+                                mNavigatorManager?.navigator()?.showFragment("start")
+                            } else {
+                                // Restore the first fragment to show after authentication
+                                AuthManager.setAppFirstFragment("tab")
+                                // Restore the navigation recording
+                                mNavigatorManager?.navigator()?.setNavigationRecording(true)
+
+                                mUserInfoDBEntry.setKey(AppUser.getInstance().id);
+                                mUserInfoDBEntry.readDBFields(object : TaskCompletionManager {
+                                    override fun onSuccess() {
+                                        val address = mUserInfoDBEntry.address
+                                        val city = mUserInfoDBEntry.city
+                                        val postcode = mUserInfoDBEntry.postCode
+
+                                        onOrdering(mKey)
+
+                                        FragmentHelpDialog(
+                                            "Sample ordered at address: $address $city $postcode") {
+
+                                            mNavigatorManager?.navigator()?.back()
+                                        }.show(childFragmentManager, "Order confirmation dialog")
+                                    }
+
+                                    override fun onFailure() {}
+                                })
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier
+                        .height(5.dp)
+                    )
                 }
             }
         }
@@ -139,6 +206,12 @@ open class FragmentProductDetail : FragmentCompose() {
         mSubtitle.value = text
     }
 
+    fun setKey(text: String) {
+        mKey = text
+    }
+
+    abstract fun onOrdering(productKey : String);
+
     @Preview
     @Composable
     fun productDetailPreview() {
@@ -146,5 +219,11 @@ open class FragmentProductDetail : FragmentCompose() {
         setTitle("Guerlain")
         setSubtitle("Abeille Royale Double Renew & Repair Advanced Serum 345ml")
         productDetail()
+    }
+
+    private fun isUserConnected(): Boolean {
+        return (AppUser.getInstance().authenticationType
+            == AppUser.AuthenticationType.REGISTERED) &&
+            (!AppUser.getInstance().id.equals(""));
     }
 }

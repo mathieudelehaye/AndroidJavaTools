@@ -77,7 +77,7 @@ public abstract class FragmentHome extends FragmentWithSearch {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            Log.d("AndroidJavaTools", "Home view becomes visible");
+            Log.d("AJT", "Home view becomes visible");
 
             updateRecentResults();
             updateRecentSearches();
@@ -88,7 +88,7 @@ public abstract class FragmentHome extends FragmentWithSearch {
         final int buttonNumber = 2;
 
         if (mContext == null) {
-            Log.w("AndroidJavaTools", "Cannot update the recent searches, as no context");
+            Log.w("AJT", "Cannot update the recent searches, as no context");
             return;
         }
 
@@ -109,7 +109,7 @@ public abstract class FragmentHome extends FragmentWithSearch {
                 final String key = result.getTitle();
                 final String title = result.getTitle();
 
-                Log.v("AndroidJavaTools", "updateRecentRP: index = " + i + ", key = " + key
+                Log.v("AJT", "updateRecentRP: index = " + i + ", key = " + key
                     + ", title = " + title);
 
                 historyButton.setText(title.substring(0, Math.min(key.length(), 15)));
@@ -127,7 +127,7 @@ public abstract class FragmentHome extends FragmentWithSearch {
         final int buttonNumber = 4;
 
         if (mContext == null) {
-            Log.w("AndroidJavaTools", "Cannot update the recent searches, as no context");
+            Log.w("AJT", "Cannot update the recent searches, as no context");
             return;
         }
 
@@ -144,7 +144,7 @@ public abstract class FragmentHome extends FragmentWithSearch {
                 // Update the search history buttons
                 final String query = mHistoryManager.getPreviousSearchQuery(i);
 
-                Log.v("AndroidJavaTools", "updateRecentSearches: age = " + i + ", query = " + query);
+                Log.v("AJT", "updateRecentSearches: age = " + i + ", query = " + query);
 
                 historyButton.setText(query.substring(0, Math.min(query.length(), 15)));
                 historyButton.setOnClickListener(v -> runSearch(query));

@@ -28,7 +28,6 @@ import android.util.Log;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import com.android.java.androidjavatools.controller.tabview.Navigator;
 import com.android.java.androidjavatools.controller.tabview.result.list.FragmentResultList;
 import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox;
@@ -68,7 +67,7 @@ public abstract class FragmentWithSearch extends Fragment {
 
     protected void showResult(ResultItemInfo item) {
         final String title = item.getTitle();
-        Log.d("AndroidJavaTools", "Result to show: " + title);
+        Log.d("AJT", "Result to show: " + title);
         mResultProvider.setSelectedResultItem(item);
         mNavigatorManager.navigator().showFragment("detail");
     }

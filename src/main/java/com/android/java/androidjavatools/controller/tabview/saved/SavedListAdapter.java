@@ -87,7 +87,7 @@ public class SavedListAdapter extends BaseAdapter {
         imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
         buttonView.setOnClickListener(v -> {
-            Log.v("AndroidJavaTools", "mdl button clicked for saved item in position " + position);
+            Log.v("AJT", "mdl button clicked for saved item in position " + position);
 
             mResultProvider.deleteSavedResult(mResultKeys.get(position));
             notifyDataSetChanged();

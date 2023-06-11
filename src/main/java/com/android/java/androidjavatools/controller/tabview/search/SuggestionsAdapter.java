@@ -63,7 +63,7 @@ public class SuggestionsAdapter extends CursorAdapter {
      */
     @Override
     public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-        Log.d("AndroidJavaTools", "runQueryOnBackgroundThread(" + constraint + ")");
+        Log.d("AJT", "runQueryOnBackgroundThread(" + constraint + ")");
 
         final String query = (constraint == null) ? "" : constraint.toString();
 
@@ -75,7 +75,7 @@ public class SuggestionsAdapter extends CursorAdapter {
                 return cursor;
             }
         } catch (RuntimeException e) {
-            Log.w("AndroidJavaTools", "Search suggestions query threw an exception: ", e);
+            Log.w("AJT", "Search suggestions query threw an exception: ", e);
         }
 
         return null;

@@ -37,7 +37,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidViewBinding
-import com.android.java.androidjavatools.controller.tabview.Navigator.NavigatorManager
+import com.android.java.androidjavatools.controller.template.Navigator.NavigatorManager
 import com.android.java.androidjavatools.controller.tabview.result.list.FragmentResultList
 import com.android.java.androidjavatools.controller.template.FragmentWithSearch
 import com.android.java.androidjavatools.databinding.SearchViewBinding
@@ -132,12 +132,12 @@ class SearchBox: FilterListener {
                 if (!hasFocus) {
                     return@setOnFocusChangeListener
                 }
-                Log.d("AndroidJavaTools", "View $v has focus")
+                Log.d("AJT", "View $v has focus")
 
                 // Possibly show the Suggestions fragment
                 if (mSuggestionsContainer) {
                     // Return if already shown
-                    Log.v("AndroidJavaTools", "View has already the focus")
+                    Log.v("AJT", "View has already the focus")
                     return@setOnFocusChangeListener
                 }
                 mNavigatorManager!!.navigator().showFragment("suggestion")
@@ -158,7 +158,7 @@ class SearchBox: FilterListener {
                 if (event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
 
                     val query: String = searchViewQuery.text.toString()
-                    Log.v("AndroidJavaTools", "Search query validated by pressing enter: $query")
+                    Log.v("AJT", "Search query validated by pressing enter: $query")
 
                     mContainer!!.runSearch(query)
                 }
