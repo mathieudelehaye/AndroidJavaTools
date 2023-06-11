@@ -67,6 +67,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
     }
 
     // TODO: download the images from the DB
+    private var mProductKeys: MutableState<Array<String>> = mutableStateOf(emptyArray())
     private var mProductImages: MutableState<Array<Int>> = mutableStateOf(emptyArray())
     private var mProductTitles: MutableState<Array<String>> = mutableStateOf(emptyArray())
     private var mProductSubtitles: MutableState<Array<String>> = mutableStateOf(emptyArray())
@@ -74,6 +75,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
     @OptIn(ExperimentalPagerApi::class)
     @Composable
     override fun contentView() {
+        var productKeys by remember { mProductKeys }
         var productImages by remember { mProductImages }
         var productTitles by remember { mProductTitles }
         var productSubtitles by remember { mProductSubtitles }
@@ -111,6 +113,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                     productImages.copyOfRange(startIndex, endIndex)
                     , productTitles.copyOfRange(startIndex, endIndex)
                     , productSubtitles.copyOfRange(startIndex, endIndex)
+                    , productKeys.copyOfRange(startIndex, endIndex)
                 )
             }
         }
@@ -147,7 +150,9 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    fun productGridPage(productNumber: Int, images : Array<Int>, titles : Array<String>, descriptions : Array<String>) {
+    fun productGridPage(productNumber: Int, images : Array<Int>, titles : Array<String>,
+        descriptions : Array<String>, keys : Array<String>) {
+
         if (productNumber > 4) {
             Log.e("AJT", "Cannot display a product grid page with more than 4 items")
             return
@@ -160,12 +165,13 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                 val imageId = images[index % productNumber]
                 val title = titles[index % productNumber]
                 val description = descriptions[index % productNumber]
+                val key = keys[index % productNumber]
 
                 Box(
                     modifier = Modifier
                         .padding(3.dp)
                 ) {
-                    productCard(imageId, title, description)
+                    productCard(imageId, title, description, key)
                 }
             }
         }
@@ -174,6 +180,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
     @Preview
     @Composable
     fun productGridPagePreview() {
+        val keys = arrayOf("", "", "", "")
         val images =
                 intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
             R.drawable.product04, R.drawable.product05)
@@ -184,19 +191,19 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
             , "Touch Eclat Le Teint Foundation Infused with Light 100ml"
             , "Because it's You EAU DE PARFUM Delicious and Sparkling 150ml")
 
-        productGridPage(titles.size, images.toTypedArray(), titles, descriptions)
+        productGridPage(titles.size, images.toTypedArray(), titles, descriptions, keys)
     }
 
     @Preview
     @Composable
     fun productCardPreview() {
         productCard(R.drawable.product01, "Guerlain",
-            "Abeille Royale Double Renew & Repair Advanced Serum 345ml")
+            "Abeille Royale Double Renew & Repair Advanced Serum 345ml", "")
     }
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun productCard(imageId: Int, title: String, description: String) {
+    fun productCard(imageId: Int, title: String, description: String, key: String) {
         Card(
             onClick = {
                 val productDetailFragment
@@ -204,6 +211,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                 productDetailFragment.setImage(imageId)
                 productDetailFragment.setTitle(title)
                 productDetailFragment.setSubtitle(description)
+                productDetailFragment.setKey(key)
 
                 mNavigatorManager.navigator().showFragment("product")
             }
@@ -282,16 +290,19 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                     val imageList = mutableListOf<Int>()
                     val titleList = mutableListOf<String>()
                     val subtitleList = mutableListOf<String>()
+                    val keyList = mutableListOf<String>()
 
                     for (i in 0 until      products) {
                         imageList.add(allImages[i % allImages.size])
                         titleList.add(productInfo.getTitleAtIndex(i)!!)
                         subtitleList.add(productInfo.getSubtitleAtIndex(i)!!)
+                        keyList.add(productInfo.getKeyAtIndex(i)!!)
                     }
 
                     mProductImages.value = imageList.toTypedArray()
                     mProductTitles.value = titleList.toTypedArray()
                     mProductSubtitles.value = subtitleList.toTypedArray()
+                    mProductKeys.value = keyList.toTypedArray()
 
                     Log.d("AJT", "Found $products items for filter `$mFilterField`")
                 }

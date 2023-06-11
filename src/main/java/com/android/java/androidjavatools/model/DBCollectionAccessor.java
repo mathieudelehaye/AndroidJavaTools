@@ -111,6 +111,10 @@ public class DBCollectionAccessor {
         mCollectionName = collection;
     }
 
+    public String getKey() {
+        return mKey;
+    }
+
     public void setKey(String value) {
         mKey = value;
     }

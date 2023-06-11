@@ -52,8 +52,10 @@ import com.android.java.androidjavatools.model.UserInfoDBEntry
 import com.google.firebase.firestore.FirebaseFirestore
 
 abstract class FragmentProductDetail : FragmentCompose() {
-    private val mDatabase = FirebaseFirestore.getInstance()
-    private val mUserInfoDBEntry = UserInfoDBEntry(mDatabase, AppUser.getInstance().id)
+    protected val mDatabase = FirebaseFirestore.getInstance()
+    protected open val mUserInfoDBEntry = UserInfoDBEntry(mDatabase, AppUser.getInstance().id)
+
+    private var mKey: String = ""
     private var mImage: MutableState<Int> = mutableStateOf(R.drawable.product01)
     private var mTitle: MutableState<String> = mutableStateOf("")
     private var mSubtitle: MutableState<String> = mutableStateOf("")
@@ -166,6 +168,8 @@ abstract class FragmentProductDetail : FragmentCompose() {
                                         val city = mUserInfoDBEntry.city
                                         val postcode = mUserInfoDBEntry.postCode
 
+                                        onOrdering(mKey)
+
                                         FragmentHelpDialog(
                                             "Sample ordered at address: $address $city $postcode") {
 
@@ -201,6 +205,12 @@ abstract class FragmentProductDetail : FragmentCompose() {
     fun setSubtitle(text: String) {
         mSubtitle.value = text
     }
+
+    fun setKey(text: String) {
+        mKey = text
+    }
+
+    abstract fun onOrdering(productKey : String);
 
     @Preview
     @Composable

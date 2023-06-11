@@ -32,12 +32,18 @@ class ProductInfo : DBCollectionAccessor {
     fun getTitleAtIndex(i: Int): String? {
         val productTitle = mData[i]["title"]
         return if (productTitle != null
-            && productTitle != "?") "$productTitle " else ""
+            && productTitle != "?") "$productTitle" else ""
     }
 
     fun getSubtitleAtIndex(i: Int): String? {
         val productDescription = mData[i]["subtitle"]
         return if (productDescription != null
-            && productDescription != "?") "$productDescription " else ""
+            && productDescription != "?") "$productDescription" else ""
+    }
+
+    fun getKeyAtIndex(i: Int): String? {
+        val productKey = mData[i]["key"]
+        return if (productKey != null
+            && productKey != "?") "$productKey" else ""
     }
 }

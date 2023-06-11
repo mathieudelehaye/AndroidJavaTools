@@ -249,7 +249,7 @@ public class Navigator {
 
         mShownFragment = prevFragmentKey;
         fragmentToShow.setUserVisibleHint(true);
-        Log.d("AJT", "Navigated back to the fragment of type " + prevFragmentKey);
+        Log.d("AJT", "Navigated back to the fragment of type: " + prevFragmentKey);
     }
 
     public void toggleTabSwiping(boolean enable) {
