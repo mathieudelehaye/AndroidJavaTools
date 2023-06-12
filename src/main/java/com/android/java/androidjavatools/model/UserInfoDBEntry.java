@@ -161,7 +161,7 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
     }
 
     public boolean readDBFields(TaskCompletionManager... cbManager) {
-        String[] fields = { "first_name", "last_name", "address", "city", "post_code", "email" };
+        String[] fields = { "first_name", "last_name", "address", "city", "post_code", "email", "score" };
         return readDBFieldsForCurrentKey(fields, cbManager);
     }
 
