@@ -41,7 +41,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
-import com.android.java.androidjavatools.controller.template.FragmentHelpDialog
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.controller.template.backButton
 import com.android.java.androidjavatools.controller.template.buttonWithText
@@ -168,13 +167,10 @@ abstract class FragmentProductDetail : FragmentCompose() {
                                         val city = mUserInfoDBEntry.city
                                         val postcode = mUserInfoDBEntry.postCode
 
-                                        onOrdering(mKey)
-
-                                        FragmentHelpDialog(
+                                        onOrdering(mKey,
                                             "Sample ordered at address: $address $city $postcode") {
-
-                                            mNavigatorManager?.navigator()?.back()
-                                        }.show(childFragmentManager, "Order confirmation dialog")
+                                                mNavigatorManager?.navigator()?.back()
+                                            }
                                     }
 
                                     override fun onFailure() {}
@@ -210,7 +206,7 @@ abstract class FragmentProductDetail : FragmentCompose() {
         mKey = text
     }
 
-    abstract fun onOrdering(productKey : String);
+    abstract fun onOrdering(productKey : String, successDialogMessage : String, onSuccessDialogClose: () -> Unit = {})
 
     @Preview
     @Composable
