@@ -3,7 +3,7 @@
 //
 //  Created by Mathieu Delehaye on 24/12/2022.
 //
-//  BeautyAndroid: An Android app to order and recycle cosmetics.
+//  AndroidJavaTools: A framework to develop Android apps in Java.
 //
 //  Copyright © 2022 Mathieu Delehaye. All rights reserved.
 //
@@ -161,7 +161,7 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
     }
 
     public boolean readDBFields(TaskCompletionManager... cbManager) {
-        String[] fields = { "first_name", "last_name", "address", "city", "post_code", "email" };
+        String[] fields = { "first_name", "last_name", "address", "city", "post_code", "email", "score" };
         return readDBFieldsForCurrentKey(fields, cbManager);
     }
 

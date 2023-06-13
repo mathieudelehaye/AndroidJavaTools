@@ -3,7 +3,7 @@
 //
 //  Created by Mathieu Delehaye on 4/02/2023.
 //
-//  BeautyAndroid: An Android app to order and recycle cosmetics.
+//  AndroidJavaTools: A framework to develop Android apps in Java.
 //
 //  Copyright © 2023 Mathieu Delehaye. All rights reserved.
 //

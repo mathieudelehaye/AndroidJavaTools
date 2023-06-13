@@ -83,5 +83,5 @@ abstract class FragmentCompose : Fragment() {
     }
 
     @Composable
-    abstract fun contentView()
+    protected abstract fun contentView()
 }

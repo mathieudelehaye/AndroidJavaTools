@@ -73,27 +73,27 @@ public abstract class FragmentLoginDialog extends FragmentAuthenticateDialog {
         mRegisteredPassword = getRegisteredPassword();
 
         if (mAnonymousLogIn == null) {
-            Log.e("EBT", "No view found for the anonymous sign-in button on login dialog");
+            Log.e("AJT", "No view found for the anonymous sign-in button on login dialog");
             return null;
         }
         mAnonymousLogIn.setOnClickListener(view -> mListener.onDialogAnonymousSignInClick(mThis));
 
         if (mFacebookLogIn == null) {
-            Log.e("EBT", "No view found when setting the Facebook sign-in button");
+            Log.e("AJT", "No view found when setting the Facebook sign-in button");
             return null;
         }
         mFacebookLogIn.setOnClickListener(view -> Toast.makeText(getContext(),
             "Facebook sign-in not yet available", Toast.LENGTH_SHORT).show());
 
         if (mGoogleLogIn == null) {
-            Log.e("EBT", "No view found when setting the Google sign-in button");
+            Log.e("AJT", "No view found when setting the Google sign-in button");
             return null;
         }
         mGoogleLogIn.setOnClickListener(view -> Toast.makeText(getContext(),
             "Google sign-in not yet available", Toast.LENGTH_SHORT).show());
 
         if (mConfirmLogIn == null) {
-            Log.e("EBT", "No view found for the confirm button on login dialog");
+            Log.e("AJT", "No view found for the confirm button on login dialog");
             return null;
         }
         mConfirmLogIn.setOnClickListener(view -> mListener.onDialogRegisteredSignInClick(mThis,
@@ -101,7 +101,7 @@ public abstract class FragmentLoginDialog extends FragmentAuthenticateDialog {
                 null)));
 
         if (mResetPassword == null) {
-            Log.e("EBT", "No view found for the reset password button on login dialog");
+            Log.e("AJT", "No view found for the reset password button on login dialog");
             return null;
         }
         mResetPassword.setOnClickListener(view -> mListener.onDialogResetPasswordClick(mThis,
@@ -109,7 +109,7 @@ public abstract class FragmentLoginDialog extends FragmentAuthenticateDialog {
                 null)));
 
         if (mEmailSignUp == null) {
-            Log.e("EBT", "No view found for the sign-up button on login dialog");
+            Log.e("AJT", "No view found for the sign-up button on login dialog");
             return null;
         }
         mEmailSignUp.setOnClickListener(view -> {
