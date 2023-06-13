@@ -124,8 +124,6 @@ public abstract class FragmentResultList extends FragmentResult {
 
             changeSearchSwitch(ResultPageType.MAP);
 
-            updateSearchResults();
-
             showHelp();
         } else {
             mIsViewVisible = false;

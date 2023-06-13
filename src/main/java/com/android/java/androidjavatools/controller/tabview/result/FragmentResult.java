@@ -123,7 +123,7 @@ public abstract class FragmentResult extends FragmentWithSearch {
         updateSearchResults();
     }
 
-    protected void updateSearchResults() {
+    public void updateSearchResults() {
         // If there is no search start yet, find it and get the items to display
         if (mSearchStart == null && getContext() != null) {
             final String searchQuery = sResultQuery;
@@ -140,8 +140,7 @@ public abstract class FragmentResult extends FragmentWithSearch {
                 Log.v("AJT", "Searching around the user location from the cache");
                 setSearchStart(mUserLocation);
             } else {
-                String dialogText = "Please wait until the app has found your position"
-                    + "No search until user position is found";
+                String dialogText = "Please wait until the app has found your position";
                 var dialogFragment = new FragmentHelpDialog(dialogText, () -> null);
                 dialogFragment.show(getChildFragmentManager(), "Searching position dialog");
             }

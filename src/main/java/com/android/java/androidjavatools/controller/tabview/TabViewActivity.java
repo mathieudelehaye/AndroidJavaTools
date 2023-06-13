@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.android.java.androidjavatools.Helpers;
+import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
 import com.android.java.androidjavatools.controller.template.Navigator;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchHistoryManager;
@@ -223,9 +224,24 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                 }
                 break;
             case "list":
+                switch (orig) {
+                    case "suggestion":
+                        // Refresh the result list
+                        ((FragmentResult)navigator().getFragment("list")).updateSearchResults();
+                        break;
+                    case "detail":
+                    case "map":
+                    default:
+                        // Do not refresh the result list
+                        break;
+                }
+                break;
             case "map":
                 switch (orig) {
                     case "suggestion":
+                        // Refresh the result list
+                        ((FragmentResult)navigator().getFragment("list")).updateSearchResults();
+
                         // Show toolbar when coming from the Suggestion page
                         toggleToolbar(true);
 
@@ -233,7 +249,10 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                         Helpers.toggleKeyboard(this, false);
 
                         break;
+                    case "detail":
+                    case "list":
                     default:
+                        // Do not refresh the result list
                         break;
                 }
                 break;
