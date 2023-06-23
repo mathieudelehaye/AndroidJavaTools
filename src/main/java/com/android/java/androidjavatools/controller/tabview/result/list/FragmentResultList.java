@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import androidx.annotation.NonNull;
 import com.android.java.androidjavatools.Helpers;
+import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
 import com.android.java.androidjavatools.controller.template.FragmentHelpDialog;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
@@ -41,6 +42,7 @@ import com.android.java.androidjavatools.R;
 public abstract class FragmentResultList extends FragmentResult {
     protected FragmentResultListBinding mBinding;
     private boolean mIsViewVisible = false;
+    private ResultDetailAdapter shownItemAdapter;
 
     public FragmentResultList(SearchProvider provider) {
         super(provider);
@@ -87,8 +89,9 @@ public abstract class FragmentResultList extends FragmentResult {
                 resultList.setAdapter(adapter);
 
                 resultList.setOnItemClickListener((adapterView, view, position, l) -> {
-                    final var itemInfo = ((ResultItemInfo)adapter.getItem(position));
-                    showResult(itemInfo);
+                    final var resultItem = ((ResultItemInfo)adapter.getItem(position));
+                    final var  itemAdapter = new ResultDetailAdapter(mContext, resultItem);
+                    showResultItem(itemAdapter);
                 });
 
                 mFoundResult.downloadImages(new TaskCompletionManager() {
@@ -96,6 +99,14 @@ public abstract class FragmentResultList extends FragmentResult {
                     @Override
                     public void onSuccess() {
                         adapter.notifyDataSetChanged();
+
+                        var selectionAdapter = mResultProvider.getSelectedItemAdapter();
+                        if (selectionAdapter != null &&
+                            ((ResultItemInfo)selectionAdapter.getItem(0)).mustShowImage()) {
+
+                            // Show the selected item image, if not yet done and if this image was just downloaded
+                            selectionAdapter.notifyDataSetChanged();
+                        }
                     }
 
                     @Override
@@ -141,7 +152,8 @@ public abstract class FragmentResultList extends FragmentResult {
         if (mIsViewVisible && mSharedPref != null) {
             if (!Boolean.parseBoolean(mSharedPref.getString("list_help_displayed", "false"))) {
                 mSharedPref.edit().putString("list_help_displayed", "true").commit();
-                var dialogFragment = new FragmentHelpDialog(getString(R.string.list_help), () -> null);
+                var dialogFragment = new FragmentHelpDialog(getString(R.string.list_help),
+                    () -> null);
                 dialogFragment.show(getChildFragmentManager(), "List help dialog");
             }
         }

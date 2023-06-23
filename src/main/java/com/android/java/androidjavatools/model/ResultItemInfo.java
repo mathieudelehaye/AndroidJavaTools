@@ -29,7 +29,8 @@ public class ResultItemInfo {
     private String mDescription;
     private GeoPoint mLocation;
     private byte[] mImage;
-    private boolean mShowImage;
+    private boolean mImageShownInDetails = false;
+    private boolean mContentAllowed;
 
     public ResultItemInfo(String key, String title, String description, GeoPoint location, byte[] image,
         boolean displayBrand) {
@@ -39,7 +40,7 @@ public class ResultItemInfo {
         mDescription = description;
         mLocation = location;
         mImage = image;
-        mShowImage = displayBrand;
+        mContentAllowed = displayBrand;
     }
 
     public String getKey() {
@@ -74,7 +75,15 @@ public class ResultItemInfo {
         mImage = image;
     }
 
-    public boolean isImageShown() {
-        return mShowImage;
+    public boolean mustShowImage() {
+        final boolean res = (mImage != null) && !mImageShownInDetails;
+
+        mImageShownInDetails = res ? true : mImageShownInDetails;
+
+        return res;
+    }
+
+    public boolean isContentAllowed() {
+        return mContentAllowed;
     }
 }

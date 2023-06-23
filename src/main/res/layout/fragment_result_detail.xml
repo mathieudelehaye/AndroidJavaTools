@@ -26,8 +26,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.android.java.androidjavatools.controller.tabview.result.FragmentResultDetail">
-
+    tools:context="com.android.java.androidjavatools.controller.tabview.result.detail.FragmentResultDetail">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/result_detail_header_layout"
@@ -40,11 +39,13 @@
         app:layout_constraintTop_toTopOf="parent"
     >
 
-        <ImageView
-            android:id="@+id/image_result_detail"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/image_result_detail_layout"
+            android:orientation="horizontal"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:importantForAccessibility="no"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
         />
@@ -61,7 +62,7 @@
             app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconSize="24dp"
-            app:layout_constraintStart_toEndOf="@id/image_result_detail"
+            app:layout_constraintStart_toEndOf="@id/image_result_detail_layout"
             app:layout_constraintTop_toTopOf="parent"
             style="?android:attr/borderlessButtonStyle"
         />

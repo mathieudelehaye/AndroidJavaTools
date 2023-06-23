@@ -34,6 +34,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
+import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
 import com.android.java.androidjavatools.controller.template.Navigator;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchHistoryManager;
@@ -59,20 +60,21 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     private CircularKeyBuffer<String> mPastRPKeys = new CircularKeyBuffer<>(2);
     private CircularKeyBuffer<String> mPastSearchQueries = new CircularKeyBuffer<>(4);
     private SearchResult mSearchResult = new SearchResult();
-    private String mSelectedResultItemKey = "";
+    private ResultDetailAdapter mSelectedItemAdapter;
 
     // Search: getter-setter
-    public ResultItemInfo getSelectedResultItem() {
-        return mSearchResult.get(mSelectedResultItemKey);
+    public ResultDetailAdapter getSelectedItemAdapter() {
+        return mSelectedItemAdapter;
     }
 
-    public void setSelectedResultItem(ResultItemInfo value) {
-        final String key = value.getKey();
+    public void setSelectedItemAdapter(ResultDetailAdapter value) {
+        final var selectedItem = (ResultItemInfo)(value.getItem(0));
+        final String key = selectedItem.getKey();
 
-        mSelectedResultItemKey = key;
+        mSelectedItemAdapter = value;
 
         if (!mPastResults.containsKey(key)) {
-            mPastResults.put(key, value);
+            mPastResults.put(key, selectedItem);
         }
 
         if (!key.equals("")) {

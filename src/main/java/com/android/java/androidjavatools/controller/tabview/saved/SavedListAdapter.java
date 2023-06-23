@@ -73,7 +73,7 @@ public class SavedListAdapter extends BaseAdapter {
         var itemInfo=(ResultItemInfo) getItem(position);
 
         final byte[] imageByte = itemInfo.getImage();
-        final boolean showImage = itemInfo.isImageShown();
+        final boolean showImage = itemInfo.isContentAllowed();
 
         textView.setText(showImage ? (itemInfo.getTitle()) : "Lorem ipsum dolor sit");
 

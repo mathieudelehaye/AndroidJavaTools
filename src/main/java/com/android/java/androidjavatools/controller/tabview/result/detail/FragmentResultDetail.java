@@ -19,23 +19,20 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.controller.tabview.result;
+package com.android.java.androidjavatools.controller.tabview.result.detail;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.android.java.androidjavatools.Helpers;
@@ -46,6 +43,23 @@ import com.android.java.androidjavatools.model.ResultItemInfo;
 import com.android.java.androidjavatools.R;
 
 public abstract class FragmentResultDetail extends Fragment {
+    class DetailDataSetObserver extends DataSetObserver {
+        @Override
+        public void onChanged() {
+            updateContent();
+        }
+
+        @Override
+        public void onInvalidated() {
+            updateContent();
+        }
+
+        private void updateContent() {
+            updateImage();
+            mDetailImage.requestLayout();
+        }
+    }
+
     private FragmentResultDetailBinding mBinding;
     private Context mContext;
     private ResultProvider mResultProvider;
@@ -53,6 +67,9 @@ public abstract class FragmentResultDetail extends Fragment {
     private String mSelectedItemKey;
     private boolean mIsSaved;
     private Button mSaveButton;
+    private ResultDetailAdapter mAdapter;
+    private DetailDataSetObserver mDataSetObserver;
+    private ImageView mDetailImage;
 
     @Override
     public View onCreateView(
@@ -106,36 +123,70 @@ public abstract class FragmentResultDetail extends Fragment {
         if (isVisibleToUser) {
             Log.d("AJT", "Result detail view becomes visible");
 
+            // Set the adapter passed by the Result list
+            ResultDetailAdapter adapter = mResultProvider.getSelectedItemAdapter();
+            if (adapter != null) {
+                mAdapter = adapter;
+            } else {
+                Log.e("AJT", "Result detail view shown but no detail adapter available");
+            }
+
             updateDetails();
             updateSavedButton();
         }
     }
 
-    private void updateDetails() {
-        // Description and image
-        mSelectedItem = mResultProvider.getSelectedResultItem();
+    public Adapter getAdapter() {
+        return mAdapter;
+    }
+
+    public void setAdapter(ResultDetailAdapter adapter) {
+        mAdapter = adapter;
+
+        if (mAdapter != null) {
+            mDataSetObserver = new DetailDataSetObserver();
+            mAdapter.registerDataSetObserver(mDataSetObserver);
+        }
+    }
+
+    public void updateImage() {
+        mSelectedItem = (ResultItemInfo) (mResultProvider.getSelectedItemAdapter().getItem(0));
+
         mSelectedItemKey = mSelectedItem.getKey();
+        final boolean show = mSelectedItem.isContentAllowed();
 
-        final byte[] imageBytes = mSelectedItem.getImage();
-        final boolean showImage = mSelectedItem.isImageShown();
+        final ConstraintLayout imageLayout = mBinding.imageResultDetailLayout;
+        final var imageView = (ImageView)mAdapter.getView(0,null, null);
 
-        String title = showImage ? mSelectedItem.getTitle() : "Lorem ipsum dolor sit";
-        String description = showImage ? mSelectedItem.getDescription() : "Lorem ipsum dolor sit amet. Ut enim "
+        // Add the image view to the fragment layout
+        imageLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT));
+        imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT));
+        imageLayout.addView(imageView);
+
+        if (show && mSelectedItem.getImage() == null) {
+            // Use a placeholder if the image cannot be shown or is not downloaded
+            imageView.setImageResource(R.drawable.camera);
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void updateDetails() {
+        mSelectedItem = (ResultItemInfo) (mResultProvider.getSelectedItemAdapter().getItem(0));
+
+        mSelectedItemKey = mSelectedItem.getKey();
+        final boolean show = mSelectedItem.isContentAllowed();
+
+        String title = show ? mSelectedItem.getTitle() : "Lorem ipsum dolor sit";
+        String description = show ? mSelectedItem.getDescription() : "Lorem ipsum dolor sit amet. Ut enim "
             + "corporis ea labore esse ea illum consequatur. Et reiciendis ducimus et repellat magni id ducimus "
             + "nesc.";
 
-        TextView resultDescription = getView().findViewById(R.id.description_result_detail);
+        TextView resultDescription = mBinding.descriptionResultDetail;
         resultDescription.setText(title + "\n\n" + description);
 
-        ImageView resultImage = getView().findViewById(R.id.image_result_detail);
-        if (imageBytes != null && showImage) {
-            Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-            resultImage.setImageBitmap(image);
-        } else {
-            // Use a placeholder if the image has not been set
-            resultImage.setImageResource(R.drawable.camera);
-        }
-        resultImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        updateImage();
     }
 
     @SuppressLint("UseCompatTextViewDrawableApis")
