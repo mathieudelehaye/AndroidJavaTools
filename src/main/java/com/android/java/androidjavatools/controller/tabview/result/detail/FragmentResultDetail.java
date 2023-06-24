@@ -158,11 +158,10 @@ public abstract class FragmentResultDetail extends Fragment {
         final ConstraintLayout imageLayout = mBinding.imageResultDetailLayout;
         mDetailImage = (ImageView)mAdapter.getView(0,null, null);
 
-        // Add the image view to the fragment layout
-        imageLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT));
+        // Replace the image view in the fragment layout
         mDetailImage.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT));
+        imageLayout.removeAllViews();
         imageLayout.addView(mDetailImage);
 
         if (show && mSelectedItem.getImage() == null) {
