@@ -29,6 +29,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SearchResult {
+    class ImageDownloaderThread extends Thread {
+        private TaskCompletionManager[] mCbManager;
+
+        public void setCallbackManagers(TaskCompletionManager... cbManager) {
+            mCbManager = cbManager;
+        }
+
+        @Override
+        public void run() {
+            // Asynchronously start the image downloads
+            for (String key: new ArrayList<>(mResultItems.keySet())) {
+                downloadAndDisplayImage(mImageUrls.get(key), mResultItems.get(key), mCbManager);
+            }
+        }
+    }
+
     private HashMap<String, ResultItemInfo> mResultItems = new HashMap<>();
     private HashMap<String, String> mImageUrls = new HashMap<>();
     private int mReceivedImageNumber = 0;
@@ -53,10 +69,9 @@ public class SearchResult {
     }
 
     public void downloadImages(TaskCompletionManager... cbManager) {
-        // Asynchronously download the images then update the view adapter
-        for (String key: new ArrayList<>(mResultItems.keySet())) {
-            downloadAndDisplayImage(mImageUrls.get(key), mResultItems.get(key), cbManager);
-        }
+        final ImageDownloaderThread imageDownloader = new ImageDownloaderThread();
+        imageDownloader.setCallbackManagers(cbManager);
+        imageDownloader.start();
     }
 
     private void downloadAndDisplayImage(String imageUrl, ResultItemInfo itemInfo,

@@ -67,7 +67,7 @@ class ResultDetailAdapter(context : Context, item : ResultItemInfo) : Adapter {
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val imageBytes: ByteArray = mResultItem.image
+        val imageBytes: ByteArray? = mResultItem.image
 
         return if (imageBytes != null) {
             val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)

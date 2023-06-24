@@ -156,18 +156,18 @@ public abstract class FragmentResultDetail extends Fragment {
         final boolean show = mSelectedItem.isContentAllowed();
 
         final ConstraintLayout imageLayout = mBinding.imageResultDetailLayout;
-        final var imageView = (ImageView)mAdapter.getView(0,null, null);
+        mDetailImage = (ImageView)mAdapter.getView(0,null, null);
 
         // Add the image view to the fragment layout
         imageLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT));
-        imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        mDetailImage.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT));
-        imageLayout.addView(imageView);
+        imageLayout.addView(mDetailImage);
 
         if (show && mSelectedItem.getImage() == null) {
             // Use a placeholder if the image cannot be shown or is not downloaded
-            imageView.setImageResource(R.drawable.camera);
+            mDetailImage.setImageResource(R.drawable.camera);
         }
     }
 

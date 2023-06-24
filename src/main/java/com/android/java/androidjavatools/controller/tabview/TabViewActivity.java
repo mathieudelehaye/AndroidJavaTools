@@ -34,6 +34,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
+import com.android.java.androidjavatools.controller.tabview.result.detail.FragmentResultDetail;
 import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
 import com.android.java.androidjavatools.controller.template.Navigator;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
@@ -265,6 +266,19 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                 // Show the keyboard
                 Helpers.toggleKeyboard(this, true);
 
+                break;
+            case "detail":
+                switch (orig) {
+                    case "list":
+                        // Pass the result item adapter to the detail fragment,
+                        // so the latter can be updated by an observer
+                        final var detailFragment =
+                            ((FragmentResultDetail)(navigator().getFragment("detail")));
+                        final var itemAdapter = getSelectedItemAdapter();
+                        detailFragment.setAdapter(itemAdapter);
+                    default:
+                        break;
+                }
                 break;
             default:
                 break;

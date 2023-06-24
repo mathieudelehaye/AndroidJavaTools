@@ -23,7 +23,6 @@ package com.android.java.androidjavatools.controller.tabview.result;
 
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -42,8 +41,6 @@ import org.jetbrains.annotations.NotNull;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
-import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
-import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import java.io.IOException;
 import java.util.List;
@@ -96,31 +93,20 @@ public abstract class FragmentResult extends FragmentWithSearch {
         // Get the current user geolocation
         final boolean[] firstLocationReceived = {false};
         var locationProvider = new GpsMyLocationProvider(mContext);
-        locationProvider.startLocationProvider(new IMyLocationConsumer() {
-            @Override
-            public void onLocationChanged(Location location, IMyLocationProvider source) {
+        locationProvider.startLocationProvider((location, source) -> {
 
-                // TODO: improve the way we detect the first gps position fix
-                if(!firstLocationReceived[0]) {
-                    firstLocationReceived[0] = true;
+            // TODO: improve the way we detect the first gps position fix
+            if(!firstLocationReceived[0]) {
+                firstLocationReceived[0] = true;
 
-                    Log.d("AJT", "First received location for the user: " + location.toString());
-                    mUserLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
-                    Log.v("AJT", "First received location at timestamp: "
-                        + Helpers.getTimestamp());
+                Log.d("AJT", "First received location for the user: " + location.toString());
+                mUserLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+                Log.v("AJT", "First received location at timestamp: "
+                    + Helpers.getTimestamp());
 
-                    writeCachedUserLocation();
-
-                    // Start a search if none happened so far
-                    if (mSearchStart == null) {
-                        setSearchStart(mUserLocation);
-                        searchAndDisplayItems();
-                    }
-                }
+                writeCachedUserLocation();
             }
         });
-
-        updateSearchResults();
     }
 
     public void updateSearchResults() {
