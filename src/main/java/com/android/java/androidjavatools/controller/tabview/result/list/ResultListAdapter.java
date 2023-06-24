@@ -34,11 +34,11 @@ import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.model.SearchResult;
 
 public class ResultListAdapter extends BaseAdapter {
-    private SearchResult mResultItems;
     private Context mContext;
+    private SearchResult mResultItems;
 
-    public ResultListAdapter(Context ctxt, SearchResult result) {
-        mContext=ctxt;
+    public ResultListAdapter(Context context, SearchResult result) {
+        mContext = context;
         mResultItems = result;
     }
 
@@ -67,7 +67,7 @@ public class ResultListAdapter extends BaseAdapter {
         var itemInfo=(ResultItemInfo) getItem(position);
 
         final byte[] imageByte = itemInfo.getImage();
-        final boolean showImage = itemInfo.isImageShown();
+        final boolean showImage = itemInfo.isContentAllowed();
 
         textView.setText(showImage ? (itemInfo.getTitle()) : "Lorem ipsum dolor sit");
 

@@ -33,6 +33,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.android.java.androidjavatools.Helpers;
+import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
+import com.android.java.androidjavatools.controller.tabview.result.detail.FragmentResultDetail;
+import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
 import com.android.java.androidjavatools.controller.template.Navigator;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchHistoryManager;
@@ -58,20 +61,21 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     private CircularKeyBuffer<String> mPastRPKeys = new CircularKeyBuffer<>(2);
     private CircularKeyBuffer<String> mPastSearchQueries = new CircularKeyBuffer<>(4);
     private SearchResult mSearchResult = new SearchResult();
-    private String mSelectedResultItemKey = "";
+    private ResultDetailAdapter mSelectedItemAdapter;
 
     // Search: getter-setter
-    public ResultItemInfo getSelectedResultItem() {
-        return mSearchResult.get(mSelectedResultItemKey);
+    public ResultDetailAdapter getSelectedItemAdapter() {
+        return mSelectedItemAdapter;
     }
 
-    public void setSelectedResultItem(ResultItemInfo value) {
-        final String key = value.getKey();
+    public void setSelectedItemAdapter(ResultDetailAdapter value) {
+        final var selectedItem = (ResultItemInfo)(value.getItem(0));
+        final String key = selectedItem.getKey();
 
-        mSelectedResultItemKey = key;
+        mSelectedItemAdapter = value;
 
         if (!mPastResults.containsKey(key)) {
-            mPastResults.put(key, value);
+            mPastResults.put(key, selectedItem);
         }
 
         if (!key.equals("")) {
@@ -223,9 +227,24 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                 }
                 break;
             case "list":
+                switch (orig) {
+                    case "suggestion":
+                        // Refresh the result list
+                        ((FragmentResult)navigator().getFragment("list")).updateSearchResults();
+                        break;
+                    case "detail":
+                    case "map":
+                    default:
+                        // Do not refresh the result list
+                        break;
+                }
+                break;
             case "map":
                 switch (orig) {
                     case "suggestion":
+                        // Refresh the result list
+                        ((FragmentResult)navigator().getFragment("list")).updateSearchResults();
+
                         // Show toolbar when coming from the Suggestion page
                         toggleToolbar(true);
 
@@ -233,7 +252,10 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                         Helpers.toggleKeyboard(this, false);
 
                         break;
+                    case "detail":
+                    case "list":
                     default:
+                        // Do not refresh the result list
                         break;
                 }
                 break;
@@ -244,6 +266,19 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                 // Show the keyboard
                 Helpers.toggleKeyboard(this, true);
 
+                break;
+            case "detail":
+                switch (orig) {
+                    case "list":
+                        // Pass the result item adapter to the detail fragment,
+                        // so the latter can be updated by an observer
+                        final var detailFragment =
+                            ((FragmentResultDetail)(navigator().getFragment("detail")));
+                        final var itemAdapter = getSelectedItemAdapter();
+                        detailFragment.setAdapter(itemAdapter);
+                    default:
+                        break;
+                }
                 break;
             default:
                 break;

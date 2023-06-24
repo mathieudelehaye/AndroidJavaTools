@@ -32,6 +32,7 @@ import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchProvider;
 import com.android.java.androidjavatools.model.TaskCompletionManager;
@@ -327,7 +328,7 @@ public class FragmentMap extends FragmentResult {
     private void showDetails(ResultItemInfo itemInfo) {
 
         final byte[] itemImageBytes = itemInfo.getImage();
-        final boolean showImage = itemInfo.isImageShown();
+        final boolean showImage = itemInfo.isContentAllowed();
 
         String itemTitle = showImage ? itemInfo.getTitle() : "Lorem ipsum dolor sit";
         String itemDescription = showImage ? itemInfo.getDescription() : "Lorem ipsum dolor sit amet. Ut enim "
@@ -348,7 +349,8 @@ public class FragmentMap extends FragmentResult {
         resultDescription.setText(itemTitle + "\n\n" + itemDescription);
 
         mBinding.detailMapLayout.setOnClickListener(view1 -> {
-            showResult(itemInfo);
+            final var  adapter = new ResultDetailAdapter(mContext, itemInfo);
+            showResultItem(adapter);
         });
 
         toggleDetailsView(true);

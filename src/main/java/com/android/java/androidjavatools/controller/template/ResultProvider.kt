@@ -21,12 +21,13 @@
 
 package com.android.java.androidjavatools.controller.template
 
+import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter
 import com.android.java.androidjavatools.model.ResultItemInfo
 import com.android.java.androidjavatools.model.SearchResult
 
 interface ResultProvider {
     var searchResult: SearchResult?
-    var selectedResultItem: ResultItemInfo?
+    var selectedItemAdapter: ResultDetailAdapter?
     val previousResultNumber: Int
 
     fun getPreviousResultItem(index: Int): ResultItemInfo?

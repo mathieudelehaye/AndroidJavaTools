@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
 import com.android.java.androidjavatools.controller.template.FragmentWithSearch;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchHistoryManager;
@@ -114,7 +115,11 @@ public abstract class FragmentHome extends FragmentWithSearch {
 
                 historyButton.setText(title.substring(0, Math.min(key.length(), 15)));
 
-                historyButton.setOnClickListener(v -> showResult(result));
+                historyButton.setOnClickListener( v -> {
+                    final var  adapter = new ResultDetailAdapter(mContext, result);
+                    showResultItem(adapter);
+                });
+
                 historyButton.setVisibility(View.VISIBLE);
             } else {
                 // Hide the button if no related RP
