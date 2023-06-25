@@ -3,7 +3,7 @@
 //
 //  Created by Mathieu Delehaye on 24/12/2022.
 //
-//  AndroidJavaTools: A framework to develop Android apps in Java.
+//  AndroidJavaTools: A framework to develop Android apps with Java Technologies.
 //
 //  Copyright © 2022 Mathieu Delehaye. All rights reserved.
 //

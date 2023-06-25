@@ -1,7 +1,7 @@
 //
-//  ActivityWithAsyncTask.java
+//  LaunchActivity.java
 //
-//  Created by Mathieu Delehaye on 4/03/2023.
+//  Created by Mathieu Delehaye on 22/02/2023.
 //
 //  AndroidJavaTools: A framework to develop Android apps with Java Technologies.
 //
@@ -19,21 +19,29 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.model;
+package com.android.java.androidjavatools.controller.onboard;
 
-public interface ActivityWithAsyncTask {
+import android.app.Activity;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 
-    // Callback function to check if the condition, depending on the environment, is fulfilled before 
-    // running some actions.
-    boolean environmentCondition();
+public abstract class LaunchActivity extends Activity {
 
-    // Callback function to check if the condition, depending on the time, is fulfilled before
-    // running some actions.
-    boolean timeCondition(long cumulatedTimeInSec);
+    protected SharedPreferences mSharedPref;
 
-    // Callback function to run actions depending on the environment.
-    void runEnvironmentDependentActions();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        //SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
 
-    // Callback function to run actions depending on the time.
-    void runTimesDependentActions();
+        super.onCreate(savedInstanceState);
+
+        // Keep the splash screen visible for this Activity
+        //splashScreen.setKeepOnScreenCondition(() -> true);
+
+        startNextActivity();
+
+        finish();
+    }
+
+    protected abstract void startNextActivity();
 }
