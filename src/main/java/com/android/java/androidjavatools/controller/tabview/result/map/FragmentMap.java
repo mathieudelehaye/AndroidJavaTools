@@ -213,6 +213,56 @@ public class FragmentMap extends FragmentResult {
         detailLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
+    public void updateMapOverlay() {
+        // possibly remove the former RP overlay
+        if (mRPOverlay != null) {
+            mMap.getOverlays().remove(mRPOverlay);
+        }
+
+        final var resultList = new ArrayList<OverlayItem>();
+        for (int i = 0; i < mFoundResult.size(); i++) {
+            resultList.add(new OverlayItem(
+                mFoundResult.get(i).getTitle(),
+                mFoundResult.get(i).getDescription(),
+                mFoundResult.get(i).getLocation()
+            ));
+        }
+
+        final var result = mResultProvider.getSearchResult();
+
+        // display the overlay
+        mRPOverlay = new ItemizedOverlayWithFocus<>(resultList,
+            new ItemizedIconOverlay.OnItemGestureListener<>() {
+                @Override
+                public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+                    Log.i("AJT", "Single tap");
+                    mMapController.animateTo(item.getPoint());
+
+                    showDetails(result.get(index));
+
+                    return true;
+                }
+
+                @Override
+                public boolean onItemLongPress(int index, OverlayItem item) {
+                    return false;
+                }
+            }, mContext);
+
+        mMap.getOverlays().add(mRPOverlay);
+
+        // Refresh the map
+        mMap.invalidate();
+
+        setZoomInKilometer(mSearchRadiusInCoordinate * mKilometerByCoordinateDeg);
+
+        final var location = mSearchStart.getLocation();
+        mMapController.animateTo(new GeoPoint(location.getLatitude(), location.getLongitude()));
+
+        final var resultProvider = (ResultProvider)getActivity();
+        resultProvider.setSearchResult(result);
+    }
+
     @Override
     protected void searchAndDisplayItems() {
 
@@ -232,53 +282,7 @@ public class FragmentMap extends FragmentResult {
                     }
                 });
 
-                // possibly remove the former RP overlay
-                if (mRPOverlay != null) {
-                    mMap.getOverlays().remove(mRPOverlay);
-                }
-
-                ArrayList<OverlayItem> resultList = new ArrayList<>();
-                for (int i = 0; i < mFoundResult.size(); i++) {
-                    resultList.add(new OverlayItem(
-                        mFoundResult.get(i).getTitle(),
-                        mFoundResult.get(i).getDescription(),
-                        mFoundResult.get(i).getLocation()
-                    ));
-                }
-
-                final var result = mResultProvider.getSearchResult();
-
-                // display the overlay
-                mRPOverlay = new ItemizedOverlayWithFocus<>(resultList,
-                    new ItemizedIconOverlay.OnItemGestureListener<>() {
-                        @Override
-                        public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                            Log.i("AJT", "Single tap");
-                            mMapController.animateTo(item.getPoint());
-
-                            showDetails(result.get(index));
-
-                            return true;
-                        }
-
-                        @Override
-                        public boolean onItemLongPress(int index, OverlayItem item) {
-                            return false;
-                        }
-                    }, mContext);
-
-                mMap.getOverlays().add(mRPOverlay);
-
-                // Refresh the map
-                mMap.invalidate();
-
-                setZoomInKilometer(mSearchRadiusInCoordinate * mKilometerByCoordinateDeg);
-
-                final var location = mSearchStart.getLocation();
-                mMapController.animateTo(new GeoPoint(location.getLatitude(), location.getLongitude()));
-
-                final var resultProvider = (ResultProvider)getActivity();
-                resultProvider.setSearchResult(result);
+                updateMapOverlay();
             }
 
             @Override
@@ -318,7 +322,7 @@ public class FragmentMap extends FragmentResult {
         mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(mContext), mMap);
         mLocationOverlay.enableMyLocation();
 
-        mMap.getOverlays().add(this.mLocationOverlay);
+        mMap.getOverlays().add(mLocationOverlay);
     }
 
     private void showHelp() {

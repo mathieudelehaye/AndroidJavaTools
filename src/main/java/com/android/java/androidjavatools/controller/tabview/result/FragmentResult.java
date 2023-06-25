@@ -42,7 +42,6 @@ import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.android.java.androidjavatools.R;
 import org.jetbrains.annotations.NotNull;
 import org.osmdroid.config.Configuration;
-import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import java.io.IOException;
@@ -56,8 +55,8 @@ public abstract class FragmentResult extends FragmentWithSearch {
     }
 
     protected GeoPosition mSearchStart;
-    protected MyLocationNewOverlay mLocationOverlay;
     protected SearchResult mFoundResult = new SearchResult();
+    protected MyLocationNewOverlay mLocationOverlay;
     protected final double mSearchRadiusInCoordinate = 0.045;
     protected abstract void searchAndDisplayItems();
     private SearchProvider mSearchProvider;
@@ -70,6 +69,14 @@ public abstract class FragmentResult extends FragmentWithSearch {
 
     public static void setResultQuery(String query) {
         sResultQuery = query;
+    }
+
+    public GeoPosition getSearchStart() {
+        return mSearchStart;
+    }
+
+    public SearchResult getFoundResult() {
+        return mFoundResult;
     }
 
     public FragmentResult(SearchProvider provider) {
@@ -127,7 +134,7 @@ public abstract class FragmentResult extends FragmentWithSearch {
                 // Otherwise, if the user location was cached, search around it
                 Log.v("AJT", "Searching around the user location from the cache");
                 final Location location = AppUser.getInstance().getGeoPosition().getLocation();
-                setSearchStart(new GeoPoint(location.getLatitude(), location.getLongitude()));
+                setSearchStart(location);
             } else {
                 String dialogText = "Please wait until the app has found your position";
                 var dialogFragment = new FragmentHelpDialog(dialogText, () -> null);
@@ -141,7 +148,12 @@ public abstract class FragmentResult extends FragmentWithSearch {
         }
     }
 
-    protected GeoPoint getCoordinatesFromAddress(@NotNull String locationName) {
+    public void copySearch(GeoPosition start, SearchResult result) {
+        mSearchStart = start;
+        mFoundResult = result;
+    }
+
+    protected Location getCoordinatesFromAddress(@NotNull String locationName) {
 
         if (mGeocoder == null || locationName.equals("")) {
             Log.w("AJT", "Cannot get coordinates, as no geocoder or empty address");
@@ -153,7 +165,9 @@ public abstract class FragmentResult extends FragmentWithSearch {
 
             if (!geoResults.isEmpty()) {
                 final Address addr = geoResults.get(0);
-                var location = new GeoPoint(addr.getLatitude(), addr.getLongitude());
+                final var location = new Location((String) null);
+                location.setLatitude(addr.getLatitude());
+                location.setLongitude(addr.getLongitude());
                 return location;
             } else {
                 Log.w("AJT", "No coordinate found for the address: " + locationName);
@@ -204,14 +218,6 @@ public abstract class FragmentResult extends FragmentWithSearch {
 
         Log.d("AJT", "User location cached: " + cacheLatitude + " " + cacheLongitude);
         Log.v("AJT", "User location cached at timestamp: " + Helpers.getTimestamp());
-    }
-
-    protected void setSearchStart(GeoPoint value) {
-        Log.v("AJT", "Search start set to: " + value);
-        final var location = new Location((String) null);
-        location.setLatitude(value.getLatitude());
-        location.setLongitude(value.getLongitude());
-        mSearchStart = new GeoPosition(location);
     }
 
     protected void searchForResults(TaskCompletionManager... cbManager) {
@@ -277,5 +283,10 @@ public abstract class FragmentResult extends FragmentWithSearch {
         }
 
         return !mContext.getResources().getConfiguration().getLocales().get(0).getDisplayName().contains("Belgique");
+    }
+
+    private void setSearchStart(Location value) {
+        Log.v("AJT", "Search start set to: " + value);
+        mSearchStart = new GeoPosition(value);
     }
 }

@@ -56,17 +56,6 @@ class SearchBox: FilterListener {
     private var mSuggestionsAdapter: CursorAdapter? = null
     private var mFilter: Filter? = null
 
-    constructor() {
-        mActivity = null
-        mContainer = null
-        mSuggestionsContainer = null
-        mResultListContainer = null
-        mNavigatorManager = null
-        mSearchManager = null
-        mSearchableConfig = null
-        mQueryHint = null
-    }
-
     constructor(activity: Activity, container: FragmentWithSearch, adapter: SuggestionsAdapter?) {
         mActivity = activity
         mContainer = container
@@ -140,6 +129,7 @@ class SearchBox: FilterListener {
                     Log.v("AJT", "View has already the focus")
                     return@setOnFocusChangeListener
                 }
+
                 mNavigatorManager!!.navigator().showFragment("suggestion")
             }
 

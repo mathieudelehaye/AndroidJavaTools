@@ -36,6 +36,8 @@ import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
 import com.android.java.androidjavatools.controller.tabview.result.detail.FragmentResultDetail;
 import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
+import com.android.java.androidjavatools.controller.tabview.result.list.FragmentResultList;
+import com.android.java.androidjavatools.controller.tabview.result.map.FragmentMap;
 import com.android.java.androidjavatools.controller.template.Navigator;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchHistoryManager;
@@ -241,11 +243,24 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                 break;
             case "map":
                 switch (orig) {
-                    case "suggestion":
                     case "list":
-                        // Refresh the result list
-                        ((FragmentResult)navigator().getFragment("list")).updateSearchResults();
+                        // Copy the search
+                        final var map = ((FragmentMap)navigator().getFragment("map"));
+                        final var resultList
+                            = ((FragmentResultList)navigator().getFragment("list"));
 
+                        if (map.getSearchStart() == null || map.getFoundResult() == null) {
+                            map.copySearch(resultList.getSearchStart(), resultList.getFoundResult());
+                        }
+
+                        // Update the map overlay
+                        map.updateMapOverlay();
+
+                        toggleToolbar(true);
+                        Helpers.toggleKeyboard(this, false);
+
+                        break;
+                    case "suggestion":
                         // Show toolbar when coming from the Suggestion page
                         toggleToolbar(true);
 
