@@ -1,2 +1,2 @@
 # AndroidJavaTools
-A framework to develop Android apps in Java
+A framework to develop Android apps with Java Technologies
