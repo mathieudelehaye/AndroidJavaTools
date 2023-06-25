@@ -1,7 +1,7 @@
 //
-//  ResultListView.kt
+//  MapView.java
 //
-//  Created by Mathieu Delehaye on 14/05/2023.
+//  Created by Mathieu Delehaye on 25/06/2023.
 //
 //  AndroidJavaTools: A framework to develop Android apps with Java Technologies.
 //
@@ -19,31 +19,25 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.controller.tabview.result.list
+package com.android.java.androidjavatools.controller.tabview.result.map
 
 import android.app.Activity
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.android.java.androidjavatools.controller.template.Navigator.NavigatorManager
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
 import com.android.java.androidjavatools.controller.template.FragmentWithSearch
-import com.android.java.androidjavatools.databinding.FragmentResultListBinding
+import com.android.java.androidjavatools.databinding.FragmentMapBinding
 
-class ResultListView {
-    private val mActivity: Activity
-    private val mContainer: FragmentWithSearch
-    private val mBinding: FragmentResultListBinding
-    private val mNavigatorManager: NavigatorManager
-
-    constructor(activity: Activity, container: FragmentWithSearch, binding: FragmentResultListBinding) {
-        mActivity = activity
-        mContainer = container
-        mBinding = binding
-        mNavigatorManager = mActivity as NavigatorManager
-    }
+class MapView(activity: Activity, container: FragmentWithSearch, binding: FragmentMapBinding) {
+    private val mActivity: Activity = activity
+    private val mContainer: FragmentWithSearch = container
+    private val mBinding: FragmentMapBinding = binding
 
     fun show() {
-        mBinding.resultListSearchComposeView.apply {
+        mBinding.mapSearchComposeView.apply {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 

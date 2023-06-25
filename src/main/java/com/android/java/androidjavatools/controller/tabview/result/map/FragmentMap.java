@@ -33,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
+import com.android.java.androidjavatools.controller.tabview.result.map.MapView;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchProvider;
 import com.android.java.androidjavatools.model.AppUser;
@@ -46,7 +47,6 @@ import com.android.java.androidjavatools.R;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.*;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -54,7 +54,7 @@ import java.util.ArrayList;
 
 public class FragmentMap extends FragmentResult {
     private FragmentMapBinding mBinding;
-    private MapView mMap = null;
+    private org.osmdroid.views.MapView mMap = null;
     private IMapController mMapController;
     private ItemizedOverlayWithFocus<OverlayItem> mRPOverlay;
     private boolean mIsViewVisible = false;
@@ -74,6 +74,9 @@ public class FragmentMap extends FragmentResult {
         Bundle savedInstanceState
     ) {
         mBinding = FragmentMapBinding.inflate(inflater, container, false);
+
+        var contentView = new MapView(getActivity(), this, mBinding);
+        contentView.show();
 
         // Disable StrictMode policy in onCreate, in order to make a network call in the main thread
         // TODO: call the network from a child thread instead
@@ -105,7 +108,7 @@ public class FragmentMap extends FragmentResult {
 
             // height of the fragment root view
             View mapRootView = view.getRootView();
-            View mapLayout = view.findViewById(R.id.mapLayout);
+            View mapLayout = view.findViewById(R.id.map_layout);
 
             if (mapRootView == null || mapLayout == null) {
                 return;
@@ -209,7 +212,7 @@ public class FragmentMap extends FragmentResult {
             Log.w("AJT", "Cannot toggle the details view, as no root view available");
         }
 
-        View detailLayout = rootView.findViewById(R.id.detail_map_layout);
+        View detailLayout = rootView.findViewById(R.id.map_detail_layout);
         detailLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
@@ -346,7 +349,7 @@ public class FragmentMap extends FragmentResult {
             + "corporis ea labore esse ea illum consequatur. Et reiciendis ducimus et repellat magni id ducimus "
             + "nesc.";
 
-        ImageView resultImage = getView().findViewById(R.id.detail_map_image);
+        ImageView resultImage = getView().findViewById(R.id.map_detail_image);
         if (itemImageBytes != null && showImage) {
             Bitmap image = BitmapFactory.decodeByteArray(itemImageBytes, 0, itemImageBytes.length);
             resultImage.setImageBitmap(image);
@@ -356,10 +359,10 @@ public class FragmentMap extends FragmentResult {
         }
         resultImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-        TextView resultDescription = getView().findViewById(R.id.detail_map_description);
+        TextView resultDescription = getView().findViewById(R.id.map_detail_description);
         resultDescription.setText(itemTitle + "\n\n" + itemDescription);
 
-        mBinding.detailMapLayout.setOnClickListener(view1 -> {
+        mBinding.mapDetailLayout.setOnClickListener(view1 -> {
             final var  adapter = new ResultDetailAdapter(mContext, itemInfo);
             showResultItem(adapter);
         });
