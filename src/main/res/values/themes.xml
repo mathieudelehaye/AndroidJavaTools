@@ -21,7 +21,7 @@
     <style name="Theme.AndroidJavaTools.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
     
     <!-- Splash theme. -->
-    <style name="Theme.App.Splash" parent="Theme.SplashScreen">
+    <style name="Theme.AJT.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/Blue</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/close_circle</item>
         <item name="windowSplashScreenAnimationDuration">1000</item>
