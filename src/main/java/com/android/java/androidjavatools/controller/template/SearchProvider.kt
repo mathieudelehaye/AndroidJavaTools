@@ -21,14 +21,14 @@
 
 package com.android.java.androidjavatools.controller.template
 
+import com.android.java.androidjavatools.model.GeoPosition
 import com.android.java.androidjavatools.model.SearchResult
 import com.android.java.androidjavatools.model.TaskCompletionManager
 import com.google.firebase.firestore.FirebaseFirestore
-import org.osmdroid.util.GeoPoint
 
 interface SearchProvider {
     val searchResults: SearchResult?
 
-    fun searchGeoPointResults(searchStart: GeoPoint?, searchRadiusInCoordinate: Double,
+    fun searchGeoPointResults(searchStart: GeoPosition?, searchRadiusInCoordinate: Double,
                               database: FirebaseFirestore?, vararg cbManager: TaskCompletionManager?)
 }

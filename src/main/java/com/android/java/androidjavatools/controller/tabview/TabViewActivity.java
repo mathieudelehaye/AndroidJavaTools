@@ -242,6 +242,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
             case "map":
                 switch (orig) {
                     case "suggestion":
+                    case "list":
                         // Refresh the result list
                         ((FragmentResult)navigator().getFragment("list")).updateSearchResults();
 
@@ -253,7 +254,6 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
 
                         break;
                     case "detail":
-                    case "list":
                     default:
                         // Do not refresh the result list
                         break;

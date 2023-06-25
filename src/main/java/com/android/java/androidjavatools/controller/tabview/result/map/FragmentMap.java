@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchProvider;
+import com.android.java.androidjavatools.model.AppUser;
 import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
 import com.android.java.androidjavatools.databinding.FragmentMapBinding;
@@ -44,6 +45,7 @@ import com.android.java.androidjavatools.controller.template.FragmentHelpDialog;
 import com.android.java.androidjavatools.R;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.*;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
@@ -137,10 +139,14 @@ public class FragmentMap extends FragmentResult {
 
         mBinding.mapUserLocation.setOnClickListener(view1 -> {
 
-            if(mUserLocation != null) {
+            final var userPosition= AppUser.getInstance().getGeoPosition();
+
+            if(AppUser.getInstance().getGeoPosition() != null) {
                 Log.d("AJT", "Change map focus to user location");
 
-                mMapController.animateTo(mUserLocation);
+                final var location = userPosition.getLocation();
+                final var geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                mMapController.animateTo(geoPoint);
                 setZoomLevel(14);
             }
         });
@@ -268,7 +274,8 @@ public class FragmentMap extends FragmentResult {
 
                 setZoomInKilometer(mSearchRadiusInCoordinate * mKilometerByCoordinateDeg);
 
-                mMapController.animateTo(mSearchStart);
+                final var location = mSearchStart.getLocation();
+                mMapController.animateTo(new GeoPoint(location.getLatitude(), location.getLongitude()));
 
                 final var resultProvider = (ResultProvider)getActivity();
                 resultProvider.setSearchResult(result);
