@@ -27,6 +27,8 @@ import com.android.java.androidjavatools.model.SearchResult
 
 interface ResultProvider {
     var searchResult: SearchResult?
+    var searchResultFragment: String?
+
     var selectedItemAdapter: ResultDetailAdapter?
     val previousResultNumber: Int
 

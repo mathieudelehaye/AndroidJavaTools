@@ -44,6 +44,7 @@ import com.android.java.androidjavatools.controller.template.SearchHistoryManage
 import com.android.java.androidjavatools.model.*;
 import com.android.java.androidjavatools.R;
 import com.google.firebase.firestore.FirebaseFirestore;
+import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 abstract public class TabViewActivity extends AppCompatActivity implements ActivityWithAsyncTask,
@@ -64,6 +65,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     private CircularKeyBuffer<String> mPastSearchQueries = new CircularKeyBuffer<>(4);
     private SearchResult mSearchResult = new SearchResult();
     private ResultDetailAdapter mSelectedItemAdapter;
+    private String mSearchResultFragment = "list";
 
     // Search: getter-setter
     public ResultDetailAdapter getSelectedItemAdapter() {
@@ -303,6 +305,17 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     @Override
     public void toggleTabSwiping(boolean enable) {
         mNavigator.toggleTabSwiping(enable);
+    }
+
+    @Nullable
+    @Override
+    public String getSearchResultFragment() {
+        return mSearchResultFragment;
+    }
+
+    @Override
+    public void setSearchResultFragment(@Nullable String s) {
+        mSearchResultFragment = s;
     }
 
     protected boolean isNetworkAvailable() {

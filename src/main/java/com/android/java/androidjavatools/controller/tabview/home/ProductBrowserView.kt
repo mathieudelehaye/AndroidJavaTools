@@ -38,11 +38,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
-import com.android.java.androidjavatools.controller.template.Navigator
 import com.android.java.androidjavatools.controller.tabview.product.FragmentProductSelection
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
-import com.android.java.androidjavatools.controller.template.FragmentWithSearch
-import com.android.java.androidjavatools.controller.template.buttonWithText
+import com.android.java.androidjavatools.controller.template.*
 import com.android.java.androidjavatools.databinding.FragmentHomeBinding
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -53,19 +51,18 @@ class ProductBrowserView {
     private val mContainer: FragmentWithSearch?
     private val mBinding: FragmentHomeBinding?
     private val mNavigatorManager: Navigator.NavigatorManager?
+    private val mResultProvider: ResultProvider
+    private val mSearchBox: SearchBox
 
-    constructor() {
-        mActivity = null
-        mContainer = null
-        mBinding = null
-        mNavigatorManager = null
-    }
+    constructor(activity: Activity, container: FragmentWithSearch, binding: FragmentHomeBinding,
+        provider : ResultProvider, search : SearchBox) {
 
-    constructor(activity: Activity, container: FragmentWithSearch, binding: FragmentHomeBinding) {
         mActivity = activity
         mContainer = container
         mBinding = binding
         mNavigatorManager = mActivity as Navigator.NavigatorManager
+        mResultProvider = provider
+        mSearchBox = search
     }
 
     fun show() {
@@ -82,14 +79,12 @@ class ProductBrowserView {
     @Composable
     fun browserView(
     ) {
-        var searchBox = SearchBox(mActivity as Activity, mContainer!!, null)
-
         val images = intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
             R.drawable.product04, R.drawable.product05)
 
         Column {
             Spacer(modifier = Modifier.height(56.dp))
-            searchBox.show()
+            mSearchBox.show()
 
             Spacer(modifier = Modifier.height(45.dp))
             Row {

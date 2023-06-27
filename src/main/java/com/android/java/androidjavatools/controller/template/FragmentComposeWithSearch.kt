@@ -46,6 +46,8 @@ abstract class FragmentComposeWithSearch() : FragmentWithSearch() {
         , container: ViewGroup?
         , savedInstanceState: Bundle?
     ): View {
+        super.onCreateView(inflater, container, savedInstanceState)
+
         mActivity = requireActivity()
 
         return ComposeView(mActivity!!).apply {

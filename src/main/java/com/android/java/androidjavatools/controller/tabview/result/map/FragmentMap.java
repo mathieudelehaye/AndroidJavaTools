@@ -33,7 +33,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
-import com.android.java.androidjavatools.controller.tabview.result.map.MapView;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchProvider;
 import com.android.java.androidjavatools.model.AppUser;
@@ -44,6 +43,7 @@ import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.model.ResultItemInfo;
 import com.android.java.androidjavatools.controller.template.FragmentHelpDialog;
 import com.android.java.androidjavatools.R;
+import org.jetbrains.annotations.NotNull;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
@@ -54,7 +54,7 @@ import java.util.ArrayList;
 
 public class FragmentMap extends FragmentResult {
     private FragmentMapBinding mBinding;
-    private org.osmdroid.views.MapView mMap = null;
+    private org.osmdroid.views.MapView mOSMMap = null;
     private IMapController mMapController;
     private ItemizedOverlayWithFocus<OverlayItem> mRPOverlay;
     private boolean mIsViewVisible = false;
@@ -70,12 +70,14 @@ public class FragmentMap extends FragmentResult {
 
     @Override
     public View onCreateView(
-        LayoutInflater inflater, ViewGroup container,
+        @NotNull LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState
     ) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
         mBinding = FragmentMapBinding.inflate(inflater, container, false);
 
-        var contentView = new MapView(getActivity(), this, mBinding);
+        var contentView = new MapView(mBinding, mSearchBox);
         contentView.show();
 
         // Disable StrictMode policy in onCreate, in order to make a network call in the main thread
@@ -172,7 +174,7 @@ public class FragmentMap extends FragmentResult {
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
-        mMap.onResume(); //needed for compass, my location overlays, v6.0.0 and up
+        mOSMMap.onResume(); //needed for compass, my location overlays, v6.0.0 and up
     }
 
     @Override
@@ -201,7 +203,7 @@ public class FragmentMap extends FragmentResult {
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().save(this, prefs);
-        mMap.onPause();  //needed for compass, my location overlays, v6.0.0 and up
+        mOSMMap.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
 
     public void toggleDetailsView(boolean visible) {
@@ -219,7 +221,7 @@ public class FragmentMap extends FragmentResult {
     public void updateMapOverlay() {
         // possibly remove the former RP overlay
         if (mRPOverlay != null) {
-            mMap.getOverlays().remove(mRPOverlay);
+            mOSMMap.getOverlays().remove(mRPOverlay);
         }
 
         final var resultList = new ArrayList<OverlayItem>();
@@ -252,10 +254,10 @@ public class FragmentMap extends FragmentResult {
                 }
             }, mContext);
 
-        mMap.getOverlays().add(mRPOverlay);
+        mOSMMap.getOverlays().add(mRPOverlay);
 
         // Refresh the map
-        mMap.invalidate();
+        mOSMMap.invalidate();
 
         setZoomInKilometer(mSearchRadiusInCoordinate * mKilometerByCoordinateDeg);
 
@@ -313,19 +315,19 @@ public class FragmentMap extends FragmentResult {
     private void setupMap(View view) {
 
         // inflate and create the map
-        mMap = view.findViewById(R.id.map);
-        mMap.setTileSource(TileSourceFactory.MAPNIK);
+        mOSMMap = view.findViewById(R.id.map);
+        mOSMMap.setTileSource(TileSourceFactory.MAPNIK);
 
-        mMap.setBuiltInZoomControls(true);
-        mMap.setMultiTouchControls(true);
+        mOSMMap.setBuiltInZoomControls(true);
+        mOSMMap.setMultiTouchControls(true);
 
-        mMapController = mMap.getController();
+        mMapController = mOSMMap.getController();
         setZoomInKilometer(mSearchRadiusInCoordinate * mKilometerByCoordinateDeg);
 
-        mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(mContext), mMap);
+        mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(mContext), mOSMMap);
         mLocationOverlay.enableMyLocation();
 
-        mMap.getOverlays().add(mLocationOverlay);
+        mOSMMap.getOverlays().add(mLocationOverlay);
     }
 
     private void showHelp() {

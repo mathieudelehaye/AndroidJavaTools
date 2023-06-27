@@ -39,7 +39,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import com.android.java.androidjavatools.controller.template.Navigator.NavigatorManager
 import com.android.java.androidjavatools.controller.tabview.result.list.FragmentResultList
+import com.android.java.androidjavatools.controller.tabview.result.map.FragmentMap
 import com.android.java.androidjavatools.controller.template.FragmentWithSearch
+import com.android.java.androidjavatools.controller.template.ResultProvider
 import com.android.java.androidjavatools.databinding.SearchViewBinding
 
 class SearchBox: FilterListener {
@@ -47,25 +49,31 @@ class SearchBox: FilterListener {
     private val mContainer: FragmentWithSearch?
     private val mSuggestionsContainer: Boolean?
     private val mResultListContainer: Boolean?
+    private val mMapListContainer: Boolean?
     private val mNavigatorManager: NavigatorManager?
     private val mSearchManager: SearchManager?
     private val mSearchableConfig: SearchableInfo?
+    private val mResultProvider: ResultProvider?
     private val mQueryHint: String?
-    private var mObserver: DataSetObserver? = null
 
+    private var mObserver: DataSetObserver? = null
     private var mSuggestionsAdapter: CursorAdapter? = null
     private var mFilter: Filter? = null
 
-    constructor(activity: Activity, container: FragmentWithSearch, adapter: SuggestionsAdapter?) {
+    constructor(activity: Activity, container: FragmentWithSearch, adapter: SuggestionsAdapter?,
+        provider: ResultProvider?) {
+
         mActivity = activity
         mContainer = container
         mSuggestionsContainer = mContainer is FragmentSuggestion
         mResultListContainer = mContainer is FragmentResultList
+        mMapListContainer = mContainer is FragmentMap
         mNavigatorManager = mActivity as NavigatorManager
         mSearchManager = mActivity.getSystemService(Context.SEARCH_SERVICE) as SearchManager
         mSearchableConfig = mSearchManager.getSearchableInfo(mActivity.componentName)
         mQueryHint = mActivity.getString(mSearchableConfig.hintId)
         mSuggestionsAdapter = adapter
+        mResultProvider = provider
     }
 
     @SuppressLint("SetTextI18n")
@@ -98,7 +106,7 @@ class SearchBox: FilterListener {
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     val query: String = s.toString()
 
-                    if (query.equals("")) {
+                    if (query == "") {
                         // If the query is empty, hide the Clear button
                         searchViewClearButton.visibility = View.GONE
                     } else {
@@ -114,23 +122,31 @@ class SearchBox: FilterListener {
             searchViewQuery.addTextChangedListener(textWatcher)
 
             // Navigate to the Suggestions fragment when clicking on the edit text view
-            searchViewQuery.setOnFocusChangeListener { v: View, hasFocus: Boolean ->
+            searchViewQuery.onFocusChangeListener = object : View.OnFocusChangeListener {
+                override fun onFocusChange(v: View?, hasFocus: Boolean) {
+                    onQueryFocusChange(hasFocus)
 
-                onQueryFocusChange(hasFocus)
+                    if (!hasFocus) {
+                        return
+                    }
+                    Log.d("AJT", "View $v has focus")
 
-                if (!hasFocus) {
-                    return@setOnFocusChangeListener
+                    // Possibly show the Suggestions fragment
+                    if (mSuggestionsContainer) {
+                        // Return if already shown
+                        Log.v("AJT", "View has already the focus")
+                        return
+                    }
+
+                    // If this is the map fragment which originally asked for the search, save it
+                    if (mMapListContainer!!) {
+                        mResultProvider?.searchResultFragment = "map"
+                    } else {
+                        mResultProvider?.searchResultFragment = "list"
+                    }
+
+                    mNavigatorManager!!.navigator().showFragment("suggestion")
                 }
-                Log.d("AJT", "View $v has focus")
-
-                // Possibly show the Suggestions fragment
-                if (mSuggestionsContainer) {
-                    // Return if already shown
-                    Log.v("AJT", "View has already the focus")
-                    return@setOnFocusChangeListener
-                }
-
-                mNavigatorManager!!.navigator().showFragment("suggestion")
             }
 
             if (searchViewQuery.text.toString() != query) {
@@ -144,16 +160,19 @@ class SearchBox: FilterListener {
             }
 
             // Start the search when the Enter key is sent to the edit text view
-            searchViewQuery.setOnKeyListener { _: View?, _: Int, event: KeyEvent ->
-                if (event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
+            searchViewQuery.setOnKeyListener(object : View.OnKeyListener {
+                override fun onKey(v: View?, i: Int, event: KeyEvent?): Boolean {
+                    if (event != null) {
+                        if (event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
+                            val query: String = searchViewQuery.text.toString()
+                            Log.v("AJT", "Search query validated by pressing enter: $query")
 
-                    val query: String = searchViewQuery.text.toString()
-                    Log.v("AJT", "Search query validated by pressing enter: $query")
-
-                    mContainer!!.runSearch(query)
+                            mContainer!!.runSearch(query, mResultProvider?.searchResultFragment)
+                        }
+                    }
+                    return false
                 }
-                false
-            }
+            })
 
             // Set query hint
             searchViewQuery.hint = mQueryHint
@@ -168,7 +187,7 @@ class SearchBox: FilterListener {
     @Preview
     @Composable
     fun previewBrowserSearch() {
-        var searchBox = SearchBox(mActivity!!, mContainer!!, null)
+        var searchBox = SearchBox(mActivity!!, mContainer!!, null, null)
         val adapter = SuggestionsAdapter(mActivity, searchBox, searchBox.getSearchableConfig())
         searchBox.setSuggestionsAdapter(adapter)
 

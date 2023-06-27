@@ -24,8 +24,8 @@ package com.android.java.androidjavatools.controller.tabview.result.list
 import android.app.Activity
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.android.java.androidjavatools.controller.template.Navigator.NavigatorManager
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
+import com.android.java.androidjavatools.controller.template.Navigator.NavigatorManager
 import com.android.java.androidjavatools.controller.template.FragmentWithSearch
 import com.android.java.androidjavatools.databinding.FragmentResultListBinding
 
@@ -34,12 +34,16 @@ class ResultListView {
     private val mContainer: FragmentWithSearch
     private val mBinding: FragmentResultListBinding
     private val mNavigatorManager: NavigatorManager
+    private val mSearchBox: SearchBox
 
-    constructor(activity: Activity, container: FragmentWithSearch, binding: FragmentResultListBinding) {
+    constructor(activity: Activity, container: FragmentWithSearch, binding: FragmentResultListBinding,
+        search : SearchBox) {
+
         mActivity = activity
         mContainer = container
         mBinding = binding
         mNavigatorManager = mActivity as NavigatorManager
+        mSearchBox = search
     }
 
     fun show() {
@@ -48,11 +52,9 @@ class ResultListView {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                val sb = SearchBox(mActivity, mContainer, null)
-
                 var hasQueryFocus by remember { mutableStateOf(false) }
 
-                sb.show(
+                mSearchBox.show(
                     hasQueryFocus = hasQueryFocus
                     , onQueryFocusChange = {
                         hasQueryFocus = it

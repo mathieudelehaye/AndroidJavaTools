@@ -52,9 +52,11 @@ public abstract class FragmentHome extends FragmentWithSearch {
         LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState
     ) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
         mBinding = FragmentHomeBinding.inflate(inflater, container, false);
 
-        var contentView = new ProductBrowserView(getActivity(), this, mBinding);
+        var contentView = new ProductBrowserView(getActivity(), this, mBinding, mResultProvider, mSearchBox);
         contentView.show();
 
         return mBinding.getRoot();
@@ -152,7 +154,7 @@ public abstract class FragmentHome extends FragmentWithSearch {
                 Log.v("AJT", "updateRecentSearches: age = " + i + ", query = " + query);
 
                 historyButton.setText(query.substring(0, Math.min(query.length(), 15)));
-                historyButton.setOnClickListener(v -> runSearch(query));
+                historyButton.setOnClickListener(v -> runSearch(query, "list"));
                 historyButton.setVisibility(View.VISIBLE);
             } else {
                 // Hide the button if no related query

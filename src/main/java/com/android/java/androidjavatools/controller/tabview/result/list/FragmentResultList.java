@@ -42,7 +42,6 @@ import com.android.java.androidjavatools.R;
 public abstract class FragmentResultList extends FragmentResult {
     protected FragmentResultListBinding mBinding;
     private boolean mIsViewVisible = false;
-    private ResultDetailAdapter shownItemAdapter;
 
     public FragmentResultList(SearchProvider provider) {
         super(provider);
@@ -53,9 +52,11 @@ public abstract class FragmentResultList extends FragmentResult {
         LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState
     ) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
         mBinding = FragmentResultListBinding.inflate(inflater, container, false);
 
-        var contentView = new ResultListView(getActivity(), this, mBinding);
+        var contentView = new ResultListView(getActivity(), this, mBinding, mSearchBox);
         contentView.show();
 
         return mBinding.getRoot();

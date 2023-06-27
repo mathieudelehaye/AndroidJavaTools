@@ -1,5 +1,5 @@
 //
-//  MapView.java
+//  MapView.kt
 //
 //  Created by Mathieu Delehaye on 25/06/2023.
 //
@@ -21,20 +21,17 @@
 
 package com.android.java.androidjavatools.controller.tabview.result.map
 
-import android.app.Activity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox
-import com.android.java.androidjavatools.controller.template.FragmentWithSearch
 import com.android.java.androidjavatools.databinding.FragmentMapBinding
 
-class MapView(activity: Activity, container: FragmentWithSearch, binding: FragmentMapBinding) {
-    private val mActivity: Activity = activity
-    private val mContainer: FragmentWithSearch = container
+class MapView(binding: FragmentMapBinding, search: SearchBox) {
     private val mBinding: FragmentMapBinding = binding
+    private val mSearchBox: SearchBox = search
 
     fun show() {
         mBinding.mapSearchComposeView.apply {
@@ -42,11 +39,9 @@ class MapView(activity: Activity, container: FragmentWithSearch, binding: Fragme
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                val sb = SearchBox(mActivity, mContainer, null)
-
                 var hasQueryFocus by remember { mutableStateOf(false) }
 
-                sb.show(
+                mSearchBox.show(
                     hasQueryFocus = hasQueryFocus
                     , onQueryFocusChange = {
                         hasQueryFocus = it

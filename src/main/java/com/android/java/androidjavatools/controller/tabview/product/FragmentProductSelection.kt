@@ -21,7 +21,6 @@
 
 package com.android.java.androidjavatools.controller.tabview.product
 
-import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -46,7 +45,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
-import com.android.java.androidjavatools.controller.tabview.search.SearchBox
 import com.android.java.androidjavatools.controller.tabview.search.SuggestionsAdapter
 import com.android.java.androidjavatools.controller.template.FragmentComposeWithSearch
 import com.android.java.androidjavatools.controller.template.backButton
@@ -84,14 +82,13 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
         val pages: Int = (products / 5) + 1
         Log.d("AJT", "Product selection updated: $products product(s), $pages page(s)")
 
-        var searchBox = SearchBox(mActivity as Activity, this, null)
-        val adapter = SuggestionsAdapter(mActivity, searchBox, searchBox.getSearchableConfig())
-        searchBox.setSuggestionsAdapter(adapter)
+        val adapter = SuggestionsAdapter(mActivity, mSearchBox, mSearchBox.getSearchableConfig())
+        mSearchBox.setSuggestionsAdapter(adapter)
 
         Column {
             productSelectionHeader()
 
-            searchBox.show()
+            mSearchBox.show()
 
             Spacer(modifier = Modifier.height(45.dp))
 
