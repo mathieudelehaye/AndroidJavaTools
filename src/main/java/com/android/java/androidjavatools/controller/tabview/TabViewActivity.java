@@ -233,11 +233,24 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
             case "list":
                 switch (orig) {
                     case "suggestion":
-                        // Refresh the result list
+                        // Update the results
                         ((FragmentResult)navigator().getFragment("list")).updateSearchResults();
                         break;
-                    case "detail":
                     case "map":
+                        // Copy the search
+                        final var map = ((FragmentMap)navigator().getFragment("map"));
+                        final var list
+                            = ((FragmentResultList)navigator().getFragment("list"));
+
+                        if (list.getSearchStart() == null || list.getFoundResult() == null) {
+                            list.copySearch(map.getSearchStart(), map.getFoundResult());
+                        }
+
+                        // Update the list
+                        list.updateList();
+
+                        break;
+                    case "detail":
                     default:
                         // Do not refresh the result list
                         break;
@@ -248,11 +261,11 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                     case "list":
                         // Copy the search
                         final var map = ((FragmentMap)navigator().getFragment("map"));
-                        final var resultList
+                        final var list
                             = ((FragmentResultList)navigator().getFragment("list"));
 
                         if (map.getSearchStart() == null || map.getFoundResult() == null) {
-                            map.copySearch(resultList.getSearchStart(), resultList.getFoundResult());
+                            map.copySearch(list.getSearchStart(), list.getFoundResult());
                         }
 
                         // Update the map overlay
@@ -268,6 +281,9 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
 
                         // Hide the keyboard
                         Helpers.toggleKeyboard(this, false);
+
+                        // Update the results
+                        ((FragmentResult)navigator().getFragment("list")).updateSearchResults();
 
                         break;
                     case "detail":
