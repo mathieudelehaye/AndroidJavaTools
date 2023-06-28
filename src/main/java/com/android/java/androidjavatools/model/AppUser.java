@@ -35,6 +35,7 @@ public class AppUser {
     private AuthenticationType mAuthenticationType = AuthenticationType.NONE;
 
     private StringBuilder mId = new StringBuilder();
+    private GeoPosition mGeoPosition = new GeoPosition();
 
     // private constructor to avoid client applications using it
     private AppUser(){}
@@ -49,6 +50,14 @@ public class AppUser {
 
     public String getId() {
         return mId.toString();
+    }
+
+    public void setGeoPosition(GeoPosition value) {
+        mGeoPosition = value;
+    }
+
+    public GeoPosition getGeoPosition() {
+        return mGeoPosition;
     }
 
     public void authenticate(@NonNull String _uid, @NonNull AuthenticationType _type) {

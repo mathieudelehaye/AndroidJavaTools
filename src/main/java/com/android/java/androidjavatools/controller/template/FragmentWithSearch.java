@@ -21,11 +21,14 @@
 
 package com.android.java.androidjavatools.controller.template;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
@@ -34,6 +37,7 @@ import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox;
 import com.android.java.androidjavatools.model.ResultItemInfo;
 import com.google.firebase.firestore.FirebaseFirestore;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class FragmentWithSearch extends Fragment {
     protected FirebaseFirestore mDatabase;
@@ -42,28 +46,37 @@ public abstract class FragmentWithSearch extends Fragment {
     protected SearchHistoryManager mHistoryManager;
     protected ResultProvider mResultProvider;
     protected Navigator.NavigatorManager mNavigatorManager;
-    protected SearchBox mSearchView;
+    protected SearchBox mSearchBox;
 
     protected abstract void searchAndDisplayItems();
+
+    @Override
+    public View onCreateView(
+        @NotNull LayoutInflater inflater, ViewGroup container,
+        Bundle savedInstanceState
+    ) {
+        mContext = requireActivity();
+        mResultProvider = (ResultProvider)mContext;
+        mSearchBox = new SearchBox((Activity) mContext, this, null, mResultProvider);
+        return null;
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         mDatabase = FirebaseFirestore.getInstance();
-        mContext = view.getContext();
         mSharedPref = mContext.getSharedPreferences(
             getString(R.string.lib_name), Context.MODE_PRIVATE);
 
         mHistoryManager = (SearchHistoryManager)mContext;
-        mResultProvider = (ResultProvider)mContext;
         mNavigatorManager = (Navigator.NavigatorManager)mContext;
     }
 
-    public void runSearch(String query) {
+    public void runSearch(String query, String resultFragment) {
         FragmentResultList.setResultQuery(query);
         mHistoryManager.storeSearchQuery(query);
-        mNavigatorManager.navigator().showFragment("list");
+        mNavigatorManager.navigator().showFragment(resultFragment);
     }
 
     protected void showResultItem(ResultDetailAdapter adapter) {

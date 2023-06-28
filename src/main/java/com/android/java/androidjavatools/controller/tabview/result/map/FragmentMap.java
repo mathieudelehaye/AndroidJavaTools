@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchProvider;
+import com.android.java.androidjavatools.model.AppUser;
 import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
 import com.android.java.androidjavatools.databinding.FragmentMapBinding;
@@ -42,9 +43,10 @@ import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.model.ResultItemInfo;
 import com.android.java.androidjavatools.controller.template.FragmentHelpDialog;
 import com.android.java.androidjavatools.R;
+import org.jetbrains.annotations.NotNull;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.views.MapView;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.*;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -52,7 +54,7 @@ import java.util.ArrayList;
 
 public class FragmentMap extends FragmentResult {
     private FragmentMapBinding mBinding;
-    private MapView mMap = null;
+    private org.osmdroid.views.MapView mOSMMap = null;
     private IMapController mMapController;
     private ItemizedOverlayWithFocus<OverlayItem> mRPOverlay;
     private boolean mIsViewVisible = false;
@@ -68,10 +70,15 @@ public class FragmentMap extends FragmentResult {
 
     @Override
     public View onCreateView(
-        LayoutInflater inflater, ViewGroup container,
+        @NotNull LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState
     ) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
         mBinding = FragmentMapBinding.inflate(inflater, container, false);
+
+        var contentView = new MapView(mBinding, mSearchBox);
+        contentView.show();
 
         // Disable StrictMode policy in onCreate, in order to make a network call in the main thread
         // TODO: call the network from a child thread instead
@@ -103,7 +110,7 @@ public class FragmentMap extends FragmentResult {
 
             // height of the fragment root view
             View mapRootView = view.getRootView();
-            View mapLayout = view.findViewById(R.id.mapLayout);
+            View mapLayout = view.findViewById(R.id.map_layout);
 
             if (mapRootView == null || mapLayout == null) {
                 return;
@@ -137,10 +144,14 @@ public class FragmentMap extends FragmentResult {
 
         mBinding.mapUserLocation.setOnClickListener(view1 -> {
 
-            if(mUserLocation != null) {
+            final var userPosition= AppUser.getInstance().getGeoPosition();
+
+            if(AppUser.getInstance().getGeoPosition() != null) {
                 Log.d("AJT", "Change map focus to user location");
 
-                mMapController.animateTo(mUserLocation);
+                final var location = userPosition.getLocation();
+                final var geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                mMapController.animateTo(geoPoint);
                 setZoomLevel(14);
             }
         });
@@ -163,7 +174,7 @@ public class FragmentMap extends FragmentResult {
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
-        mMap.onResume(); //needed for compass, my location overlays, v6.0.0 and up
+        mOSMMap.onResume(); //needed for compass, my location overlays, v6.0.0 and up
     }
 
     @Override
@@ -192,7 +203,7 @@ public class FragmentMap extends FragmentResult {
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().save(this, prefs);
-        mMap.onPause();  //needed for compass, my location overlays, v6.0.0 and up
+        mOSMMap.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
 
     public void toggleDetailsView(boolean visible) {
@@ -203,8 +214,58 @@ public class FragmentMap extends FragmentResult {
             Log.w("AJT", "Cannot toggle the details view, as no root view available");
         }
 
-        View detailLayout = rootView.findViewById(R.id.detail_map_layout);
+        View detailLayout = rootView.findViewById(R.id.map_detail_layout);
         detailLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    public void updateMapOverlay() {
+        // possibly remove the former RP overlay
+        if (mRPOverlay != null) {
+            mOSMMap.getOverlays().remove(mRPOverlay);
+        }
+
+        final var resultList = new ArrayList<OverlayItem>();
+        for (int i = 0; i < mFoundResult.size(); i++) {
+            resultList.add(new OverlayItem(
+                mFoundResult.get(i).getTitle(),
+                mFoundResult.get(i).getDescription(),
+                mFoundResult.get(i).getLocation()
+            ));
+        }
+
+        final var result = mResultProvider.getSearchResult();
+
+        // display the overlay
+        mRPOverlay = new ItemizedOverlayWithFocus<>(resultList,
+            new ItemizedIconOverlay.OnItemGestureListener<>() {
+                @Override
+                public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+                    Log.i("AJT", "Single tap");
+                    mMapController.animateTo(item.getPoint());
+
+                    showDetails(result.get(index));
+
+                    return true;
+                }
+
+                @Override
+                public boolean onItemLongPress(int index, OverlayItem item) {
+                    return false;
+                }
+            }, mContext);
+
+        mOSMMap.getOverlays().add(mRPOverlay);
+
+        // Refresh the map
+        mOSMMap.invalidate();
+
+        setZoomInKilometer(mSearchRadiusInCoordinate * mKilometerByCoordinateDeg);
+
+        final var location = mSearchStart.getLocation();
+        mMapController.animateTo(new GeoPoint(location.getLatitude(), location.getLongitude()));
+
+        final var resultProvider = (ResultProvider)getActivity();
+        resultProvider.setSearchResult(result);
     }
 
     @Override
@@ -226,52 +287,7 @@ public class FragmentMap extends FragmentResult {
                     }
                 });
 
-                // possibly remove the former RP overlay
-                if (mRPOverlay != null) {
-                    mMap.getOverlays().remove(mRPOverlay);
-                }
-
-                ArrayList<OverlayItem> resultList = new ArrayList<>();
-                for (int i = 0; i < mFoundResult.size(); i++) {
-                    resultList.add(new OverlayItem(
-                        mFoundResult.get(i).getTitle(),
-                        mFoundResult.get(i).getDescription(),
-                        mFoundResult.get(i).getLocation()
-                    ));
-                }
-
-                final var result = mResultProvider.getSearchResult();
-
-                // display the overlay
-                mRPOverlay = new ItemizedOverlayWithFocus<>(resultList,
-                    new ItemizedIconOverlay.OnItemGestureListener<>() {
-                        @Override
-                        public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                            Log.i("AJT", "Single tap");
-                            mMapController.animateTo(item.getPoint());
-
-                            showDetails(result.get(index));
-
-                            return true;
-                        }
-
-                        @Override
-                        public boolean onItemLongPress(int index, OverlayItem item) {
-                            return false;
-                        }
-                    }, mContext);
-
-                mMap.getOverlays().add(mRPOverlay);
-
-                // Refresh the map
-                mMap.invalidate();
-
-                setZoomInKilometer(mSearchRadiusInCoordinate * mKilometerByCoordinateDeg);
-
-                mMapController.animateTo(mSearchStart);
-
-                final var resultProvider = (ResultProvider)getActivity();
-                resultProvider.setSearchResult(result);
+                updateMapOverlay();
             }
 
             @Override
@@ -299,19 +315,19 @@ public class FragmentMap extends FragmentResult {
     private void setupMap(View view) {
 
         // inflate and create the map
-        mMap = view.findViewById(R.id.map);
-        mMap.setTileSource(TileSourceFactory.MAPNIK);
+        mOSMMap = view.findViewById(R.id.map);
+        mOSMMap.setTileSource(TileSourceFactory.MAPNIK);
 
-        mMap.setBuiltInZoomControls(true);
-        mMap.setMultiTouchControls(true);
+        mOSMMap.setBuiltInZoomControls(true);
+        mOSMMap.setMultiTouchControls(true);
 
-        mMapController = mMap.getController();
+        mMapController = mOSMMap.getController();
         setZoomInKilometer(mSearchRadiusInCoordinate * mKilometerByCoordinateDeg);
 
-        mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(mContext), mMap);
+        mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(mContext), mOSMMap);
         mLocationOverlay.enableMyLocation();
 
-        mMap.getOverlays().add(this.mLocationOverlay);
+        mOSMMap.getOverlays().add(mLocationOverlay);
     }
 
     private void showHelp() {
@@ -335,7 +351,7 @@ public class FragmentMap extends FragmentResult {
             + "corporis ea labore esse ea illum consequatur. Et reiciendis ducimus et repellat magni id ducimus "
             + "nesc.";
 
-        ImageView resultImage = getView().findViewById(R.id.detail_map_image);
+        ImageView resultImage = getView().findViewById(R.id.map_detail_image);
         if (itemImageBytes != null && showImage) {
             Bitmap image = BitmapFactory.decodeByteArray(itemImageBytes, 0, itemImageBytes.length);
             resultImage.setImageBitmap(image);
@@ -345,10 +361,10 @@ public class FragmentMap extends FragmentResult {
         }
         resultImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-        TextView resultDescription = getView().findViewById(R.id.detail_map_description);
+        TextView resultDescription = getView().findViewById(R.id.map_detail_description);
         resultDescription.setText(itemTitle + "\n\n" + itemDescription);
 
-        mBinding.detailMapLayout.setOnClickListener(view1 -> {
+        mBinding.mapDetailLayout.setOnClickListener(view1 -> {
             final var  adapter = new ResultDetailAdapter(mContext, itemInfo);
             showResultItem(adapter);
         });

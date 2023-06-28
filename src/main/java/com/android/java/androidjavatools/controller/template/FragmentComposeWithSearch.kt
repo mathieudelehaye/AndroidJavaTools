@@ -46,6 +46,8 @@ abstract class FragmentComposeWithSearch() : FragmentWithSearch() {
         , container: ViewGroup?
         , savedInstanceState: Bundle?
     ): View {
+        super.onCreateView(inflater, container, savedInstanceState)
+
         mActivity = requireActivity()
 
         return ComposeView(mActivity!!).apply {
@@ -64,7 +66,7 @@ abstract class FragmentComposeWithSearch() : FragmentWithSearch() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.v("AJT", "Base view created at timestamp: "
-                + Helpers.getTimestamp())
+            + Helpers.getTimestamp())
         super.onViewCreated(view, savedInstanceState)
     }
 

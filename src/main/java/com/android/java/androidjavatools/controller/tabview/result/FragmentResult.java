@@ -23,6 +23,7 @@ package com.android.java.androidjavatools.controller.tabview.result;
 
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -34,12 +35,13 @@ import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.controller.template.FragmentHelpDialog;
 import com.android.java.androidjavatools.controller.template.FragmentWithSearch;
 import com.android.java.androidjavatools.controller.template.SearchProvider;
+import com.android.java.androidjavatools.model.AppUser;
+import com.android.java.androidjavatools.model.GeoPosition;
 import com.android.java.androidjavatools.model.SearchResult;
 import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.android.java.androidjavatools.R;
 import org.jetbrains.annotations.NotNull;
 import org.osmdroid.config.Configuration;
-import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import java.io.IOException;
@@ -52,10 +54,9 @@ public abstract class FragmentResult extends FragmentWithSearch {
         MAP
     }
 
-    protected GeoPoint mUserLocation;
-    protected GeoPoint mSearchStart;
-    protected MyLocationNewOverlay mLocationOverlay;
+    protected GeoPosition mSearchStart;
     protected SearchResult mFoundResult = new SearchResult();
+    protected MyLocationNewOverlay mLocationOverlay;
     protected final double mSearchRadiusInCoordinate = 0.045;
     protected abstract void searchAndDisplayItems();
     private SearchProvider mSearchProvider;
@@ -68,6 +69,14 @@ public abstract class FragmentResult extends FragmentWithSearch {
 
     public static void setResultQuery(String query) {
         sResultQuery = query;
+    }
+
+    public GeoPosition getSearchStart() {
+        return mSearchStart;
+    }
+
+    public SearchResult getFoundResult() {
+        return mFoundResult;
     }
 
     public FragmentResult(SearchProvider provider) {
@@ -100,7 +109,7 @@ public abstract class FragmentResult extends FragmentWithSearch {
                 firstLocationReceived[0] = true;
 
                 Log.d("AJT", "First received location for the user: " + location.toString());
-                mUserLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+                AppUser.getInstance().setGeoPosition(new GeoPosition(location));
                 Log.v("AJT", "First received location at timestamp: "
                     + Helpers.getTimestamp());
 
@@ -110,35 +119,52 @@ public abstract class FragmentResult extends FragmentWithSearch {
     }
 
     public void updateSearchResults() {
-        // If there is no search start yet, find it and get the items to display
-        if (mSearchStart == null && getContext() != null) {
-            final String searchQuery = sResultQuery;
+        final String searchQuery = (sResultQuery.equals("Around current location") ? "usr" : sResultQuery);
 
-            boolean userLocationReadFromCache = readCachedUserLocation();
+        final boolean userLocationReadFromCache = readCachedUserLocation();
 
-            if (!searchQuery.equals("") && !searchQuery.equals("usr")) {
-                // If a query has been received by the searchable activity, use it
-                // to find the search start
-                Log.v("AJT", "Searching for the query: " + searchQuery);
-                setSearchStart(getCoordinatesFromAddress(searchQuery));
-            } else if (userLocationReadFromCache) {
-                // Otherwise, if the user location was cached, search around it
-                Log.v("AJT", "Searching around the user location from the cache");
-                setSearchStart(mUserLocation);
-            } else {
-                String dialogText = "Please wait until the app has found your position";
-                var dialogFragment = new FragmentHelpDialog(dialogText, () -> null);
-                dialogFragment.show(getChildFragmentManager(), "Searching position dialog");
+        if (!searchQuery.equals("") && !searchQuery.equals("usr")) {
+            // If a query has been received by the searchable activity, use it
+            // to find the search start
+            Log.v("AJT", "Searching for the query: " + searchQuery);
+            setSearchStart(getCoordinatesFromAddress(searchQuery));
+        } else if (userLocationReadFromCache) {
+            // Otherwise, if the user location was cached, search around it
+            Log.v("AJT", "Searching around the user location from the cache");
+            final Location location = AppUser.getInstance().getGeoPosition().getLocation();
+            setSearchStart(location);
+        } else {
+            String dialogText = "Please wait until the app has found your position";
+            var dialogFragment = new FragmentHelpDialog(dialogText, () -> null);
+            dialogFragment.show(getChildFragmentManager(), "Searching position dialog");
+            return;
+        }
+
+        // Search and display the items in the child fragment
+        searchAndDisplayItems();
+    }
+
+    public void tryAndCopySearch(@NotNull GeoPosition newStart, SearchResult newResult) {
+        // Check if the search start are different. If not, do not copy the searches
+        if (mSearchStart != null) {
+            final Location originalLocation = mSearchStart.getLocation();
+            final Location newLocation = newStart.getLocation();
+            final int multiplier = 100000;
+
+            if(Math.floor(originalLocation.getLatitude() * multiplier) ==
+                Math.floor(newLocation.getLatitude() * multiplier) &&
+                (Math.floor(originalLocation.getLongitude() * multiplier) ==
+                Math.floor(newLocation.getLongitude() * multiplier))) {
+
+                return;
             }
         }
 
-        if  (mSearchStart != null) {
-            // Search and display the items in the child fragment
-            searchAndDisplayItems();
-        }
+        mSearchStart = newStart;
+        mFoundResult = newResult;
     }
 
-    protected GeoPoint getCoordinatesFromAddress(@NotNull String locationName) {
+    protected Location getCoordinatesFromAddress(@NotNull String locationName) {
 
         if (mGeocoder == null || locationName.equals("")) {
             Log.w("AJT", "Cannot get coordinates, as no geocoder or empty address");
@@ -150,7 +176,9 @@ public abstract class FragmentResult extends FragmentWithSearch {
 
             if (!geoResults.isEmpty()) {
                 final Address addr = geoResults.get(0);
-                var location = new GeoPoint(addr.getLatitude(), addr.getLongitude());
+                final var location = new Location((String) null);
+                location.setLatitude(addr.getLatitude());
+                location.setLongitude(addr.getLongitude());
                 return location;
             } else {
                 Log.w("AJT", "No coordinate found for the address: " + locationName);
@@ -166,14 +194,17 @@ public abstract class FragmentResult extends FragmentWithSearch {
     }
 
     protected boolean readCachedUserLocation() {
-        String cacheLocation = mSharedPref.getString("user_location", "");
+        final double cacheLatitude = Location.convert(mSharedPref.getString("user_latitude", ""));
+        final double cacheLongitude = Location.convert(mSharedPref.getString("user_longitude", ""));
 
-        if (cacheLocation != "") {
-            Log.d("AJT", "User location read from cache: " + cacheLocation);
-            Log.v("AJT", "User location read from cache at timestamp: "
-                + Helpers.getTimestamp());
+        if (cacheLatitude != 0f && cacheLongitude != 0) {
+            Log.d("AJT", "User location read from cache: " + cacheLatitude + " " + cacheLongitude);
+            Log.v("AJT", "User location read from cache at timestamp: " + Helpers.getTimestamp());
 
-            mUserLocation = GeoPoint.fromDoubleString(cacheLocation, ',');
+            final var location = new Location((String) null);
+            location.setLatitude(cacheLatitude);
+            location.setLongitude(cacheLongitude);
+            AppUser.getInstance().getGeoPosition().setLocation(location);
 
             return true;
         }
@@ -183,23 +214,21 @@ public abstract class FragmentResult extends FragmentWithSearch {
 
     protected void writeCachedUserLocation() {
         // Store the user location for the next startup
-        String cacheLocation = mUserLocation.toDoubleString();
+        final var location = AppUser.getInstance().getGeoPosition().getLocation();
 
-        // Do not use an R.string resource here to store "user_location". As sometimes
+        final String cacheLatitude = Location.convert(location.getLatitude(), Location.FORMAT_DEGREES);
+        final String cacheLongitude = Location.convert(location.getLongitude(), Location.FORMAT_DEGREES);
+
+        // Do not use an R.string resource here to store
+        // "user_location". As sometimes
         // the context won't be available yet, when creating again the child view of
         // the FragmentApp object (e.g.: after tapping the search view switch button).
         // In such a case, `getString` will throw an exception.
-        mSharedPref.edit().putString("user_location", cacheLocation)
-            .commit();
+        mSharedPref.edit().putString("user_latitude", cacheLatitude).commit();
+        mSharedPref.edit().putString("user_longitude", cacheLongitude).commit();
 
-        Log.d("AJT", "User location cached: " + cacheLocation);
-        Log.v("AJT", "User location cached at timestamp: "
-            + Helpers.getTimestamp());
-    }
-
-    protected void setSearchStart(GeoPoint value) {
-        Log.v("AJT", "Search start set to: " + value);
-        mSearchStart = value;
+        Log.d("AJT", "User location cached: " + cacheLatitude + " " + cacheLongitude);
+        Log.v("AJT", "User location cached at timestamp: " + Helpers.getTimestamp());
     }
 
     protected void searchForResults(TaskCompletionManager... cbManager) {
@@ -265,5 +294,10 @@ public abstract class FragmentResult extends FragmentWithSearch {
         }
 
         return !mContext.getResources().getConfiguration().getLocales().get(0).getDisplayName().contains("Belgique");
+    }
+
+    private void setSearchStart(Location value) {
+        Log.v("AJT", "Search start set to: " + value);
+        mSearchStart = new GeoPosition(value);
     }
 }

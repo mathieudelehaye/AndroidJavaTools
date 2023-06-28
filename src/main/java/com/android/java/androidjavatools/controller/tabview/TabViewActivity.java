@@ -36,12 +36,15 @@ import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
 import com.android.java.androidjavatools.controller.tabview.result.detail.FragmentResultDetail;
 import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
+import com.android.java.androidjavatools.controller.tabview.result.list.FragmentResultList;
+import com.android.java.androidjavatools.controller.tabview.result.map.FragmentMap;
 import com.android.java.androidjavatools.controller.template.Navigator;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchHistoryManager;
 import com.android.java.androidjavatools.model.*;
 import com.android.java.androidjavatools.R;
 import com.google.firebase.firestore.FirebaseFirestore;
+import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 abstract public class TabViewActivity extends AppCompatActivity implements ActivityWithAsyncTask,
@@ -62,6 +65,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     private CircularKeyBuffer<String> mPastSearchQueries = new CircularKeyBuffer<>(4);
     private SearchResult mSearchResult = new SearchResult();
     private ResultDetailAdapter mSelectedItemAdapter;
+    private String mSearchResultFragment = "list";
 
     // Search: getter-setter
     public ResultDetailAdapter getSelectedItemAdapter() {
@@ -229,11 +233,28 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
             case "list":
                 switch (orig) {
                     case "suggestion":
-                        // Refresh the result list
+                        // Show toolbar when coming from the Suggestion page
+                        toggleToolbar(true);
+
+                        // Hide the keyboard
+                        Helpers.toggleKeyboard(this, false);
+
+                        // Update the results
                         ((FragmentResult)navigator().getFragment("list")).updateSearchResults();
                         break;
-                    case "detail":
                     case "map":
+                        // Copy the search
+                        final var map = ((FragmentMap)navigator().getFragment("map"));
+                        final var list
+                            = ((FragmentResultList)navigator().getFragment("list"));
+
+                        list.tryAndCopySearch(map.getSearchStart(), map.getFoundResult());
+
+                        // Update the list
+                        list.updateList();
+
+                        break;
+                    case "detail":
                     default:
                         // Do not refresh the result list
                         break;
@@ -241,19 +262,33 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                 break;
             case "map":
                 switch (orig) {
-                    case "suggestion":
-                        // Refresh the result list
-                        ((FragmentResult)navigator().getFragment("list")).updateSearchResults();
+                    case "list":
+                        // Copy the search
+                        final var map = ((FragmentMap)navigator().getFragment("map"));
+                        final var list
+                            = ((FragmentResultList)navigator().getFragment("list"));
 
+                        map.tryAndCopySearch(list.getSearchStart(), list.getFoundResult());
+
+                        // Update the map overlay
+                        map.updateMapOverlay();
+
+                        toggleToolbar(true);
+                        Helpers.toggleKeyboard(this, false);
+
+                        break;
+                    case "suggestion":
                         // Show toolbar when coming from the Suggestion page
                         toggleToolbar(true);
 
                         // Hide the keyboard
                         Helpers.toggleKeyboard(this, false);
 
+                        // Update the results
+                        ((FragmentResult)navigator().getFragment("map")).updateSearchResults();
+
                         break;
                     case "detail":
-                    case "list":
                     default:
                         // Do not refresh the result list
                         break;
@@ -288,6 +323,17 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     @Override
     public void toggleTabSwiping(boolean enable) {
         mNavigator.toggleTabSwiping(enable);
+    }
+
+    @Nullable
+    @Override
+    public String getSearchResultFragment() {
+        return mSearchResultFragment;
+    }
+
+    @Override
+    public void setSearchResultFragment(@Nullable String s) {
+        mSearchResultFragment = s;
     }
 
     protected boolean isNetworkAvailable() {

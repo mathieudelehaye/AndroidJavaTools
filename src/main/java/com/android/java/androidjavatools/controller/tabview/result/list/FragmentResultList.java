@@ -41,8 +41,8 @@ import com.android.java.androidjavatools.R;
 
 public abstract class FragmentResultList extends FragmentResult {
     protected FragmentResultListBinding mBinding;
+    private ResultListAdapter mResultListAdapter;
     private boolean mIsViewVisible = false;
-    private ResultDetailAdapter shownItemAdapter;
 
     public FragmentResultList(SearchProvider provider) {
         super(provider);
@@ -53,9 +53,11 @@ public abstract class FragmentResultList extends FragmentResult {
         LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState
     ) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
         mBinding = FragmentResultListBinding.inflate(inflater, container, false);
 
-        var contentView = new ResultListView(getActivity(), this, mBinding);
+        var contentView = new ResultListView(getActivity(), this, mBinding, mSearchBox);
         contentView.show();
 
         return mBinding.getRoot();
@@ -71,57 +73,6 @@ public abstract class FragmentResultList extends FragmentResult {
         changeSearchSwitch(ResultPageType.MAP);
 
         showHelp();
-    }
-
-    @Override
-    protected void searchAndDisplayItems() {
-
-        // Search for the RP around the user
-        searchForResults(new TaskCompletionManager() {
-            @Override
-            public void onSuccess() {
-                Log.v("AJT", "Results received from database at timestamp: "
-                    + Helpers.getTimestamp());
-
-                var resultList = (ListView) getView().findViewById(R.id.result_list_view);
-
-                var adapter = new ResultListAdapter(getContext(), mFoundResult);
-                resultList.setAdapter(adapter);
-
-                resultList.setOnItemClickListener((adapterView, view, position, l) -> {
-                    final var resultItem = ((ResultItemInfo)adapter.getItem(position));
-                    final var  itemAdapter = new ResultDetailAdapter(mContext, resultItem);
-                    showResultItem(itemAdapter);
-                });
-
-                mFoundResult.downloadImages(new TaskCompletionManager() {
-
-                    @Override
-                    public void onSuccess() {
-                        adapter.notifyDataSetChanged();
-
-                        var selectionAdapter = mResultProvider.getSelectedItemAdapter();
-                        if (selectionAdapter != null &&
-                            ((ResultItemInfo)selectionAdapter.getItem(0)).mustShowImage()) {
-
-                            // Show the selected item image, if not yet done and if this image was just downloaded
-                            selectionAdapter.notifyDataSetChanged();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure() {
-                    }
-                });
-
-                final var resultProvider = (ResultProvider)getActivity();
-                resultProvider.setSearchResult(mFoundResult);
-            }
-
-            @Override
-            public void onFailure() {
-            }
-        });
     }
 
     @Override
@@ -145,6 +96,60 @@ public abstract class FragmentResultList extends FragmentResult {
     public void onDestroyView() {
         super.onDestroyView();
         mBinding = null;
+    }
+
+    public void updateList() {
+        var resultList = (ListView) getView().findViewById(R.id.result_list_view);
+
+        mResultListAdapter = new ResultListAdapter(getContext(), mFoundResult);
+        resultList.setAdapter(mResultListAdapter);
+
+        resultList.setOnItemClickListener((adapterView, view, position, l) -> {
+            final var resultItem = ((ResultItemInfo)mResultListAdapter.getItem(position));
+            final var  itemAdapter = new ResultDetailAdapter(mContext, resultItem);
+            showResultItem(itemAdapter);
+        });
+
+        final var resultProvider = (ResultProvider)getActivity();
+        resultProvider.setSearchResult(mFoundResult);
+    }
+
+    @Override
+    protected void searchAndDisplayItems() {
+
+        // Search for the RP around the user
+        searchForResults(new TaskCompletionManager() {
+            @Override
+            public void onSuccess() {
+                Log.v("AJT", "Results received from database at timestamp: "
+                    + Helpers.getTimestamp());
+
+                updateList();
+
+                mFoundResult.downloadImages(new TaskCompletionManager() {
+                    @Override
+                    public void onSuccess() {
+                        mResultListAdapter.notifyDataSetChanged();
+
+                        var selectionAdapter = mResultProvider.getSelectedItemAdapter();
+                        if (selectionAdapter != null &&
+                            ((ResultItemInfo)selectionAdapter.getItem(0)).mustShowImage()) {
+
+                            // Show the selected item image, if not yet done and if this image was just downloaded
+                            selectionAdapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure() {
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure() {
+            }
+        });
     }
 
     private void showHelp() {
