@@ -119,38 +119,49 @@ public abstract class FragmentResult extends FragmentWithSearch {
     }
 
     public void updateSearchResults() {
-        // If there is no search start yet, find it and get the items to display
-        if (mSearchStart == null && getContext() != null) {
-            final String searchQuery = sResultQuery;
+        final String searchQuery = (sResultQuery.equals("Around current location") ? "usr" : sResultQuery);
 
-            boolean userLocationReadFromCache = readCachedUserLocation();
+        final boolean userLocationReadFromCache = readCachedUserLocation();
 
-            if (!searchQuery.equals("") && !searchQuery.equals("usr")) {
-                // If a query has been received by the searchable activity, use it
-                // to find the search start
-                Log.v("AJT", "Searching for the query: " + searchQuery);
-                setSearchStart(getCoordinatesFromAddress(searchQuery));
-            } else if (userLocationReadFromCache) {
-                // Otherwise, if the user location was cached, search around it
-                Log.v("AJT", "Searching around the user location from the cache");
-                final Location location = AppUser.getInstance().getGeoPosition().getLocation();
-                setSearchStart(location);
-            } else {
-                String dialogText = "Please wait until the app has found your position";
-                var dialogFragment = new FragmentHelpDialog(dialogText, () -> null);
-                dialogFragment.show(getChildFragmentManager(), "Searching position dialog");
+        if (!searchQuery.equals("") && !searchQuery.equals("usr")) {
+            // If a query has been received by the searchable activity, use it
+            // to find the search start
+            Log.v("AJT", "Searching for the query: " + searchQuery);
+            setSearchStart(getCoordinatesFromAddress(searchQuery));
+        } else if (userLocationReadFromCache) {
+            // Otherwise, if the user location was cached, search around it
+            Log.v("AJT", "Searching around the user location from the cache");
+            final Location location = AppUser.getInstance().getGeoPosition().getLocation();
+            setSearchStart(location);
+        } else {
+            String dialogText = "Please wait until the app has found your position";
+            var dialogFragment = new FragmentHelpDialog(dialogText, () -> null);
+            dialogFragment.show(getChildFragmentManager(), "Searching position dialog");
+            return;
+        }
+
+        // Search and display the items in the child fragment
+        searchAndDisplayItems();
+    }
+
+    public void tryAndCopySearch(@NotNull GeoPosition newStart, SearchResult newResult) {
+        // Check if the search start are different. If not, do not copy the searches
+        if (mSearchStart != null) {
+            final Location originalLocation = mSearchStart.getLocation();
+            final Location newLocation = newStart.getLocation();
+            final int multiplier = 100000;
+
+            if(Math.floor(originalLocation.getLatitude() * multiplier) ==
+                Math.floor(newLocation.getLatitude() * multiplier) &&
+                (Math.floor(originalLocation.getLongitude() * multiplier) ==
+                Math.floor(newLocation.getLongitude() * multiplier))) {
+
+                return;
             }
         }
 
-        if  (mSearchStart != null) {
-            // Search and display the items in the child fragment
-            searchAndDisplayItems();
-        }
-    }
-
-    public void copySearch(GeoPosition start, SearchResult result) {
-        mSearchStart = start;
-        mFoundResult = result;
+        mSearchStart = newStart;
+        mFoundResult = newResult;
     }
 
     protected Location getCoordinatesFromAddress(@NotNull String locationName) {

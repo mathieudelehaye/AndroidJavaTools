@@ -233,6 +233,12 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
             case "list":
                 switch (orig) {
                     case "suggestion":
+                        // Show toolbar when coming from the Suggestion page
+                        toggleToolbar(true);
+
+                        // Hide the keyboard
+                        Helpers.toggleKeyboard(this, false);
+
                         // Update the results
                         ((FragmentResult)navigator().getFragment("list")).updateSearchResults();
                         break;
@@ -242,9 +248,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                         final var list
                             = ((FragmentResultList)navigator().getFragment("list"));
 
-                        if (list.getSearchStart() == null || list.getFoundResult() == null) {
-                            list.copySearch(map.getSearchStart(), map.getFoundResult());
-                        }
+                        list.tryAndCopySearch(map.getSearchStart(), map.getFoundResult());
 
                         // Update the list
                         list.updateList();
@@ -264,9 +268,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                         final var list
                             = ((FragmentResultList)navigator().getFragment("list"));
 
-                        if (map.getSearchStart() == null || map.getFoundResult() == null) {
-                            map.copySearch(list.getSearchStart(), list.getFoundResult());
-                        }
+                        map.tryAndCopySearch(list.getSearchStart(), list.getFoundResult());
 
                         // Update the map overlay
                         map.updateMapOverlay();
@@ -283,7 +285,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                         Helpers.toggleKeyboard(this, false);
 
                         // Update the results
-                        ((FragmentResult)navigator().getFragment("list")).updateSearchResults();
+                        ((FragmentResult)navigator().getFragment("map")).updateSearchResults();
 
                         break;
                     case "detail":
