@@ -227,9 +227,9 @@ public class FragmentMap extends FragmentResult {
         final var resultList = new ArrayList<OverlayItem>();
         for (int i = 0; i < mFoundResult.size(); i++) {
             resultList.add(new OverlayItem(
-                mFoundResult.get(i).getTitle(),
-                mFoundResult.get(i).getDescription(),
-                mFoundResult.get(i).getLocation()
+                ((ResultItemInfo)mFoundResult.get(i)).getTitle(),
+                ((ResultItemInfo)mFoundResult.get(i)).getDescription(),
+                ((ResultItemInfo)mFoundResult.get(i)).getLocation()
             ));
         }
 
@@ -243,7 +243,7 @@ public class FragmentMap extends FragmentResult {
                     Log.i("AJT", "Single tap");
                     mMapController.animateTo(item.getPoint());
 
-                    showDetails(result.get(index));
+                    showDetails((ResultItemInfo)(result.get(index)));
 
                     return true;
                 }
@@ -343,7 +343,7 @@ public class FragmentMap extends FragmentResult {
 
     private void showDetails(ResultItemInfo itemInfo) {
 
-        final byte[] itemImageBytes = itemInfo.getImage();
+        final byte[] itemImageBytes = Helpers.toPrimitives(itemInfo.getImage());
         final boolean showImage = itemInfo.isContentAllowed();
 
         String itemTitle = showImage ? itemInfo.getTitle() : "Lorem ipsum dolor sit";

@@ -23,10 +23,10 @@ package com.android.java.androidjavatools.controller.template
 
 import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter
 import com.android.java.androidjavatools.model.ResultItemInfo
-import com.android.java.androidjavatools.model.SearchResult
+import com.android.java.androidjavatools.model.SetWithImages
 
 interface ResultProvider {
-    var searchResult: SearchResult?
+    var searchResult: SetWithImages?
     var searchResultFragment: String?
 
     var selectedItemAdapter: ResultDetailAdapter?

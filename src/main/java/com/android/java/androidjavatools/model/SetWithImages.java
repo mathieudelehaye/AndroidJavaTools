@@ -1,5 +1,5 @@
 //
-//  SearchResult.java
+//  SetWithImages.java
 //
 //  Created by Mathieu Delehaye on 26/02/2023.
 //
@@ -23,63 +23,50 @@ package com.android.java.androidjavatools.model;
 
 import android.util.Log;
 import com.android.java.androidjavatools.Helpers;
+import com.android.java.androidjavatools.controller.template.ImageDownloaderThread;
+import com.android.java.androidjavatools.controller.template.ItemWithImage;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import kotlin.Unit;
 
-public class SearchResult {
-    class ImageDownloaderThread extends Thread {
-        private TaskCompletionManager[] mCbManager;
-
-        public void setCallbackManagers(TaskCompletionManager... cbManager) {
-            mCbManager = cbManager;
-        }
-
-        @Override
-        public void run() {
-            // Asynchronously start the image downloads
-            for (String key: new ArrayList<>(mResultItems.keySet())) {
-                downloadAndDisplayImage(mImageUrls.get(key), mResultItems.get(key), mCbManager);
-            }
-        }
-    }
-
-    private HashMap<String, ResultItemInfo> mResultItems = new HashMap<>();
+public class SetWithImages {
+    private HashMap<String, ItemWithImage> mItems = new HashMap<>();
     private HashMap<String, String> mImageUrls = new HashMap<>();
     private int mReceivedImageNumber = 0;
     private final Object mImageUpdateLock = new Object();
 
-    public ResultItemInfo get(String key) {
-        return mResultItems.get(key);
+    public ItemWithImage get(String key) {
+        return mItems.get(key);
     }
 
-    public ResultItemInfo get(int index) {
-        ArrayList<String> keys = new ArrayList<>(mResultItems.keySet());
-        return mResultItems.get(keys.get(index));
+    public ItemWithImage get(int index) {
+        ArrayList<String> keys = new ArrayList<>(mItems.keySet());
+        return mItems.get(keys.get(index));
     }
 
     public int size() {
-        return mResultItems.size();
+        return mItems.size();
     }
 
-    public void add(String key, ResultItemInfo info, String imageURL) {
-        mResultItems.put(key, info);
+    public void add(String key, ItemWithImage info, String imageURL) {
+        mItems.put(key, info);
         mImageUrls.put(key, imageURL);
     }
 
     public void downloadImages(TaskCompletionManager... cbManager) {
-        final ImageDownloaderThread imageDownloader = new ImageDownloaderThread();
-        imageDownloader.setCallbackManagers(cbManager);
+        final var imageDownloader = new ImageDownloaderThread(mItems, mImageUrls,
+            this::downloadImage, cbManager);
         imageDownloader.start();
     }
 
-    private void downloadAndDisplayImage(String imageUrl, ResultItemInfo itemInfo,
-        TaskCompletionManager... cbManager) {
+    private Unit downloadImage(String imageUrl, ItemWithImage itemInfo,
+                               TaskCompletionManager... cbManager) {
 
         if (imageUrl == null || imageUrl.equals("") || itemInfo == null) {
             Log.w("AJT", "Try to download an image but some parameters is missing");
-            return;
+            return null;
         }
 
         var storage = FirebaseStorage.getInstance();
@@ -91,7 +78,7 @@ public class SearchResult {
         gsReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(bytes -> {
 
             synchronized (mImageUpdateLock) {
-                itemInfo.setImage(bytes);
+                itemInfo.setImage(Helpers.toObjects(bytes));
 
                 if (cbManager.length >= 1) {
                     cbManager[0].onSuccess();
@@ -108,5 +95,7 @@ public class SearchResult {
                 cbManager[0].onFailure();
             }
         });
+
+        return Unit.INSTANCE;
     }
 }

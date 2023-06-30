@@ -63,7 +63,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     private ArrayList<String> mSavedRPKeys = new ArrayList<>();
     private CircularKeyBuffer<String> mPastRPKeys = new CircularKeyBuffer<>(2);
     private CircularKeyBuffer<String> mPastSearchQueries = new CircularKeyBuffer<>(4);
-    private SearchResult mSearchResult = new SearchResult();
+    private SetWithImages mSearchResult = new SetWithImages();
     private ResultDetailAdapter mSelectedItemAdapter;
     private String mSearchResultFragment = "list";
 
@@ -87,12 +87,12 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
         }
     }
 
-    public SearchResult getSearchResult() {
+    public SetWithImages getSearchResult() {
         return mSearchResult;
     }
 
     @Override
-    public void setSearchResult(SearchResult result) {
+    public void setSearchResult(SetWithImages result) {
         mSearchResult = result;
     }
 

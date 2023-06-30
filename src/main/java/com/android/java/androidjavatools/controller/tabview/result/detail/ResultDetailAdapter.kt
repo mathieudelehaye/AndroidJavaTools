@@ -30,6 +30,7 @@ import android.view.ViewGroup
 import android.widget.Adapter
 import android.widget.Adapter.IGNORE_ITEM_VIEW_TYPE
 import android.widget.ImageView
+import com.android.java.androidjavatools.Helpers
 import com.android.java.androidjavatools.model.ResultItemInfo
 
 class ResultDetailAdapter(context : Context, item : ResultItemInfo) : Adapter {
@@ -67,10 +68,10 @@ class ResultDetailAdapter(context : Context, item : ResultItemInfo) : Adapter {
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val imageBytes: ByteArray? = mResultItem.image
+        val imageBytes: Array<Byte> = mResultItem.getImage()
 
         return if (imageBytes != null) {
-            val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+            val image = BitmapFactory.decodeByteArray(Helpers.toPrimitives(imageBytes), 0, imageBytes.size)
             val resultImage = ImageView(mContext)
             resultImage.setImageBitmap(image)
             resultImage.scaleType = ImageView.ScaleType.FIT_CENTER

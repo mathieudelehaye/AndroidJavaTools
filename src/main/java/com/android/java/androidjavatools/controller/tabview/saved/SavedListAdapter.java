@@ -28,6 +28,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.model.ResultItemInfo;
@@ -72,7 +73,7 @@ public class SavedListAdapter extends BaseAdapter {
 
         var itemInfo=(ResultItemInfo) getItem(position);
 
-        final byte[] imageByte = itemInfo.getImage();
+        final byte[] imageByte = Helpers.toPrimitives(itemInfo.getImage());
         final boolean showImage = itemInfo.isContentAllowed();
 
         textView.setText(showImage ? (itemInfo.getTitle()) : "Lorem ipsum dolor sit");

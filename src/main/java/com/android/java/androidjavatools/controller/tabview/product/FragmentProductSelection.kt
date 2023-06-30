@@ -179,7 +179,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
     fun productGridPagePreview() {
         val keys = arrayOf("", "", "", "")
         val images =
-                intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
+            intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
             R.drawable.product04, R.drawable.product05)
         val titles = arrayOf("Guerlain", "Sisley", "YSL", "Emporio Armani")
         val descriptions = arrayOf(
