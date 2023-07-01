@@ -313,14 +313,6 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                     val keyList = mutableListOf<String>()
                     val titleList = mutableListOf<String>()
                     val subtitleList = mutableListOf<String>()
-                    val imageList = mutableListOf<Array<Byte>>()
-
-                    // Get byte array for the placeholder image
-                    val placeholderBitmap : Bitmap =
-                        (requireActivity().getDrawable(R.drawable.camera_raster) as BitmapDrawable).bitmap
-                    val stream = ByteArrayOutputStream()
-                    placeholderBitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
-                    val placeholderByteArray = Helpers.toObjects(stream.toByteArray())
 
                     for (i in 0 until      productNumber) {
                         val key: String = productInfo.getKeyAtIndex(i)!!
@@ -329,11 +321,10 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                         val description: String = productInfo.getSubtitleAtIndex(i)!!
                         val imageURL: String = productInfo.getImageURLAtIndex(i)!!
 
-                        // Update the Compose view states
+                        // Prepare the state data for the Compose text views
                         keyList.add(key)
                         titleList.add(productInfo.getTitleAtIndex(i)!!)
                         subtitleList.add(productInfo.getSubtitleAtIndex(i)!!)
-                        imageList.add(placeholderByteArray)
 
                         // Update the set to download the images
                         mProducts.add(
@@ -341,15 +332,14 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                             ProductItemInfo(key, title, subtitle, description, true),
                             imageURL
                         )
-
                     }
 
+                    // Update the states for the Compose text views
                     mProductKeys.value = keyList.toTypedArray()
                     mProductTitles.value = titleList.toTypedArray()
                     mProductSubtitles.value = subtitleList.toTypedArray()
-                    mProductImages.value = imageList.toTypedArray()
 
-//                    downloadProductImages()
+                    updateProductImages()
 
                     Log.d("AJT", "Found $productNumber items for filter `$mFilterField`")
                 }
@@ -358,9 +348,32 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
             })
     }
 
-    private fun downloadProductImages() {
+    private fun updateProductImages() {
+        val productNumber = mProducts.size()
+        val imageList = mutableListOf<Array<Byte>>()
+
+        // Get byte array for the placeholder image
+        val placeholderBitmap : Bitmap =
+            (requireActivity().getDrawable(R.drawable.camera_raster) as BitmapDrawable).bitmap
+        val stream = ByteArrayOutputStream()
+        placeholderBitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
+        val placeholderByteArray = Helpers.toObjects(stream.toByteArray())
+
+        // Update the Compose image view with the placeholder image
+        for (i in 0 until      productNumber) {
+            imageList.add(placeholderByteArray)
+        }
+        mProductImages.value = imageList.toTypedArray()
+
         mProducts.downloadImages(object : TaskCompletionManager {
             override fun onSuccess() {
+                // Update the Compose image view with the latest downloaded images
+                for (i in 0 until      mProducts.size()) {
+                    if (mProducts[i].mustShowImage()) {
+                        imageList[i] = mProducts[i].getImage()
+                    }
+                }
+                mProductImages.value = imageList.toTypedArray()
             }
 
             override fun onFailure() {}

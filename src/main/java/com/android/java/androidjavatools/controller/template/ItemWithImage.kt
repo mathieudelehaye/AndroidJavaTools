@@ -34,7 +34,9 @@ open abstract class ItemWithImage {
     }
 
     open fun mustShowImage(): Boolean {
-        val res = mImage != null && !mImageShownInDetails
+        val res = mImage != null &&
+            mImage.isNotEmpty() &&
+            !mImageShownInDetails
         if (res) {
             mImageShownInDetails = true
         }
