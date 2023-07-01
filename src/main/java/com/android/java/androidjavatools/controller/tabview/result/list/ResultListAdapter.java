@@ -30,7 +30,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.java.androidjavatools.Helpers;
-import com.android.java.androidjavatools.model.ResultItemInfo;
+import com.android.java.androidjavatools.model.result.ResultItemInfo;
 import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.model.SetWithImages;
 

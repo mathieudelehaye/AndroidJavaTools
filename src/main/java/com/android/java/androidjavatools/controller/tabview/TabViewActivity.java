@@ -43,6 +43,7 @@ import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchHistoryManager;
 import com.android.java.androidjavatools.model.*;
 import com.android.java.androidjavatools.R;
+import com.android.java.androidjavatools.model.result.ResultItemInfo;
 import com.google.firebase.firestore.FirebaseFirestore;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;

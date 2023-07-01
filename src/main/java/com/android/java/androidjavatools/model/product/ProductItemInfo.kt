@@ -19,15 +19,41 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.model
+package com.android.java.androidjavatools.model.product
 
 import com.android.java.androidjavatools.controller.template.ItemWithImage
 
-class ProductItemInfo(key : String, title : String, description : String, displayBrand : Boolean) :
-    ItemWithImage() {
+class ProductItemInfo (
+    key : String,
+    title : String,
+    subtitle : String,
+    description : String,
+    displayBrand : Boolean
+) : ItemWithImage() {
 
     private val mKey: String? = key
-    private val mTitle: String? = title
-    private val mDescription: String? = description
+    private var mTitle: String? = title
+    private val mSubtitle: String? = subtitle
+    private var mDescription: String? = description
     private val mContentAllowed = displayBrand
+
+    fun getKey(): String? {
+        return mKey
+    }
+
+    fun getTitle(): String? {
+        return mTitle
+    }
+
+    fun getSubtitle(): String? {
+        return mSubtitle
+    }
+
+    fun getDescription(): String? {
+        return mDescription
+    }
+
+    fun isContentAllowed(): Boolean {
+        return mContentAllowed
+    }
 }

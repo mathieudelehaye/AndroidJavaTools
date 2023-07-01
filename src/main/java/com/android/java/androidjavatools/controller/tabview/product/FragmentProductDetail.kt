@@ -21,6 +21,7 @@
 
 package com.android.java.androidjavatools.controller.tabview.product
 
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,8 +33,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -44,10 +47,10 @@ import com.android.java.androidjavatools.R
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.controller.template.backButton
 import com.android.java.androidjavatools.controller.template.buttonWithText
-import com.android.java.androidjavatools.model.AppUser
-import com.android.java.androidjavatools.model.AuthManager
+import com.android.java.androidjavatools.model.user.AppUser
+import com.android.java.androidjavatools.model.user.AuthManager
 import com.android.java.androidjavatools.model.TaskCompletionManager
-import com.android.java.androidjavatools.model.UserInfoDBEntry
+import com.android.java.androidjavatools.model.user.UserInfoDBEntry
 import com.google.firebase.firestore.FirebaseFirestore
 
 abstract class FragmentProductDetail : FragmentCompose() {
@@ -55,7 +58,8 @@ abstract class FragmentProductDetail : FragmentCompose() {
     protected open val mUserInfoDBEntry = UserInfoDBEntry(mDatabase, AppUser.getInstance().id)
 
     private var mKey: String = ""
-    private var mImage: MutableState<Int> = mutableStateOf(R.drawable.product01)
+    private var mImage: MutableState<ImageBitmap>
+        = mutableStateOf(BitmapFactory.decodeResource(activity?.resources!!, R.drawable.camera).asImageBitmap())
     private var mTitle: MutableState<String> = mutableStateOf("")
     private var mSubtitle: MutableState<String> = mutableStateOf("")
 
@@ -84,7 +88,7 @@ abstract class FragmentProductDetail : FragmentCompose() {
                         .border(width = 0.5.dp, Color.DarkGray)
                 ) {
                     Image(
-                        painter = painterResource(id = image)
+                        painter = BitmapPainter(image)
                         , contentDescription = "Image with id $image"
                         , contentScale = ContentScale.Fit
                         , modifier = Modifier
@@ -190,7 +194,7 @@ abstract class FragmentProductDetail : FragmentCompose() {
     open fun productDescription() {
     }
 
-    fun setImage(image: Int) {
+    fun setImage(image: ImageBitmap) {
         mImage.value = image
     }
 
@@ -211,10 +215,10 @@ abstract class FragmentProductDetail : FragmentCompose() {
     @Preview
     @Composable
     fun productDetailPreview() {
-        setImage(R.drawable.product01)
-        setTitle("Guerlain")
-        setSubtitle("Abeille Royale Double Renew & Repair Advanced Serum 345ml")
-        productDetail()
+//        setImage(R.drawable.product01)
+//        setTitle("Guerlain")
+//        setSubtitle("Abeille Royale Double Renew & Repair Advanced Serum 345ml")
+//        productDetail()
     }
 
     private fun isUserConnected(): Boolean {

@@ -35,7 +35,7 @@ import com.android.java.androidjavatools.controller.tabview.result.detail.Result
 import com.android.java.androidjavatools.controller.tabview.result.list.FragmentResultList;
 import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.controller.tabview.search.SearchBox;
-import com.android.java.androidjavatools.model.ResultItemInfo;
+import com.android.java.androidjavatools.model.result.ResultItemInfo;
 import com.google.firebase.firestore.FirebaseFirestore;
 import org.jetbrains.annotations.NotNull;
 

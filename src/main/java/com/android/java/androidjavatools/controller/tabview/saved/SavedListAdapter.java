@@ -31,7 +31,7 @@ import android.widget.*;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
-import com.android.java.androidjavatools.model.ResultItemInfo;
+import com.android.java.androidjavatools.model.result.ResultItemInfo;
 import java.util.List;
 import java.util.Map;
 

@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import com.android.java.androidjavatools.controller.template.Navigator;
-import com.android.java.androidjavatools.model.AuthManager;
+import com.android.java.androidjavatools.model.user.AuthManager;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class FragmentAuthenticateDialog extends DialogFragment {

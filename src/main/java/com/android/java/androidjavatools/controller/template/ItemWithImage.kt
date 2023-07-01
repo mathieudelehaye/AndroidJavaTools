@@ -21,7 +21,7 @@
 
 package com.android.java.androidjavatools.controller.template
 
-open class ItemWithImage {
+open abstract class ItemWithImage {
     private var mImage: Array<Byte> = emptyArray()
     private var mImageShownInDetails = false
 

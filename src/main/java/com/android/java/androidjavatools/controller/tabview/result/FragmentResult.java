@@ -35,7 +35,7 @@ import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.controller.template.FragmentHelpDialog;
 import com.android.java.androidjavatools.controller.template.FragmentWithSearch;
 import com.android.java.androidjavatools.controller.template.SearchProvider;
-import com.android.java.androidjavatools.model.AppUser;
+import com.android.java.androidjavatools.model.user.AppUser;
 import com.android.java.androidjavatools.model.GeoPosition;
 import com.android.java.androidjavatools.model.SetWithImages;
 import com.android.java.androidjavatools.model.TaskCompletionManager;

@@ -19,8 +19,10 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.model;
+package com.android.java.androidjavatools.model.result;
 
+import com.android.java.androidjavatools.model.DBCollectionAccessor;
+import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 

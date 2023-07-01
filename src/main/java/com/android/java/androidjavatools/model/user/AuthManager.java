@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.model;
+package com.android.java.androidjavatools.model.user;
 
 import android.Manifest;
 import android.app.Activity;
@@ -41,6 +41,7 @@ import com.android.java.androidjavatools.controller.template.Navigator;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.controller.tabview.auth.AuthenticateDialogListener;
+import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;

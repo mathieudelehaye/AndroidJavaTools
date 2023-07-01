@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.java.androidjavatools.R
 import com.android.java.androidjavatools.controller.template.FragmentCompose
-import com.android.java.androidjavatools.model.AppUser
+import com.android.java.androidjavatools.model.user.AppUser
 
 data class MenuItem(
     val name: String,

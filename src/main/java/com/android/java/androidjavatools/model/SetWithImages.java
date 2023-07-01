@@ -29,6 +29,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import kotlin.Unit;
 
 public class SetWithImages {
@@ -36,6 +37,10 @@ public class SetWithImages {
     private HashMap<String, String> mImageUrls = new HashMap<>();
     private int mReceivedImageNumber = 0;
     private final Object mImageUpdateLock = new Object();
+
+    public Set<String> keySet() {
+        return mItems.keySet();
+    }
 
     public ItemWithImage get(String key) {
         return mItems.get(key);

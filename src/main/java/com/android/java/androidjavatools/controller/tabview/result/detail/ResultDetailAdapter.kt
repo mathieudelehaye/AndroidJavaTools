@@ -31,7 +31,7 @@ import android.widget.Adapter
 import android.widget.Adapter.IGNORE_ITEM_VIEW_TYPE
 import android.widget.ImageView
 import com.android.java.androidjavatools.Helpers
-import com.android.java.androidjavatools.model.ResultItemInfo
+import com.android.java.androidjavatools.model.result.ResultItemInfo
 
 class ResultDetailAdapter(context : Context, item : ResultItemInfo) : Adapter {
     private val mContext : Context = context
