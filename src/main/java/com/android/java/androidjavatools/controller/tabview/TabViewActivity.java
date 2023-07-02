@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.android.java.androidjavatools.Helpers;
+import com.android.java.androidjavatools.controller.tabview.product.FragmentProductSelection;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
 import com.android.java.androidjavatools.controller.tabview.result.detail.FragmentResultDetail;
 import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
@@ -213,6 +214,15 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     public void onNavigation(@NonNull String dest, @NonNull String orig) {
         switch (dest) {
             case "products":
+                switch (orig) {
+                    case "tab":
+                        // Update the product list
+                        ((FragmentProductSelection)navigator().getFragment("products")).launchSearch();
+                        break;
+                    default:
+                        break;
+                }
+                break;
             case "tab":
                 switch (orig) {
                     case "help":
@@ -232,7 +242,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                 }
                 break;
             case "list":
-                switch (orig) {
+            switch (orig) {
                     case "suggestion":
                         // Show toolbar when coming from the Suggestion page
                         toggleToolbar(true);

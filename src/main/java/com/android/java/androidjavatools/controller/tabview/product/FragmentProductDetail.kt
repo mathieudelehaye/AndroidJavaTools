@@ -33,7 +33,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
@@ -43,7 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.android.java.androidjavatools.R
+import com.android.java.androidjavatools.Helpers
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.controller.template.backButton
 import com.android.java.androidjavatools.controller.template.buttonWithText
@@ -58,8 +57,7 @@ abstract class FragmentProductDetail : FragmentCompose() {
     protected open val mUserInfoDBEntry = UserInfoDBEntry(mDatabase, AppUser.getInstance().id)
 
     private var mKey: String = ""
-    private var mImage: MutableState<ImageBitmap>
-        = mutableStateOf(BitmapFactory.decodeResource(activity?.resources!!, R.drawable.camera).asImageBitmap())
+    private var mImage: MutableState<Array<Byte>> = mutableStateOf(emptyArray())
     private var mTitle: MutableState<String> = mutableStateOf("")
     private var mSubtitle: MutableState<String> = mutableStateOf("")
 
@@ -73,6 +71,11 @@ abstract class FragmentProductDetail : FragmentCompose() {
         var image by remember { mImage }
         var title by remember { mTitle }
         var subtitle by remember { mSubtitle }
+
+        val imageByteArray = if (image.isNotEmpty()) image
+            else Helpers.getPlaceholderImageByteArray(requireActivity())
+        val imageBitmap = BitmapFactory.decodeByteArray(Helpers.toPrimitives(imageByteArray),0,
+            imageByteArray.size).asImageBitmap()
 
         Column {
             Column(
@@ -88,7 +91,7 @@ abstract class FragmentProductDetail : FragmentCompose() {
                         .border(width = 0.5.dp, Color.DarkGray)
                 ) {
                     Image(
-                        painter = BitmapPainter(image)
+                        painter = BitmapPainter(imageBitmap)
                         , contentDescription = "Image with id $image"
                         , contentScale = ContentScale.Fit
                         , modifier = Modifier
@@ -164,7 +167,7 @@ abstract class FragmentProductDetail : FragmentCompose() {
                                 // Restore the navigation recording
                                 mNavigatorManager?.navigator()?.setNavigationRecording(true)
 
-                                mUserInfoDBEntry.setKey(AppUser.getInstance().id);
+                                mUserInfoDBEntry.key = AppUser.getInstance().id;
                                 mUserInfoDBEntry.readDBFields(object : TaskCompletionManager {
                                     override fun onSuccess() {
                                         val address = mUserInfoDBEntry.address
@@ -194,7 +197,7 @@ abstract class FragmentProductDetail : FragmentCompose() {
     open fun productDescription() {
     }
 
-    fun setImage(image: ImageBitmap) {
+    fun setImage(image: Array<Byte>) {
         mImage.value = image
     }
 

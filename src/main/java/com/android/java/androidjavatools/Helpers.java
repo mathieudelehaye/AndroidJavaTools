@@ -21,11 +21,16 @@
 
 package com.android.java.androidjavatools;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.inputmethod.InputMethodManager;
+import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -103,5 +108,14 @@ public class Helpers {
         for (byte b : bytesPrim) bytes[i++] = b; //Autoboxing
         return bytes;
 
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    public static Byte[] getPlaceholderImageByteArray(Activity activity) {
+        final Bitmap placeholderBitmap =
+            ((BitmapDrawable)(activity.getDrawable(R.drawable.camera_raster))).getBitmap();
+        final var stream = new ByteArrayOutputStream();
+        placeholderBitmap.compress(Bitmap.CompressFormat.PNG, 90, stream);
+        return Helpers.toObjects(stream.toByteArray());
     }
 }

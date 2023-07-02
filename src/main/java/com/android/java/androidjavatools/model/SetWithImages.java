@@ -55,6 +55,11 @@ public class SetWithImages {
         return mItems.size();
     }
 
+    public void clear() {
+        mItems.clear();
+        mImageUrls.clear();
+    }
+
     public void add(String key, ItemWithImage info, String imageURL) {
         mItems.put(key, info);
         mImageUrls.put(key, imageURL);

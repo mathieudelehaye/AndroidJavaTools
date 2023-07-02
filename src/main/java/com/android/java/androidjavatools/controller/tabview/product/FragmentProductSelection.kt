@@ -22,9 +22,7 @@
 package com.android.java.androidjavatools.controller.tabview.product
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -62,7 +60,6 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.google.firebase.firestore.FirebaseFirestore
-import java.io.ByteArrayOutputStream
 
 open class FragmentProductSelection : FragmentComposeWithSearch() {
     companion object {
@@ -79,6 +76,10 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
     private var mProductImages: MutableState<Array<Array<Byte>>> = mutableStateOf(emptyArray())
     private var mProductTitles: MutableState<Array<String>> = mutableStateOf(emptyArray())
     private var mProductSubtitles: MutableState<Array<String>> = mutableStateOf(emptyArray())
+
+    fun launchSearch() {
+        searchProducts()
+    }
 
     @OptIn(ExperimentalPagerApi::class)
     @Composable
@@ -220,7 +221,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
             onClick = {
                 val productDetailFragment
                     = mNavigatorManager.navigator().getFragment("product") as FragmentProductDetail
-                productDetailFragment.setImage(imageBitmap)
+                productDetailFragment.setImage(image)
                 productDetailFragment.setTitle(title)
                 productDetailFragment.setSubtitle(description)
                 productDetailFragment.setKey(key)
@@ -228,10 +229,10 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                 mNavigatorManager.navigator().showFragment("product")
             }
             , modifier = Modifier
-            .background(Color.White)
-            .width(200.dp)
-            .height(200.dp)
-            .border(width = 1.dp, Color.DarkGray)
+                .background(Color.White)
+                .width(200.dp)
+                .height(200.dp)
+                .border(width = 1.dp, Color.DarkGray)
             , elevation = 6.dp
         ) {
             Column {
@@ -246,7 +247,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                         , contentDescription = "Image for key $key"
                         , contentScale = ContentScale.Fit
                         , modifier = Modifier
-                        .align(Alignment.Center)
+                            .align(Alignment.Center)
                     )
                 }
                 Box(
@@ -263,7 +264,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                             , textAlign = TextAlign.Center
                             , color = Color.Blue
                             , modifier = Modifier
-                            .padding(start = 2.dp)
+                                .padding(start = 2.dp)
                         )
                         Text(
                             text = description
@@ -275,7 +276,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                             , overflow = TextOverflow.Clip
                             , softWrap = false
                             , modifier = Modifier
-                            .padding(start = 2.dp)
+                                .padding(start = 2.dp)
                         )
                     }
                 }
@@ -288,8 +289,6 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
 
         if (isVisibleToUser) {
             Log.d("AJT", "Product selection page becomes visible")
-
-            searchProducts()
         } else {
             Log.d("AJT", "Product selection page becomes hidden")
         }
@@ -313,6 +312,8 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                     val keyList = mutableListOf<String>()
                     val titleList = mutableListOf<String>()
                     val subtitleList = mutableListOf<String>()
+
+                    mProducts.clear();
 
                     for (i in 0 until      productNumber) {
                         val key: String = productInfo.getKeyAtIndex(i)!!
@@ -352,16 +353,9 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
         val productNumber = mProducts.size()
         val imageList = mutableListOf<Array<Byte>>()
 
-        // Get byte array for the placeholder image
-        val placeholderBitmap : Bitmap =
-            (requireActivity().getDrawable(R.drawable.camera_raster) as BitmapDrawable).bitmap
-        val stream = ByteArrayOutputStream()
-        placeholderBitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
-        val placeholderByteArray = Helpers.toObjects(stream.toByteArray())
-
         // Update the Compose image view with the placeholder image
         for (i in 0 until      productNumber) {
-            imageList.add(placeholderByteArray)
+            imageList.add(Helpers.getPlaceholderImageByteArray(requireActivity()))
         }
         mProductImages.value = imageList.toTypedArray()
 
