@@ -27,6 +27,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DBCollectionAccessor {
@@ -245,20 +246,20 @@ public class DBCollectionAccessor {
             //dataItem.put("documentId", document.getId());   // uncomment to debug
             //dataChangeItem.put("documentId", false);    // uncomment to debug
 
-            // TODO: move the coordinate out of this class, in order to keep it reusable
-            // Get the Coordinates map
-            var coordinatesMap = (HashMap<String, Double>) document.getData().get("Coordinates");
-
             for (String field :fields) {
-                if (coordinatesMap != null && field == "Latitude") {
-                    dataItem.put("Latitude", String.valueOf(coordinatesMap.get("latitude")));
-                    dataChangeItem.put("Latitude", false);
+                if (field.contains(".") && field.contains("->")) {
+                    if (!readDocumentNestedField(document, field, dataItem, dataChangeItem)) {
+                        Log.e("AJT", "Error while reading nested field");
+                        return;
+                    }
                     continue;
                 }
 
-                if (coordinatesMap != null && field == "Longitude") {
-                    dataItem.put("Longitude", String.valueOf(coordinatesMap.get("longitude")));
-                    dataChangeItem.put("Longitude", false);
+                if (field.contains("[]->")) {
+                    if (!readDocumentFieldArray(document, field, dataItem, dataChangeItem)) {
+                        Log.e("AJT", "Error while reading field array");
+                        return;
+                    }
                     continue;
                 }
 
@@ -269,6 +270,88 @@ public class DBCollectionAccessor {
             dataItem.put("key", document.getId());
             dataChangeItem.put("key", false);
         }
+    }
+
+    private Boolean readDocumentNestedField(
+        QueryDocumentSnapshot inputDocument,
+        String fieldDescription,
+        HashMap<String, String> outputItem,
+        HashMap<String, Boolean> outputItemChange) {
+
+        /*
+         *  E.g.:
+         *    fieldDescription ==  "Coordinates.latitude->Latitude" =>
+         *      inputField = "Coordinates"
+         *      nestedInputField = "latitude"
+         *      outputField = "Latitude"
+         */
+
+        String[] split1 = fieldDescription.split(".");
+        final String inputField = split1[0];
+
+        String[] split2 = split1[1].split("->");
+        final String nestedInputField = split2[0];
+        final String outputField = split2[1];
+
+        if (inputField.equals("") ||
+            nestedInputField.equals("") ||
+            outputField.equals("")
+        ) {
+            return false;
+        }
+
+        // TODO: use String values instead of Double
+        final var nestedFields = (HashMap<String, Double>) inputDocument.getData().get(inputField);
+
+        outputItem.put(outputField, String.valueOf(nestedFields.get(nestedInputField)));
+        outputItemChange.put(outputField, false);
+
+        return true;
+    }
+
+    private Boolean readDocumentFieldArray(
+            QueryDocumentSnapshot inputDocument,
+            String fieldDescription,
+            HashMap<String, String> outputItem,
+            HashMap<String, Boolean> outputItemChange) {
+
+        /*
+         *  E.g.:
+         *    fieldDescription ==  "favourites[]->favourites" =>
+         *      inputField = "favourites"
+         *      outputField = "favourites"
+         */
+
+        String[] split1 = fieldDescription.split("\\[\\]->");
+        final String inputField = split1[0];
+        final String outputField = split1[1];
+
+        if (inputField.equals("") ||
+            outputField.equals("")
+        ) {
+            return false;
+        }
+
+        final var data = inputDocument.getData();
+        final var field = data.get(inputField);
+        final var list = (List<String>) field;
+        final String[] array = list.toArray(new String[0]);
+
+        if (array.length == 0) {
+            return false;
+        }
+
+        // Convert the field array to a comma separated string
+        var sb = new StringBuilder();
+        for (String s : array) {
+            sb.append(s).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+
+        outputItem.put(outputField, sb.toString());
+        outputItemChange.put(outputField, false);
+
+        return true;
     }
 
     private boolean filterDocument(QueryDocumentSnapshot document, SearchFilter filter) {

@@ -41,8 +41,8 @@ public class SavedListAdapter extends BaseAdapter {
     private Map<String, ResultItemInfo> mResults;
     private List<String> mResultKeys;
 
-    public SavedListAdapter(Context ctxt, ResultProvider resultProvider) {
-        mContext = ctxt;
+    public SavedListAdapter(Context context, ResultProvider resultProvider) {
+        mContext = context;
         mResultProvider = resultProvider;
         mResults = resultProvider.getSavedResults();
         mResultKeys = resultProvider.getSavedResultKeys();
