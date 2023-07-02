@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.android.java.androidjavatools.Helpers;
+import com.android.java.androidjavatools.controller.tabview.product.FragmentProductSelection;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
 import com.android.java.androidjavatools.controller.tabview.result.detail.FragmentResultDetail;
 import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
@@ -43,6 +44,7 @@ import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchHistoryManager;
 import com.android.java.androidjavatools.model.*;
 import com.android.java.androidjavatools.R;
+import com.android.java.androidjavatools.model.result.ResultItemInfo;
 import com.google.firebase.firestore.FirebaseFirestore;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
@@ -63,7 +65,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     private ArrayList<String> mSavedRPKeys = new ArrayList<>();
     private CircularKeyBuffer<String> mPastRPKeys = new CircularKeyBuffer<>(2);
     private CircularKeyBuffer<String> mPastSearchQueries = new CircularKeyBuffer<>(4);
-    private SearchResult mSearchResult = new SearchResult();
+    private SetWithImages mSearchResult = new SetWithImages();
     private ResultDetailAdapter mSelectedItemAdapter;
     private String mSearchResultFragment = "list";
 
@@ -87,12 +89,12 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
         }
     }
 
-    public SearchResult getSearchResult() {
+    public SetWithImages getSearchResult() {
         return mSearchResult;
     }
 
     @Override
-    public void setSearchResult(SearchResult result) {
+    public void setSearchResult(SetWithImages result) {
         mSearchResult = result;
     }
 
@@ -212,6 +214,15 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     public void onNavigation(@NonNull String dest, @NonNull String orig) {
         switch (dest) {
             case "products":
+                switch (orig) {
+                    case "tab":
+                        // Update the product list
+                        ((FragmentProductSelection)navigator().getFragment("products")).launchSearch();
+                        break;
+                    default:
+                        break;
+                }
+                break;
             case "tab":
                 switch (orig) {
                     case "help":
@@ -231,7 +242,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                 }
                 break;
             case "list":
-                switch (orig) {
+            switch (orig) {
                     case "suggestion":
                         // Show toolbar when coming from the Suggestion page
                         toggleToolbar(true);

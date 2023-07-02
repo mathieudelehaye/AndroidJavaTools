@@ -35,9 +35,9 @@ import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.controller.template.FragmentHelpDialog;
 import com.android.java.androidjavatools.controller.template.FragmentWithSearch;
 import com.android.java.androidjavatools.controller.template.SearchProvider;
-import com.android.java.androidjavatools.model.AppUser;
+import com.android.java.androidjavatools.model.user.AppUser;
 import com.android.java.androidjavatools.model.GeoPosition;
-import com.android.java.androidjavatools.model.SearchResult;
+import com.android.java.androidjavatools.model.SetWithImages;
 import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.android.java.androidjavatools.R;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +55,7 @@ public abstract class FragmentResult extends FragmentWithSearch {
     }
 
     protected GeoPosition mSearchStart;
-    protected SearchResult mFoundResult = new SearchResult();
+    protected SetWithImages mFoundResult = new SetWithImages();
     protected MyLocationNewOverlay mLocationOverlay;
     protected final double mSearchRadiusInCoordinate = 0.045;
     protected abstract void searchAndDisplayItems();
@@ -75,7 +75,7 @@ public abstract class FragmentResult extends FragmentWithSearch {
         return mSearchStart;
     }
 
-    public SearchResult getFoundResult() {
+    public SetWithImages getFoundResult() {
         return mFoundResult;
     }
 
@@ -144,7 +144,7 @@ public abstract class FragmentResult extends FragmentWithSearch {
         searchAndDisplayItems();
     }
 
-    public void tryAndCopySearch(@NotNull GeoPosition newStart, SearchResult newResult) {
+    public void tryAndCopySearch(@NotNull GeoPosition newStart, SetWithImages newResult) {
         // Check if the search start are different. If not, do not copy the searches
         if (mSearchStart != null) {
             final Location originalLocation = mSearchStart.getLocation();

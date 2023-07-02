@@ -36,9 +36,9 @@ import com.android.java.androidjavatools.R
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.controller.template.Navigator
 import com.android.java.androidjavatools.databinding.FragmentAccountBinding
-import com.android.java.androidjavatools.model.AppUser
+import com.android.java.androidjavatools.model.user.AppUser
 import com.android.java.androidjavatools.model.TaskCompletionManager
-import com.android.java.androidjavatools.model.UserInfoDBEntry
+import com.android.java.androidjavatools.model.user.UserInfoDBEntry
 import com.google.firebase.firestore.FirebaseFirestore
 
 abstract class FragmentAccount : FragmentCompose() {

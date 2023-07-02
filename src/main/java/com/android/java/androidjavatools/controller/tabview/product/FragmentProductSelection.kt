@@ -21,6 +21,8 @@
 
 package com.android.java.androidjavatools.controller.tabview.product
 
+import android.annotation.SuppressLint
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -36,20 +38,24 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.android.java.androidjavatools.Helpers
 import com.android.java.androidjavatools.R
 import com.android.java.androidjavatools.controller.tabview.search.SuggestionsAdapter
 import com.android.java.androidjavatools.controller.template.FragmentComposeWithSearch
 import com.android.java.androidjavatools.controller.template.backButton
-import com.android.java.androidjavatools.model.ProductInfo
+import com.android.java.androidjavatools.model.SetWithImages
 import com.android.java.androidjavatools.model.TaskCompletionManager
+import com.android.java.androidjavatools.model.product.ProductInfo
+import com.android.java.androidjavatools.model.product.ProductItemInfo
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -64,11 +70,16 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
         }
     }
 
-    // TODO: download the images from the DB
+    private val mProducts = SetWithImages()
+
     private var mProductKeys: MutableState<Array<String>> = mutableStateOf(emptyArray())
-    private var mProductImages: MutableState<Array<Int>> = mutableStateOf(emptyArray())
+    private var mProductImages: MutableState<Array<Array<Byte>>> = mutableStateOf(emptyArray())
     private var mProductTitles: MutableState<Array<String>> = mutableStateOf(emptyArray())
     private var mProductSubtitles: MutableState<Array<String>> = mutableStateOf(emptyArray())
+
+    fun launchSearch() {
+        searchProducts()
+    }
 
     @OptIn(ExperimentalPagerApi::class)
     @Composable
@@ -78,9 +89,9 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
         var productTitles by remember { mProductTitles }
         var productSubtitles by remember { mProductSubtitles }
 
-        val products = productTitles.size
-        val pages: Int = (products / 5) + 1
-        Log.d("AJT", "Product selection updated: $products product(s), $pages page(s)")
+        val productNumber = productKeys.size
+        val pages: Int = (productNumber / 5) + 1
+        Log.d("AJT", "Product selection updated: $productNumber product(s), $pages page(s)")
 
         val adapter = SuggestionsAdapter(mActivity, mSearchBox, mSearchBox.getSearchableConfig())
         mSearchBox.setSuggestionsAdapter(adapter)
@@ -98,15 +109,15 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                     initialPage = 0
                 )
             ) { page ->
-                val pageProducts =  if (page < pages - 1) 4 else (products % 5)
+                val pageProductNumber =  if (page < pages - 1) 4 else (productNumber % 5)
                 val startIndex = page * 4
-                val endIndex = page * 4 + pageProducts
+                val endIndex = page * 4 + pageProductNumber
 
-                Log.d("AJT", "Page $page has $pageProducts products, fom index $startIndex " +
+                Log.d("AJT", "Page $page has $pageProductNumber products, fom index $startIndex " +
                     "to $endIndex")
 
                 productGridPage(
-                    pageProducts,
+                    pageProductNumber,
                     productImages.copyOfRange(startIndex, endIndex)
                     , productTitles.copyOfRange(startIndex, endIndex)
                     , productSubtitles.copyOfRange(startIndex, endIndex)
@@ -147,7 +158,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    fun productGridPage(productNumber: Int, images : Array<Int>, titles : Array<String>,
+    fun productGridPage(productNumber: Int, images : Array<Array<Byte>>, titles : Array<String>,
         descriptions : Array<String>, keys : Array<String>) {
 
         if (productNumber > 4) {
@@ -159,16 +170,16 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
             cells = GridCells.Fixed(2)
         ) {
             items(productNumber) { index ->
-                val imageId = images[index % productNumber]
+                val key = keys[index % productNumber]
                 val title = titles[index % productNumber]
                 val description = descriptions[index % productNumber]
-                val key = keys[index % productNumber]
+                val image = images[index % productNumber]
 
                 Box(
                     modifier = Modifier
                         .padding(3.dp)
                 ) {
-                    productCard(imageId, title, description, key)
+                    productCard(image, title, description, key)
                 }
             }
         }
@@ -178,8 +189,9 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
     @Composable
     fun productGridPagePreview() {
         val keys = arrayOf("", "", "", "")
+        // TODO: re-add the preview images
         val images =
-                intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
+            intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
             R.drawable.product04, R.drawable.product05)
         val titles = arrayOf("Guerlain", "Sisley", "YSL", "Emporio Armani")
         val descriptions = arrayOf(
@@ -188,24 +200,28 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
             , "Touch Eclat Le Teint Foundation Infused with Light 100ml"
             , "Because it's You EAU DE PARFUM Delicious and Sparkling 150ml")
 
-        productGridPage(titles.size, images.toTypedArray(), titles, descriptions, keys)
+//        productGridPage(titles.size, images.toTypedArray(), titles, descriptions, keys)
     }
 
     @Preview
     @Composable
     fun productCardPreview() {
-        productCard(R.drawable.product01, "Guerlain",
-            "Abeille Royale Double Renew & Repair Advanced Serum 345ml", "")
+//        productCard(R.drawable.camera, "Guerlain",
+//            "Abeille Royale Double Renew & Repair Advanced Serum 345ml", "")
     }
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun productCard(imageId: Int, title: String, description: String, key: String) {
+    fun productCard(image: Array<Byte>, title: String, description: String, key: String) {
+
+        val imageBitmap = BitmapFactory.decodeByteArray(Helpers.toPrimitives(image),0, image.size)
+            .asImageBitmap()
+
         Card(
             onClick = {
                 val productDetailFragment
                     = mNavigatorManager.navigator().getFragment("product") as FragmentProductDetail
-                productDetailFragment.setImage(imageId)
+                productDetailFragment.setImage(image)
                 productDetailFragment.setTitle(title)
                 productDetailFragment.setSubtitle(description)
                 productDetailFragment.setKey(key)
@@ -213,10 +229,10 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                 mNavigatorManager.navigator().showFragment("product")
             }
             , modifier = Modifier
-            .background(Color.White)
-            .width(200.dp)
-            .height(200.dp)
-            .border(width = 1.dp, Color.DarkGray)
+                .background(Color.White)
+                .width(200.dp)
+                .height(200.dp)
+                .border(width = 1.dp, Color.DarkGray)
             , elevation = 6.dp
         ) {
             Column {
@@ -227,11 +243,11 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                         .height(155.dp)
                 ) {
                     Image(
-                        painter = painterResource(id = imageId)
-                        , contentDescription = "Image with id $imageId"
+                        painter = BitmapPainter(imageBitmap)
+                        , contentDescription = "Image for key $key"
                         , contentScale = ContentScale.Fit
                         , modifier = Modifier
-                        .align(Alignment.Center)
+                            .align(Alignment.Center)
                     )
                 }
                 Box(
@@ -248,7 +264,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                             , textAlign = TextAlign.Center
                             , color = Color.Blue
                             , modifier = Modifier
-                            .padding(start = 2.dp)
+                                .padding(start = 2.dp)
                         )
                         Text(
                             text = description
@@ -260,7 +276,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                             , overflow = TextOverflow.Clip
                             , softWrap = false
                             , modifier = Modifier
-                            .padding(start = 2.dp)
+                                .padding(start = 2.dp)
                         )
                     }
                 }
@@ -273,39 +289,6 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
 
         if (isVisibleToUser) {
             Log.d("AJT", "Product selection page becomes visible")
-
-            val productInfo = ProductInfo(FirebaseFirestore.getInstance())
-            productInfo.setValueBasedFilter(arrayOf(mFilterField), arrayOf("true"))
-
-            productInfo.readDBFieldsForCurrentFilter(arrayOf("title", "subtitle"), object : TaskCompletionManager {
-                override fun onSuccess() {
-                    val products = productInfo.data.size
-
-                    val allImages = intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
-                        R.drawable.product04)
-
-                    val imageList = mutableListOf<Int>()
-                    val titleList = mutableListOf<String>()
-                    val subtitleList = mutableListOf<String>()
-                    val keyList = mutableListOf<String>()
-
-                    for (i in 0 until      products) {
-                        imageList.add(allImages[i % allImages.size])
-                        titleList.add(productInfo.getTitleAtIndex(i)!!)
-                        subtitleList.add(productInfo.getSubtitleAtIndex(i)!!)
-                        keyList.add(productInfo.getKeyAtIndex(i)!!)
-                    }
-
-                    mProductImages.value = imageList.toTypedArray()
-                    mProductTitles.value = titleList.toTypedArray()
-                    mProductSubtitles.value = subtitleList.toTypedArray()
-                    mProductKeys.value = keyList.toTypedArray()
-
-                    Log.d("AJT", "Found $products items for filter `$mFilterField`")
-                }
-
-                override fun onFailure() {}
-            })
         } else {
             Log.d("AJT", "Product selection page becomes hidden")
         }
@@ -313,5 +296,81 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
 
     override fun searchAndDisplayItems() {
         TODO("Not yet implemented")
+    }
+
+    private fun searchProducts() {
+        val productInfo = ProductInfo(FirebaseFirestore.getInstance())
+        productInfo.setValueBasedFilter(arrayOf(mFilterField), arrayOf("true"))
+
+        productInfo.readDBFieldsForCurrentFilter(arrayOf("title", "subtitle", "description", "image_url"),
+            object : TaskCompletionManager {
+
+                @SuppressLint("UseCompatLoadingForDrawables")
+                override fun onSuccess() {
+                    val productNumber = productInfo.data.size
+
+                    val keyList = mutableListOf<String>()
+                    val titleList = mutableListOf<String>()
+                    val subtitleList = mutableListOf<String>()
+
+                    mProducts.clear();
+
+                    for (i in 0 until      productNumber) {
+                        val key: String = productInfo.getKeyAtIndex(i)!!
+                        val title: String = productInfo.getTitleAtIndex(i)!!
+                        val subtitle: String = productInfo.getSubtitleAtIndex(i)!!
+                        val description: String = productInfo.getSubtitleAtIndex(i)!!
+                        val imageURL: String = productInfo.getImageURLAtIndex(i)!!
+
+                        // Prepare the state data for the Compose text views
+                        keyList.add(key)
+                        titleList.add(productInfo.getTitleAtIndex(i)!!)
+                        subtitleList.add(productInfo.getSubtitleAtIndex(i)!!)
+
+                        // Update the set to download the images
+                        mProducts.add(
+                            key,
+                            ProductItemInfo(key, title, subtitle, description, true),
+                            imageURL
+                        )
+                    }
+
+                    // Update the states for the Compose text views
+                    mProductKeys.value = keyList.toTypedArray()
+                    mProductTitles.value = titleList.toTypedArray()
+                    mProductSubtitles.value = subtitleList.toTypedArray()
+
+                    updateProductImages()
+
+                    Log.d("AJT", "Found $productNumber items for filter `$mFilterField`")
+                }
+
+                override fun onFailure() {}
+            })
+    }
+
+    private fun updateProductImages() {
+        val productNumber = mProducts.size()
+        val imageList = mutableListOf<Array<Byte>>()
+
+        // Update the Compose image view with the placeholder image
+        for (i in 0 until      productNumber) {
+            imageList.add(Helpers.getPlaceholderImageByteArray(requireActivity()))
+        }
+        mProductImages.value = imageList.toTypedArray()
+
+        mProducts.downloadImages(object : TaskCompletionManager {
+            override fun onSuccess() {
+                // Update the Compose image view with the latest downloaded images
+                for (i in 0 until      mProducts.size()) {
+                    if (mProducts[i].mustShowImage()) {
+                        imageList[i] = mProducts[i].getImage()
+                    }
+                }
+                mProductImages.value = imageList.toTypedArray()
+            }
+
+            override fun onFailure() {}
+        })
     }
 }

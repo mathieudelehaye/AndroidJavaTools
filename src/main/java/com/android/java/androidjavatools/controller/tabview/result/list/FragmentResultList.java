@@ -35,7 +35,7 @@ import com.android.java.androidjavatools.controller.tabview.result.FragmentResul
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.controller.template.SearchProvider;
 import com.android.java.androidjavatools.databinding.FragmentResultListBinding;
-import com.android.java.androidjavatools.model.ResultItemInfo;
+import com.android.java.androidjavatools.model.result.ResultItemInfo;
 import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.android.java.androidjavatools.R;
 

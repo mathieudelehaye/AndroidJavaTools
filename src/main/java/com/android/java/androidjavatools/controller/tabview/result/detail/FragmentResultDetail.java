@@ -39,7 +39,7 @@ import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.controller.template.Navigator;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.databinding.FragmentResultDetailBinding;
-import com.android.java.androidjavatools.model.ResultItemInfo;
+import com.android.java.androidjavatools.model.result.ResultItemInfo;
 import com.android.java.androidjavatools.R;
 
 public abstract class FragmentResultDetail extends Fragment {

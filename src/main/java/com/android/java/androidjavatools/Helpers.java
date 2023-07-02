@@ -21,13 +21,16 @@
 
 package com.android.java.androidjavatools;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.inputmethod.InputMethodManager;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -90,59 +93,29 @@ public class Helpers {
                 visible ? InputMethodManager.RESULT_SHOWN : InputMethodManager.RESULT_HIDDEN, 0);
     }
 
-    // TODO: improve implementation, e.g. by using varargs or array for the called method arguments.
-    // TODO: remove this static method if unused.
-    public static <T, T1, T2, T3> Object callObjectMethod(Object obj, Class<T> objType, String methodName,
-        T1 arg1, T2 arg2, T3 arg3) {
-
-        if (obj == null) {
-            Log.e("AJT", "Cannot call method `" + methodName + "`, as object null");
-            return null;
+    public static byte[] toPrimitives(Byte[] oBytes) {
+        byte[] bytes = new byte[oBytes.length];
+        for(int i = 0; i < oBytes.length; i++){
+            bytes[i] = oBytes[i];
         }
+        return bytes;
 
-        var typedObject = objType.cast(obj);
-        if (typedObject == null) {
-            Log.e("AJT", "Cannot call method `" + methodName
-                + "`,  as object not of the expected type " + objType);
-            return null;
-        }
+    }
 
-        if (methodName == null | methodName.equals("")) {
-            Log.e("AJT", "Cannot call a method with a null or empty name");
-            return null;
-        }
+    public static Byte[] toObjects(byte[] bytesPrim) {
+        Byte[] bytes = new Byte[bytesPrim.length];
+        int i = 0;
+        for (byte b : bytesPrim) bytes[i++] = b; //Autoboxing
+        return bytes;
 
-        try {
-            Method method = (arg1 == null) ? typedObject.getClass().getMethod(methodName):
-                (arg2 == null) ? typedObject.getClass().getMethod(methodName, arg1.getClass()):
-                    (arg3 == null) ? typedObject.getClass().getMethod(methodName, arg1.getClass(), arg2.getClass()):
-                        typedObject.getClass().getMethod(methodName, arg1.getClass(), arg2.getClass(),
-                            arg3.getClass());
+    }
 
-            Object ret = (arg1 == null) ? method.invoke(obj):
-                (arg2 == null) ? method.invoke(obj, arg1):
-                    (arg3 == null) ? method.invoke(obj, arg1, arg2):
-                        method.invoke(obj, arg1, arg2, arg3);
-
-            return ret;
-        } catch (SecurityException e) {
-            Log.e("AJT", "Security exception while calling `" + methodName + "`: " + e.getCause());
-            return null;
-        } catch (NoSuchMethodException e) {
-            Log.e("AJT", "No method exception while calling `" + methodName + "`: " + e.getCause());
-            return null;
-        } catch (IllegalArgumentException e) {
-            Log.e("AJT", "Illegal argument method exception while calling `" + methodName + "`: "
-                + e.getCause());
-            return null;
-        } catch (IllegalAccessException e) {
-            Log.e("AJT", "Illegal access exception while calling `" + methodName + "`: "
-                + e.getCause());
-            return null;
-        } catch (InvocationTargetException e) {
-            Log.e("AJT", "Invocation target exception while calling `" + methodName + "`: "
-                + e.getCause());
-            return null;
-        }
+    @SuppressLint("UseCompatLoadingForDrawables")
+    public static Byte[] getPlaceholderImageByteArray(Activity activity) {
+        final Bitmap placeholderBitmap =
+            ((BitmapDrawable)(activity.getDrawable(R.drawable.camera_raster))).getBitmap();
+        final var stream = new ByteArrayOutputStream();
+        placeholderBitmap.compress(Bitmap.CompressFormat.PNG, 90, stream);
+        return Helpers.toObjects(stream.toByteArray());
     }
 }

@@ -82,7 +82,7 @@ public class DBCollectionAccessor {
     }
 
     protected FirebaseFirestore mDatabase;
-    protected String mCollectionName;
+    protected String mCollectionName = "";
     protected String mKey;
     protected SearchFilter mFilter;
 
@@ -94,16 +94,8 @@ public class DBCollectionAccessor {
         return mData;
     }
 
-    public DBCollectionAccessor(String collection) {
-        mCollectionName = collection;
-    }
-
-    public DBCollectionAccessor() {
-    }
-
-    // TODO: delete this useless method
-    public String getCollection() {
-        return mCollectionName;
+    public DBCollectionAccessor(FirebaseFirestore database) {
+        mDatabase = database;
     }
 
     public DBCollectionAccessor(FirebaseFirestore database, String collection) {

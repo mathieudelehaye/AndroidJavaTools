@@ -29,15 +29,16 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.android.java.androidjavatools.model.ResultItemInfo;
+import com.android.java.androidjavatools.Helpers;
+import com.android.java.androidjavatools.model.result.ResultItemInfo;
 import com.android.java.androidjavatools.R;
-import com.android.java.androidjavatools.model.SearchResult;
+import com.android.java.androidjavatools.model.SetWithImages;
 
 public class ResultListAdapter extends BaseAdapter {
     private Context mContext;
-    private SearchResult mResultItems;
+    private SetWithImages mResultItems;
 
-    public ResultListAdapter(Context context, SearchResult result) {
+    public ResultListAdapter(Context context, SetWithImages result) {
         mContext = context;
         mResultItems = result;
     }
@@ -66,7 +67,7 @@ public class ResultListAdapter extends BaseAdapter {
 
         var itemInfo=(ResultItemInfo) getItem(position);
 
-        final byte[] imageByte = itemInfo.getImage();
+        final byte[] imageByte = Helpers.toPrimitives(itemInfo.getImage());
         final boolean showImage = itemInfo.isContentAllowed();
 
         textView.setText(showImage ? (itemInfo.getTitle()) : "Lorem ipsum dolor sit");

@@ -27,7 +27,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import com.android.java.androidjavatools.model.AuthManager;
+import com.android.java.androidjavatools.model.user.AuthManager;
 
 public abstract class FragmentLoginDialog extends FragmentAuthenticateDialog {
     protected Button mAnonymousLogIn;

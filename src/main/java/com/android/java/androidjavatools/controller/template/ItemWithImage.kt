@@ -1,7 +1,7 @@
 //
-//  SearchProvider.kt
+//  ItemWithImage.kt
 //
-//  Created by Mathieu Delehaye on 22/05/2023.
+//  Created by Mathieu Delehaye on 30/06/2023.
 //
 //  AndroidJavaTools: A framework to develop Android apps with Java Technologies.
 //
@@ -16,19 +16,30 @@
 //  warranty of MERCHANTABILITY or FITNESS
 //  FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 //
-//  You should have received a copy of the GNU Affero General Public License along with this program. If not,
-//  see <https://www.gnu.org/licenses/>.
+//  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+//  <https://www.gnu.org/licenses/>.
 
 package com.android.java.androidjavatools.controller.template
 
-import com.android.java.androidjavatools.model.GeoPosition
-import com.android.java.androidjavatools.model.SetWithImages
-import com.android.java.androidjavatools.model.TaskCompletionManager
-import com.google.firebase.firestore.FirebaseFirestore
+open abstract class ItemWithImage {
+    private var mImage: Array<Byte> = emptyArray()
+    private var mImageShownInDetails = false
 
-interface SearchProvider {
-    val searchResults: SetWithImages?
+    fun getImage(): Array<Byte> {
+        return mImage
+    }
 
-    fun searchGeoPointResults(searchStart: GeoPosition?, searchRadiusInCoordinate: Double,
-                              database: FirebaseFirestore?, vararg cbManager: TaskCompletionManager?)
+    fun setImage(image: Array<Byte>) {
+        mImage = image
+    }
+
+    open fun mustShowImage(): Boolean {
+        val res = mImage != null &&
+            mImage.isNotEmpty() &&
+            !mImageShownInDetails
+        if (res) {
+            mImageShownInDetails = true
+        }
+        return res
+    }
 }
