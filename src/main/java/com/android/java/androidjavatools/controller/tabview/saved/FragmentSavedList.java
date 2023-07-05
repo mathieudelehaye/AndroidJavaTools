@@ -95,53 +95,7 @@ public abstract class FragmentSavedList extends Fragment {
         if (isVisibleToUser) {
             Log.d("AJT", "Saved view becomes visible");
 
-            SetWithImages resultToDisplay = mResultProvider.getSavedResult();
-
-            if (resultToDisplay == null) {
-                Log.e("EBT", "Cannot show the saved result as no set created at startup");
-                return;
-            }
-
-            final var itemNumberToDownload = resultToDisplay.size();
-            final int[] downloadedItemNumber = {0};
-
-            for (String key : resultToDisplay.keySet()) {
-                final var resultItemToDisplay = (ResultItemInfo)(resultToDisplay.get(key));
-
-                mSearchProvider.searchResultForKey(key, mDatabase, new TaskCompletionManager() {
-                    @Override
-                    public void onSuccess() {
-                        // Copy the result item read from DB to the one to display
-                        var readResultItem = (ResultItemInfo)(mSearchProvider.getSearchResults().get(0));
-
-                        resultItemToDisplay.setTitle(readResultItem.getTitle());
-                        resultItemToDisplay.setDescription(readResultItem.getDescription());
-                        resultItemToDisplay.setLocation(readResultItem.getLocation());
-
-                        downloadedItemNumber[0]++;
-
-                        if (downloadedItemNumber[0] >= itemNumberToDownload) {
-                            Log.d("EBT", "Last saved item data downloaded");
-
-                            // Download the images for all the items
-                            resultToDisplay.downloadImages(new TaskCompletionManager() {
-                                @Override
-                                public void onSuccess() {
-                                    mListAdapter.notifyDataSetChanged();
-                                }
-
-                                @Override
-                                public void onFailure() {
-                                }
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onFailure() {
-                    }
-                });
-            }
+            updateSavedResults();
         }
 
         toggleToolbar(isVisibleToUser);
@@ -159,5 +113,60 @@ public abstract class FragmentSavedList extends Fragment {
         Log.v("AJT", "Saved page toolbar " + (visible ? "shown" : "hidden"));
 
         mToolbar.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    private void updateSavedResults() {
+        SetWithImages resultToDisplay = mResultProvider.getSavedResult();
+
+        if (resultToDisplay == null) {
+            Log.e("AJT", "Cannot show the saved result as no set created at startup");
+            return;
+        }
+
+        final var itemNumberToDownload = resultToDisplay.size();
+        final int[] downloadedItemNumber = {0};
+
+        for (String key : resultToDisplay.keySet()) {
+            final var resultItemToDisplay = (ResultItemInfo)(resultToDisplay.get(key));
+
+            mSearchProvider.searchResultForKey(key, mDatabase, new TaskCompletionManager() {
+                @Override
+                public void onSuccess() {
+                    // Copy the result item read from DB to the one to display
+                    final SetWithImages results = mSearchProvider.getSearchResults();
+
+                    var readResultItem = (ResultItemInfo)(results.get(0));
+
+                    resultItemToDisplay.setTitle(readResultItem.getTitle());
+                    resultItemToDisplay.setDescription(readResultItem.getDescription());
+                    resultItemToDisplay.setLocation(readResultItem.getLocation());
+
+                    // Copy the URLs, so the images can be downloaded for all the keys
+                    resultToDisplay.setImageUrl(key, results.getImageUrl(key));
+
+                    downloadedItemNumber[0]++;
+
+                    if (downloadedItemNumber[0] >= itemNumberToDownload) {
+                        Log.d("AJT", "Last saved item data downloaded");
+
+                        // Download the images for all the items
+                        resultToDisplay.downloadImages(new TaskCompletionManager() {
+                            @Override
+                            public void onSuccess() {
+                                mListAdapter.notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onFailure() {
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure() {
+                }
+            });
+        }
     }
 }

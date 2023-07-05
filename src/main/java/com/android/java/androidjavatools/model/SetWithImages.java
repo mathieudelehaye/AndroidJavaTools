@@ -51,6 +51,14 @@ public class SetWithImages {
         return mItems.get(keys.get(index));
     }
 
+    public String getImageUrl(String key) {
+        return mImageUrls.get(key);
+    }
+
+    public String setImageUrl(String key, String value) {
+        return mImageUrls.put(key, value);
+    }
+
     public int size() {
         return mItems.size();
     }
