@@ -31,19 +31,23 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
+import com.android.java.androidjavatools.controller.template.SearchProvider;
 
 abstract public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
-    protected ResultProvider mSearchResultProvider;
+    protected ResultProvider mResultProvider;
+    protected SearchProvider mSearchProvider;
     // current page of the app ViewPager
     private static int mCurrentPage = 0;
     private FragmentActivity mActivity;
 
     public CollectionPagerAdapter(FragmentManager fm, FragmentActivity fa,
-                                  ResultProvider resultProvider) {
+                                  ResultProvider rProvider,
+                                  SearchProvider sProvider) {
 
         super(fm);
         mActivity = fa;
-        mSearchResultProvider = resultProvider;
+        mResultProvider = rProvider;
+        mSearchProvider = sProvider;
     }
 
     public static int getPage() {

@@ -317,9 +317,9 @@ public class DBCollectionAccessor {
 
         /*
          *  E.g.:
-         *    fieldDescription ==  "favourites[]->favourites" =>
+         *    fieldDescription ==  "favourites[]->saved" =>
          *      inputField = "favourites"
-         *      outputField = "favourites"
+         *      outputField = "saved"
          */
 
         String[] split1 = fieldDescription.split("\\[\\]->");

@@ -27,9 +27,7 @@ import com.android.java.androidjavatools.controller.template.ImageDownloaderThre
 import com.android.java.androidjavatools.controller.template.ItemWithImage;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 import kotlin.Unit;
 
 public class SetWithImages {
@@ -43,7 +41,9 @@ public class SetWithImages {
     }
 
     public ItemWithImage get(String key) {
-        return mItems.get(key);
+        return mItems.containsKey(key) ?
+            mItems.get(key) :
+            null;
     }
 
     public ItemWithImage get(int index) {
@@ -60,9 +60,14 @@ public class SetWithImages {
         mImageUrls.clear();
     }
 
-    public void add(String key, ItemWithImage info, String imageURL) {
+    public void create(String key, ItemWithImage info, String imageURL) {
         mItems.put(key, info);
         mImageUrls.put(key, imageURL);
+    }
+
+    public void delete(String key) {
+        mItems.remove(key);
+        mImageUrls.remove(key);
     }
 
     public void downloadImages(TaskCompletionManager... cbManager) {

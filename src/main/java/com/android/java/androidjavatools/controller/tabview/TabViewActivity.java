@@ -45,6 +45,8 @@ import com.android.java.androidjavatools.controller.template.SearchHistoryManage
 import com.android.java.androidjavatools.model.*;
 import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.model.result.ResultItemInfo;
+import com.android.java.androidjavatools.model.user.AppUser;
+import com.android.java.androidjavatools.model.user.UserInfoDBEntry;
 import com.google.firebase.firestore.FirebaseFirestore;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
@@ -61,11 +63,10 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     // Search: properties
     private final int mSavedListMaxSize = 100;
     private HashMap<String, ResultItemInfo> mPastResults = new HashMap<>();
-    private HashMap<String, ResultItemInfo> mSavedRP = new HashMap<>();
-    private ArrayList<String> mSavedRPKeys = new ArrayList<>();
-    private CircularKeyBuffer<String> mPastRPKeys = new CircularKeyBuffer<>(2);
+    private CircularKeyBuffer<String> mPastResultKeys = new CircularKeyBuffer<>(2);
     private CircularKeyBuffer<String> mPastSearchQueries = new CircularKeyBuffer<>(4);
     private SetWithImages mSearchResult = new SetWithImages();
+    private SetWithImages mSavedResults = new SetWithImages();
     private ResultDetailAdapter mSelectedItemAdapter;
     private String mSearchResultFragment = "list";
 
@@ -85,7 +86,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
         }
 
         if (!key.equals("")) {
-            mPastRPKeys.add(key);
+            mPastResultKeys.add(key);
         }
     }
 
@@ -97,32 +98,6 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     public void setSearchResult(SetWithImages result) {
         mSearchResult = result;
     }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        Helpers.startTimestamp();
-        Log.i("AJT", "Main activity started");
-
-        super.onCreate(savedInstanceState);
-
-        if(this.getSupportActionBar()!=null) {
-            this.getSupportActionBar().hide();
-        }
-
-        setContentView(R.layout.activity_main);
-
-        // Only portrait orientation
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        mDatabase = FirebaseFirestore.getInstance();
-        mSharedPref = getSharedPreferences(
-            getString(R.string.lib_name), Context.MODE_PRIVATE);
-
-        createNavigator();
-    }
-
-    protected abstract void createNavigator();
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -141,55 +116,48 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
 
     @Override
     public int getPreviousResultNumber() {
-        return mPastRPKeys.items();
+        return mPastResultKeys.items();
     }
 
     @Override
     public ResultItemInfo getPreviousResultItem(int index) {
-        final String key = mPastRPKeys.getFromEnd(index);
+        final String key = mPastResultKeys.getFromEnd(index);
 
         return mPastResults.get(key);
     }
 
+    @Nullable
     @Override
-    public Map<String, ResultItemInfo> getSavedResults() {
-        return mSavedRP;
+    public SetWithImages getSavedResult() {
+        return mSavedResults;
     }
 
     @Override
-    public List<String> getSavedResultKeys() {
-        return mSavedRPKeys;
+    public void setSavedResult(@Nullable SetWithImages savedResult) {
+        mSavedResults = savedResult;
     }
 
     @Override
     public boolean createSavedResult(ResultItemInfo value) {
-        if (mSavedRPKeys.size() >= mSavedListMaxSize) {
+        if (mSavedResults.size() >= mSavedListMaxSize) {
             Log.w("AJT", "Cannot save more than " + mSavedListMaxSize + " RP");
             return false;
         }
 
         final String key = value.getKey();
-        mSavedRP.put(key, value);
-        mSavedRPKeys.add(key);
+        mSavedResults.create(key, value, null);
 
         return true;
     }
 
     @Override
     public boolean isSavedResult(String key) {
-        return mSavedRP.containsKey(key);
+        return (mSavedResults.get(key) != null);
     }
 
     @Override
     public void deleteSavedResult(String key) {
-        mSavedRP.remove(key);
-
-        for (int i = 0; i < mSavedRPKeys.size(); i++) {
-            if (mSavedRPKeys.get(i).equals(key)) {
-                mSavedRPKeys.remove(i);
-                break;
-            }
-        }
+        mSavedResults.delete(key);
     }
 
     @Override
@@ -242,7 +210,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                 }
                 break;
             case "list":
-            switch (orig) {
+                switch (orig) {
                     case "suggestion":
                         // Show toolbar when coming from the Suggestion page
                         toggleToolbar(true);
@@ -346,6 +314,51 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     public void setSearchResultFragment(@Nullable String s) {
         mSearchResultFragment = s;
     }
+
+    public void readSavedResults() {
+        final var userInfo = new UserInfoDBEntry(mDatabase, AppUser.getInstance().getId());
+
+        userInfo.readDBFields(new TaskCompletionManager() {
+            @Override
+            public void onSuccess() {
+                var savedResultKeys = new ArrayList<>(Arrays.asList(userInfo.getFavourites()));
+                for (String key : savedResultKeys) {
+                    mSavedResults.create(key, new ResultItemInfo(key, true), null);
+                }
+                Log.d("AJT", "Read saved results from database: " + savedResultKeys);
+            }
+
+            @Override
+            public void onFailure() {
+            }
+        });
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        Helpers.startTimestamp();
+        Log.i("AJT", "Main activity started");
+
+        super.onCreate(savedInstanceState);
+
+        if(this.getSupportActionBar()!=null) {
+            this.getSupportActionBar().hide();
+        }
+
+        setContentView(R.layout.activity_main);
+
+        // Only portrait orientation
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        mDatabase = FirebaseFirestore.getInstance();
+        mSharedPref = getSharedPreferences(
+            getString(R.string.lib_name), Context.MODE_PRIVATE);
+
+        createNavigator();
+    }
+
+    protected abstract void createNavigator();
 
     protected boolean isNetworkAvailable() {
         var connectivityManager

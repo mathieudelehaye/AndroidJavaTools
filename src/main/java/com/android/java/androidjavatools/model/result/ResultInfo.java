@@ -98,4 +98,12 @@ public abstract class ResultInfo extends DBCollectionAccessor {
 
         return readDBFieldsForCurrentFilter(outputFields, cbManager);
     }
+
+    public boolean readDBFieldsForKey(String[] outputFields, TaskCompletionManager... cbManager) {
+        if (mCollectionName.equals("")) {
+            mCollectionName = getCollectionName();
+        }
+
+        return readDBFieldsForCurrentKey(outputFields, cbManager);
+    }
 }

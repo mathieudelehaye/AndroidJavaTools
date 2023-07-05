@@ -37,6 +37,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
+import com.android.java.androidjavatools.controller.tabview.TabViewActivity;
 import com.android.java.androidjavatools.controller.template.Navigator;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.R;
@@ -161,6 +162,9 @@ public abstract class AuthManager implements AuthenticateDialogListener {
 
         // Update the current app user
         AppUser.getInstance().authenticate(_uid, _userType);
+
+        // Read the saved results for the user
+        ((TabViewActivity)(mActivity)).readSavedResults();
 
         mNavigatorManager.navigator().showFragment(mAppFirstFragment);
     }

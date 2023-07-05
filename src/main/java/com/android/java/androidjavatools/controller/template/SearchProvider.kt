@@ -31,4 +31,6 @@ interface SearchProvider {
 
     fun searchGeoPointResults(searchStart: GeoPosition?, searchRadiusInCoordinate: Double,
                               database: FirebaseFirestore?, vararg cbManager: TaskCompletionManager?)
+
+    fun searchResultForKey(key : String, database: FirebaseFirestore?, vararg cbManager: TaskCompletionManager?)
 }

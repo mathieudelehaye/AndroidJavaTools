@@ -176,8 +176,8 @@ abstract class FragmentProductDetail : FragmentCompose() {
 
                                         onOrdering(mKey,
                                             "Sample ordered at address: $address $city $postcode") {
-                                                mNavigatorManager?.navigator()?.back()
-                                            }
+                                            mNavigatorManager?.navigator()?.back()
+                                        }
                                     }
 
                                     override fun onFailure() {}
