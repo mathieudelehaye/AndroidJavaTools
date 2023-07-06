@@ -40,6 +40,11 @@ abstract public class SearchResultProvider implements SearchProvider {
     }
 
     @Override
+    public void resetSearchResults() {
+        mSearchResults = new SetWithImages();
+    }
+
+    @Override
     public void searchGeoPointResults(GeoPosition searchStart, double searchRadiusInCoordinate,
                                       FirebaseFirestore database, TaskCompletionManager... cbManager) {
 
@@ -67,7 +72,7 @@ abstract public class SearchResultProvider implements SearchProvider {
         var pointInfo = createResultInfo(database);
         pointInfo.setRangeBasedFilter(filterFields, filterMinRanges, filterMaxRanges);
 
-        mSearchResults = new SetWithImages();
+        resetSearchResults();
 
         pointInfo.readAllDBFields(outputFields, new TaskCompletionManager() {
             @Override
@@ -96,8 +101,6 @@ abstract public class SearchResultProvider implements SearchProvider {
 
         var pointInfo = createResultInfo(database);
         pointInfo.setKey(key);
-
-        mSearchResults = new SetWithImages();
 
         pointInfo.readDBFieldsForKey(outputFields, new TaskCompletionManager() {
             @Override

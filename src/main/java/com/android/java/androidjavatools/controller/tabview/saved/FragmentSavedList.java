@@ -126,6 +126,8 @@ public abstract class FragmentSavedList extends Fragment {
         final var itemNumberToDownload = resultToDisplay.size();
         final int[] downloadedItemNumber = {0};
 
+        mSearchProvider.resetSearchResults();
+
         for (String key : resultToDisplay.keySet()) {
             final var resultItemToDisplay = (ResultItemInfo)(resultToDisplay.get(key));
 
@@ -135,7 +137,7 @@ public abstract class FragmentSavedList extends Fragment {
                     // Copy the result item read from DB to the one to display
                     final SetWithImages results = mSearchProvider.getSearchResults();
 
-                    var readResultItem = (ResultItemInfo)(results.get(0));
+                    var readResultItem = (ResultItemInfo)(results.get(key));
 
                     resultItemToDisplay.setTitle(readResultItem.getTitle());
                     resultItemToDisplay.setDescription(readResultItem.getDescription());
