@@ -69,6 +69,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     private SetWithImages mSavedResults = new SetWithImages();
     private ResultDetailAdapter mSelectedItemAdapter;
     private String mSearchResultFragment = "list";
+    private final int mTimeBeforeRunningAsyncTaskInMin = 1;
 
     // Search: getter-setter
     public ResultDetailAdapter getSelectedItemAdapter() {
@@ -158,6 +159,25 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     @Override
     public void deleteSavedResult(String key) {
         mSavedResults.delete(key);
+    }
+
+    public void readSavedResults() {
+        final var userInfo = new UserInfoDBEntry(mDatabase, AppUser.getInstance().getId());
+
+        userInfo.readDBFields(new TaskCompletionManager() {
+            @Override
+            public void onSuccess() {
+                var savedResultKeys = new ArrayList<>(Arrays.asList(userInfo.getFavourites()));
+                for (String key : savedResultKeys) {
+                    mSavedResults.create(key, new ResultItemInfo(key, true), null);
+                }
+                Log.d("AJT", "Read saved results from database: " + savedResultKeys);
+            }
+
+            @Override
+            public void onFailure() {
+            }
+        });
     }
 
     @Override
@@ -315,25 +335,6 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
         mSearchResultFragment = s;
     }
 
-    public void readSavedResults() {
-        final var userInfo = new UserInfoDBEntry(mDatabase, AppUser.getInstance().getId());
-
-        userInfo.readDBFields(new TaskCompletionManager() {
-            @Override
-            public void onSuccess() {
-                var savedResultKeys = new ArrayList<>(Arrays.asList(userInfo.getFavourites()));
-                for (String key : savedResultKeys) {
-                    mSavedResults.create(key, new ResultItemInfo(key, true), null);
-                }
-                Log.d("AJT", "Read saved results from database: " + savedResultKeys);
-            }
-
-            @Override
-            public void onFailure() {
-            }
-        });
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -359,6 +360,51 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     }
 
     protected abstract void createNavigator();
+
+    // Background: methods
+    @Override
+    public boolean environmentCondition() {
+        if (!isNetworkAvailable()) {
+            //Log.v("AJT", "Try to write the scanning events but no network");
+            return false;
+        }
+
+        if (AppUser.getInstance().getAuthenticationType() == AppUser.AuthenticationType.NONE) {
+            //Log.v("AJT", "Try to write the scanning events but no app user");
+            return false;
+        }
+
+        return onEnvironmentConditionCheck();
+    }
+
+    @Override
+    public boolean timeCondition(long cumulatedTimeInSec) {
+
+        final int secondsByMinute = 60; // change it to debug
+        if ((cumulatedTimeInSec / secondsByMinute) < mTimeBeforeRunningAsyncTaskInMin) {
+            //Log.v("AJT", "Timed condition not fulfilled: " + cumulatedTimeInSec
+            //    + " sec out of " + (mTimeBeforePollingScoreInMin * secondsByMinute));
+            return false;
+        }
+
+        //Log.v("AJT", "Timed condition fulfilled");
+        return onTimeConditionCheck();
+    }
+
+    @Override
+    public void runEnvironmentDependentAction() {
+        onEnvironmentDependentActionRun();
+    }
+
+    @Override
+    public void runTimesDependentAction() {
+        onTimeDependentActionRun();
+    }
+
+    protected abstract boolean onEnvironmentConditionCheck();
+    protected abstract boolean onTimeConditionCheck();
+    protected abstract void onEnvironmentDependentActionRun();
+    protected abstract void onTimeDependentActionRun();
 
     protected boolean isNetworkAvailable() {
         var connectivityManager

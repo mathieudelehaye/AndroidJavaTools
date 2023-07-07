@@ -75,12 +75,12 @@ public class AsyncTaskRunner extends AsyncTask<String, String, String> {
         mCumulatedSleepTimeInSec += mSleepTimeInSec;
 
         if(mParentActivity.environmentCondition()) {
-           mParentActivity.runEnvironmentDependentActions();
+           mParentActivity.runEnvironmentDependentAction();
         }
 
         if(mParentActivity.timeCondition(mCumulatedSleepTimeInSec)) {
             mCumulatedSleepTimeInSec = 0;
-            mParentActivity.runTimesDependentActions();
+            mParentActivity.runTimesDependentAction();
         }
 
         restart();
