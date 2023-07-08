@@ -33,9 +33,8 @@ interface ResultProvider {
     val previousResultNumber: Int
 
     fun getPreviousResultItem(index: Int): ResultItemInfo?
-    val savedResults: Map<String?, ResultItemInfo?>?
-    val savedResultKeys: List<String?>?
 
+    var savedResult: SetWithImages?
     fun createSavedResult(value: ResultItemInfo?): Boolean
     fun isSavedResult(key: String?): Boolean
     fun deleteSavedResult(key: String?)

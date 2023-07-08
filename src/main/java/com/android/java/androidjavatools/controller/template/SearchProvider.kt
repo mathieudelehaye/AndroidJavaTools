@@ -29,6 +29,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 interface SearchProvider {
     val searchResults: SetWithImages?
 
+    fun resetSearchResults()
+
     fun searchGeoPointResults(searchStart: GeoPosition?, searchRadiusInCoordinate: Double,
                               database: FirebaseFirestore?, vararg cbManager: TaskCompletionManager?)
+
+    fun searchResultForKey(key : String, database: FirebaseFirestore?, vararg cbManager: TaskCompletionManager?)
 }

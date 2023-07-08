@@ -45,6 +45,8 @@ import com.android.java.androidjavatools.controller.template.SearchHistoryManage
 import com.android.java.androidjavatools.model.*;
 import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.model.result.ResultItemInfo;
+import com.android.java.androidjavatools.model.user.AppUser;
+import com.android.java.androidjavatools.model.user.UserInfoDBEntry;
 import com.google.firebase.firestore.FirebaseFirestore;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
@@ -61,13 +63,15 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     // Search: properties
     private final int mSavedListMaxSize = 100;
     private HashMap<String, ResultItemInfo> mPastResults = new HashMap<>();
-    private HashMap<String, ResultItemInfo> mSavedRP = new HashMap<>();
-    private ArrayList<String> mSavedRPKeys = new ArrayList<>();
-    private CircularKeyBuffer<String> mPastRPKeys = new CircularKeyBuffer<>(2);
+    private CircularKeyBuffer<String> mPastResultKeys = new CircularKeyBuffer<>(2);
     private CircularKeyBuffer<String> mPastSearchQueries = new CircularKeyBuffer<>(4);
     private SetWithImages mSearchResult = new SetWithImages();
+    private SetWithImages mSavedResults = new SetWithImages();
+    private boolean mSavedResultsChanged = false;
     private ResultDetailAdapter mSelectedItemAdapter;
     private String mSearchResultFragment = "list";
+    final private int mAsyncTaskSleepTime = 5;  // time in sec between 2 time condition check
+    private final int mTimeBeforeRunningAsyncTaskInMin = 1;
 
     // Search: getter-setter
     public ResultDetailAdapter getSelectedItemAdapter() {
@@ -85,7 +89,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
         }
 
         if (!key.equals("")) {
-            mPastRPKeys.add(key);
+            mPastResultKeys.add(key);
         }
     }
 
@@ -97,32 +101,6 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     public void setSearchResult(SetWithImages result) {
         mSearchResult = result;
     }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        Helpers.startTimestamp();
-        Log.i("AJT", "Main activity started");
-
-        super.onCreate(savedInstanceState);
-
-        if(this.getSupportActionBar()!=null) {
-            this.getSupportActionBar().hide();
-        }
-
-        setContentView(R.layout.activity_main);
-
-        // Only portrait orientation
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        mDatabase = FirebaseFirestore.getInstance();
-        mSharedPref = getSharedPreferences(
-            getString(R.string.lib_name), Context.MODE_PRIVATE);
-
-        createNavigator();
-    }
-
-    protected abstract void createNavigator();
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -141,55 +119,94 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
 
     @Override
     public int getPreviousResultNumber() {
-        return mPastRPKeys.items();
+        return mPastResultKeys.items();
     }
 
     @Override
     public ResultItemInfo getPreviousResultItem(int index) {
-        final String key = mPastRPKeys.getFromEnd(index);
+        final String key = mPastResultKeys.getFromEnd(index);
 
         return mPastResults.get(key);
     }
 
+    // TODO: move the saved results to a separate class
+    @Nullable
     @Override
-    public Map<String, ResultItemInfo> getSavedResults() {
-        return mSavedRP;
+    public SetWithImages getSavedResult() {
+        return mSavedResults;
     }
 
     @Override
-    public List<String> getSavedResultKeys() {
-        return mSavedRPKeys;
+    public void setSavedResult(@Nullable SetWithImages savedResult) {
+        mSavedResults = savedResult;
     }
 
     @Override
     public boolean createSavedResult(ResultItemInfo value) {
-        if (mSavedRPKeys.size() >= mSavedListMaxSize) {
+        if (mSavedResults.size() >= mSavedListMaxSize) {
             Log.w("AJT", "Cannot save more than " + mSavedListMaxSize + " RP");
             return false;
         }
 
         final String key = value.getKey();
-        mSavedRP.put(key, value);
-        mSavedRPKeys.add(key);
+        mSavedResults.create(key, value, null);
+        mSavedResultsChanged = true;
 
         return true;
     }
 
     @Override
     public boolean isSavedResult(String key) {
-        return mSavedRP.containsKey(key);
+        return (mSavedResults.get(key) != null);
     }
 
     @Override
     public void deleteSavedResult(String key) {
-        mSavedRP.remove(key);
+        mSavedResults.delete(key);
+        mSavedResultsChanged = true;
+    }
 
-        for (int i = 0; i < mSavedRPKeys.size(); i++) {
-            if (mSavedRPKeys.get(i).equals(key)) {
-                mSavedRPKeys.remove(i);
-                break;
+    public void readSavedResults() {
+        final var userInfo = new UserInfoDBEntry(mDatabase, AppUser.getInstance().getId());
+
+        userInfo.readDBFields(new TaskCompletionManager() {
+            @Override
+            public void onSuccess() {
+                var savedResultKeys = new ArrayList<>(Arrays.asList(userInfo.getFavourites()));
+                for (String key : savedResultKeys) {
+                    mSavedResults.create(key, new ResultItemInfo(key, true), null);
+                }
+                Log.d("AJT", "Read saved results from database: " + savedResultKeys);
             }
+
+            @Override
+            public void onFailure() {
+            }
+        });
+    }
+
+    public void writeSavedResults() {
+        if (AppUser.getInstance().getAuthenticationType() != AppUser.AuthenticationType.REGISTERED) {
+            Log.v("AJT", "Cannot write the saved results, as user not authenticated");
+            return;
         }
+
+        final var userInfo = new UserInfoDBEntry(mDatabase, AppUser.getInstance().getId());
+        ArrayList<String> savedResultKeys = new ArrayList<>(mSavedResults.keySet());
+        userInfo.setFavourites(savedResultKeys.toArray(new String[0]));
+
+        userInfo.updateDBFields(new TaskCompletionManager() {
+            @Override
+            public void onSuccess() {
+                Log.d("AJT", "Write saved results to database: " + savedResultKeys);
+
+                mSavedResultsChanged = false;
+            }
+
+            @Override
+            public void onFailure() {
+            }
+        });
     }
 
     @Override
@@ -242,7 +259,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                 }
                 break;
             case "list":
-            switch (orig) {
+                switch (orig) {
                     case "suggestion":
                         // Show toolbar when coming from the Suggestion page
                         toggleToolbar(true);
@@ -346,6 +363,84 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     public void setSearchResultFragment(@Nullable String s) {
         mSearchResultFragment = s;
     }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        Helpers.startTimestamp();
+        Log.i("AJT", "Main activity started");
+
+        super.onCreate(savedInstanceState);
+
+        if(this.getSupportActionBar()!=null) {
+            this.getSupportActionBar().hide();
+        }
+
+        setContentView(R.layout.activity_main);
+
+        // Only portrait orientation
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        mDatabase = FirebaseFirestore.getInstance();
+        mSharedPref = getSharedPreferences(
+            getString(R.string.lib_name), Context.MODE_PRIVATE);
+
+        createNavigator();
+
+        // Background: initialization
+        var runner = new AsyncTaskRunner(this, mDatabase, mAsyncTaskSleepTime
+            , 0);
+        runner.execute(String.valueOf(mAsyncTaskSleepTime));
+    }
+
+    protected abstract void createNavigator();
+
+    // Background: methods
+    @Override
+    public boolean environmentCondition() {
+        if (!isNetworkAvailable()) {
+            //Log.v("AJT", "Try to write the scanning events but no network");
+            return false;
+        }
+
+        if (AppUser.getInstance().getAuthenticationType() == AppUser.AuthenticationType.NONE) {
+            //Log.v("AJT", "Try to write the scanning events but no app user");
+            return false;
+        }
+
+        return mSavedResultsChanged || onEnvironmentConditionCheck();
+    }
+
+    @Override
+    public boolean timeCondition(long cumulatedTimeInSec) {
+
+        final int secondsByMinute = 60; // change it to debug
+        if ((cumulatedTimeInSec / secondsByMinute) < mTimeBeforeRunningAsyncTaskInMin) {
+            //Log.v("AJT", "Timed condition not fulfilled: " + cumulatedTimeInSec
+            //    + " sec out of " + (mTimeBeforePollingScoreInMin * secondsByMinute));
+            return false;
+        }
+
+        //Log.v("AJT", "Timed condition fulfilled");
+        return onTimeConditionCheck();
+    }
+
+    @Override
+    public void runEnvironmentDependentAction() {
+        writeSavedResults();
+
+        onEnvironmentDependentActionRun();
+    }
+
+    @Override
+    public void runTimesDependentAction() {
+        onTimeDependentActionRun();
+    }
+
+    protected abstract boolean onEnvironmentConditionCheck();
+    protected abstract boolean onTimeConditionCheck();
+    protected abstract void onEnvironmentDependentActionRun();
+    protected abstract void onTimeDependentActionRun();
 
     protected boolean isNetworkAvailable() {
         var connectivityManager

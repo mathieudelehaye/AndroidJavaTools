@@ -31,6 +31,11 @@ public class ResultItemInfo extends ItemWithImage {
     private GeoPoint mLocation;
     private boolean mContentAllowed;
 
+    public ResultItemInfo(String key, boolean displayBrand) {
+        mKey = key;
+        mContentAllowed = displayBrand;
+    }
+
     public ResultItemInfo(String key, String title, String description, GeoPoint location, boolean displayBrand) {
         mKey = key;
         mTitle = title;
@@ -61,6 +66,10 @@ public class ResultItemInfo extends ItemWithImage {
 
     public GeoPoint getLocation() {
         return mLocation;
+    }
+
+    public void setLocation(GeoPoint value) {
+        mLocation = value;
     }
 
     public boolean isContentAllowed() {

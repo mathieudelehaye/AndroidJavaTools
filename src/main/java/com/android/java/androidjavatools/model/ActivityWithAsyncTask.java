@@ -32,8 +32,8 @@ public interface ActivityWithAsyncTask {
     boolean timeCondition(long cumulatedTimeInSec);
 
     // Callback function to run actions depending on the environment.
-    void runEnvironmentDependentActions();
+    void runEnvironmentDependentAction();
 
     // Callback function to run actions depending on the time.
-    void runTimesDependentActions();
+    void runTimesDependentAction();
 }

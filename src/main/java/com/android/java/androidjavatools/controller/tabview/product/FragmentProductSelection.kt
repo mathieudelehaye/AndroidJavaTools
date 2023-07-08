@@ -328,7 +328,7 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
                         subtitleList.add(productInfo.getSubtitleAtIndex(i)!!)
 
                         // Update the set to download the images
-                        mProducts.add(
+                        mProducts.create(
                             key,
                             ProductItemInfo(key, title, subtitle, description, true),
                             imageURL

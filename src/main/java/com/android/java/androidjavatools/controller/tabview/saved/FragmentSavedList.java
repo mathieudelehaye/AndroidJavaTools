@@ -36,20 +36,32 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
+import com.android.java.androidjavatools.controller.template.SearchProvider;
 import com.android.java.androidjavatools.databinding.FragmentSavedListBinding;
 import com.android.java.androidjavatools.R;
+import com.android.java.androidjavatools.model.SetWithImages;
+import com.android.java.androidjavatools.model.TaskCompletionManager;
+import com.android.java.androidjavatools.model.result.ResultItemInfo;
+import com.google.firebase.firestore.FirebaseFirestore;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class FragmentSavedList extends Fragment {
     protected FragmentSavedListBinding mBinding;
+    protected FirebaseFirestore mDatabase;
     protected ResultProvider mResultProvider;
+    private SearchProvider mSearchProvider;
     private Toolbar mToolbar;
     private Button mToolbarBackButton;
     private ListView mSavedItemList;
     private BaseAdapter mListAdapter;
 
-    public FragmentSavedList(ResultProvider provider) {
-        mResultProvider = provider;
+    public FragmentSavedList(
+        ResultProvider rProvider,
+        SearchProvider sProvider) {
+
+        mDatabase = FirebaseFirestore.getInstance();
+        mResultProvider = rProvider;
+        mSearchProvider = sProvider;
     }
 
     @Override
@@ -83,7 +95,7 @@ public abstract class FragmentSavedList extends Fragment {
         if (isVisibleToUser) {
             Log.d("AJT", "Saved view becomes visible");
 
-            mListAdapter.notifyDataSetChanged();
+            updateSavedResults();
         }
 
         toggleToolbar(isVisibleToUser);
@@ -101,5 +113,62 @@ public abstract class FragmentSavedList extends Fragment {
         Log.v("AJT", "Saved page toolbar " + (visible ? "shown" : "hidden"));
 
         mToolbar.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    private void updateSavedResults() {
+        SetWithImages resultToDisplay = mResultProvider.getSavedResult();
+
+        if (resultToDisplay == null) {
+            Log.e("AJT", "Cannot show the saved result as no set created at startup");
+            return;
+        }
+
+        final var itemNumberToDownload = resultToDisplay.size();
+        final int[] downloadedItemNumber = {0};
+
+        mSearchProvider.resetSearchResults();
+
+        for (String key : resultToDisplay.keySet()) {
+            final var resultItemToDisplay = (ResultItemInfo)(resultToDisplay.get(key));
+
+            mSearchProvider.searchResultForKey(key, mDatabase, new TaskCompletionManager() {
+                @Override
+                public void onSuccess() {
+                    // Copy the result item read from DB to the one to display
+                    final SetWithImages results = mSearchProvider.getSearchResults();
+
+                    var readResultItem = (ResultItemInfo)(results.get(key));
+
+                    resultItemToDisplay.setTitle(readResultItem.getTitle());
+                    resultItemToDisplay.setDescription(readResultItem.getDescription());
+                    resultItemToDisplay.setLocation(readResultItem.getLocation());
+
+                    // Copy the URLs, so the images can be downloaded for all the keys
+                    resultToDisplay.setImageUrl(key, results.getImageUrl(key));
+
+                    downloadedItemNumber[0]++;
+
+                    if (downloadedItemNumber[0] >= itemNumberToDownload) {
+                        Log.d("AJT", "Last saved item data downloaded");
+
+                        // Download the images for all the items
+                        resultToDisplay.downloadImages(new TaskCompletionManager() {
+                            @Override
+                            public void onSuccess() {
+                                mListAdapter.notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onFailure() {
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure() {
+                }
+            });
+        }
     }
 }

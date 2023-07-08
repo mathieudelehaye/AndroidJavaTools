@@ -33,13 +33,19 @@ import androidx.fragment.app.FragmentManager;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.controller.tabview.home.FragmentHome;
+import com.android.java.androidjavatools.controller.template.SearchProvider;
 import com.android.java.androidjavatools.databinding.FragmentTabViewBinding;
 import com.google.android.material.tabs.TabLayout;
 
 public abstract class FragmentTabView extends Fragment {
     protected FragmentTabViewBinding mBinding;
-    protected NotSwipeableViewPager mViewPager;
     private Activity mActivity;
+    protected NotSwipeableViewPager mViewPager;
+    protected SearchProvider mSearchProvider;
+
+    public FragmentTabView(SearchProvider provider) {
+        mSearchProvider = provider;
+    }
 
     @Override
     public View onCreateView(

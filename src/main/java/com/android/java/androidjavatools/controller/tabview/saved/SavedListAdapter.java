@@ -31,31 +31,28 @@ import android.widget.*;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.R;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
+import com.android.java.androidjavatools.model.SetWithImages;
 import com.android.java.androidjavatools.model.result.ResultItemInfo;
-import java.util.List;
-import java.util.Map;
 
 public class SavedListAdapter extends BaseAdapter {
     private Context mContext;
     protected ResultProvider mResultProvider;
-    private Map<String, ResultItemInfo> mResults;
-    private List<String> mResultKeys;
+    private SetWithImages mResultItems;
 
-    public SavedListAdapter(Context ctxt, ResultProvider resultProvider) {
-        mContext = ctxt;
+    public SavedListAdapter(Context context, ResultProvider resultProvider) {
+        mContext = context;
         mResultProvider = resultProvider;
-        mResults = resultProvider.getSavedResults();
-        mResultKeys = resultProvider.getSavedResultKeys();
+        mResultItems = resultProvider.getSavedResult();
     }
 
     @Override
     public int getCount() {
-        return mResults.size();
+        return mResultItems.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mResults.get(mResultKeys.get(position));
+        return mResultItems.get(position);
     }
 
     @Override
@@ -71,7 +68,8 @@ public class SavedListAdapter extends BaseAdapter {
         ImageView imageView = view.findViewById(R.id.saved_list_item_image);
         ImageButton buttonView = view.findViewById(R.id.saved_list_item_delete);
 
-        var itemInfo=(ResultItemInfo) getItem(position);
+        final var itemInfo = (ResultItemInfo) getItem(position);
+        final var itemKey = itemInfo.getKey();
 
         final byte[] imageByte = Helpers.toPrimitives(itemInfo.getImage());
         final boolean showImage = itemInfo.isContentAllowed();
@@ -90,7 +88,7 @@ public class SavedListAdapter extends BaseAdapter {
         buttonView.setOnClickListener(v -> {
             Log.v("AJT", "mdl button clicked for saved item in position " + position);
 
-            mResultProvider.deleteSavedResult(mResultKeys.get(position));
+            mResultProvider.deleteSavedResult(itemKey);
             notifyDataSetChanged();
         });
 

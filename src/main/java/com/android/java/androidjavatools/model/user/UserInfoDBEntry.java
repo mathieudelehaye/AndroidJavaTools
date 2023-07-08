@@ -25,9 +25,7 @@ import android.util.Log;
 import com.android.java.androidjavatools.model.DBCollectionAccessor;
 import com.android.java.androidjavatools.model.TaskCompletionManager;
 import com.google.firebase.firestore.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class UserInfoDBEntry extends DBCollectionAccessor {
     public UserInfoDBEntry(FirebaseFirestore database, String key, Map<String, String> data) {
@@ -131,6 +129,23 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
         mDataChanged.get(0).put("email", true);
     }
 
+    public String[] getFavourites() {
+        final var value = mData.get(0).get("favourites");
+        return value.split(",");
+    }
+
+    public void setFavourites(String[] values) {
+        // Convert the field array to a comma separated string
+        var sb = new StringBuilder();
+        for (String v : values) {
+            sb.append(v).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+
+        mData.get(0).put("favourites", sb.toString());
+        mDataChanged.get(0).put("favourites", true);
+    }
+
     public String getDeviceId() {
         return mData.get(0).get("post_code");
     }
@@ -163,7 +178,8 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
     }
 
     public boolean readDBFields(TaskCompletionManager... cbManager) {
-        String[] fields = { "first_name", "last_name", "address", "city", "post_code", "email", "score" };
+        String[] fields = { "first_name", "last_name", "address", "city", "post_code", "email", "score",
+            "favourites[]->favourites" };
         return readDBFieldsForCurrentKey(fields, cbManager);
     }
 
@@ -177,8 +193,17 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
 
         for (String key : mData.get(0).keySet()) {
             if (mDataChanged.get(0).get(key)) {
-                // Data has changed and must be written back to the database
-                batch.update(ref, key, mData.get(0).get(key));
+                // Data changed and must be written back to the database
+
+                Object value;
+
+                if (key.equals("favourites")) {
+                    value = Arrays.asList(getFavourites());
+                } else {
+                    value = mData.get(0).get(key);
+                }
+
+                batch.update(ref, key, value);
                 changedKeys.add(key);
             }
         }
