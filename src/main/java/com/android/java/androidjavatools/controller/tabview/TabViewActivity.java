@@ -67,8 +67,10 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     private CircularKeyBuffer<String> mPastSearchQueries = new CircularKeyBuffer<>(4);
     private SetWithImages mSearchResult = new SetWithImages();
     private SetWithImages mSavedResults = new SetWithImages();
+    private boolean mSavedResultsChanged = false;
     private ResultDetailAdapter mSelectedItemAdapter;
     private String mSearchResultFragment = "list";
+    final private int mAsyncTaskSleepTime = 5;  // time in sec between 2 time condition check
     private final int mTimeBeforeRunningAsyncTaskInMin = 1;
 
     // Search: getter-setter
@@ -127,6 +129,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
         return mPastResults.get(key);
     }
 
+    // TODO: move the saved results to a separate class
     @Nullable
     @Override
     public SetWithImages getSavedResult() {
@@ -147,6 +150,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
 
         final String key = value.getKey();
         mSavedResults.create(key, value, null);
+        mSavedResultsChanged = true;
 
         return true;
     }
@@ -159,6 +163,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
     @Override
     public void deleteSavedResult(String key) {
         mSavedResults.delete(key);
+        mSavedResultsChanged = true;
     }
 
     public void readSavedResults() {
@@ -172,6 +177,30 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                     mSavedResults.create(key, new ResultItemInfo(key, true), null);
                 }
                 Log.d("AJT", "Read saved results from database: " + savedResultKeys);
+            }
+
+            @Override
+            public void onFailure() {
+            }
+        });
+    }
+
+    public void writeSavedResults() {
+        if (AppUser.getInstance().getAuthenticationType() != AppUser.AuthenticationType.REGISTERED) {
+            Log.v("AJT", "Cannot write the saved results, as user not authenticated");
+            return;
+        }
+
+        final var userInfo = new UserInfoDBEntry(mDatabase, AppUser.getInstance().getId());
+        ArrayList<String> savedResultKeys = new ArrayList<>(mSavedResults.keySet());
+        userInfo.setFavourites(savedResultKeys.toArray(new String[0]));
+
+        userInfo.updateDBFields(new TaskCompletionManager() {
+            @Override
+            public void onSuccess() {
+                Log.d("AJT", "Write saved results to database: " + savedResultKeys);
+
+                mSavedResultsChanged = false;
             }
 
             @Override
@@ -357,6 +386,11 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
             getString(R.string.lib_name), Context.MODE_PRIVATE);
 
         createNavigator();
+
+        // Background: initialization
+        var runner = new AsyncTaskRunner(this, mDatabase, mAsyncTaskSleepTime
+            , 0);
+        runner.execute(String.valueOf(mAsyncTaskSleepTime));
     }
 
     protected abstract void createNavigator();
@@ -374,7 +408,7 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
             return false;
         }
 
-        return onEnvironmentConditionCheck();
+        return mSavedResultsChanged || onEnvironmentConditionCheck();
     }
 
     @Override
@@ -393,6 +427,8 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
 
     @Override
     public void runEnvironmentDependentAction() {
+        writeSavedResults();
+
         onEnvironmentDependentActionRun();
     }
 

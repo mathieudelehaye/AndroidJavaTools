@@ -143,7 +143,7 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
         sb.deleteCharAt(sb.length() - 1);
 
         mData.get(0).put("favourites", sb.toString());
-        mDataChanged.get(0).put("email", true);
+        mDataChanged.get(0).put("favourites", true);
     }
 
     public String getDeviceId() {
@@ -198,7 +198,7 @@ public class UserInfoDBEntry extends DBCollectionAccessor {
                 Object value;
 
                 if (key.equals("favourites")) {
-                    value = getFavourites();
+                    value = Arrays.asList(getFavourites());
                 } else {
                     value = mData.get(0).get(key);
                 }
