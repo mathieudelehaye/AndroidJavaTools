@@ -31,6 +31,7 @@ import com.android.java.androidjavatools.controller.tabview.FragmentTabView;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -55,6 +56,8 @@ public class Navigator {
     final private NavigatorManager mManager;
     final private FragmentManager mFragmentManager;
     final private int mContentLayoutId;
+    private HashMap<String, Class<?>> mFragmentClasses = new HashMap<>();
+    private HashMap<String, FragmentArgument[]> mFragmentConstructorArgs = new HashMap<>();
     private HashMap<String, Fragment> mFragments = new HashMap<>();
     private String mShownFragment;
     Stack<String> mPrevFragments = new Stack<>();
@@ -75,57 +78,12 @@ public class Navigator {
         mContentLayoutId = contentLayoutId;
     }
 
-    public void createFragment(String key, Class<?> fragmentType, FragmentArgument... constructorArguments) {
-        if (key.equals("")) {
-            return;
-        }
+    public void declareFragment(String key, Class<?> fragmentType, FragmentArgument... constructorArguments) {
+        Log.v("AJT", "Declaring fragment with class: " + fragmentType + " and constructor arguments "
+            + Arrays.toString(constructorArguments));
 
-        if (!mFragments.containsKey(key)) {
-            Log.v("AJT", "Try to create a navigable fragment with the key: " + key);
-
-            // Split argument struct data
-            final var argumentTypes = new ArrayList<Class<?>>();
-            final var argumentValues = new ArrayList<>();
-
-            for (int i = 0; i < constructorArguments.length; i++) {
-                var argument= constructorArguments[i];
-                argumentTypes.add(argument.mType);
-                argumentValues.add(argument.mValue);
-            }
-
-            Fragment fragment;
-
-            try {
-                // Create fragment instance
-                Constructor<?> fragmentConstructor = fragmentType
-                    .getConstructor(argumentTypes.toArray(new Class<?>[0]));
-
-                fragment = (Fragment)fragmentConstructor.newInstance(argumentValues.toArray());
-            } catch (IllegalAccessException |
-                InvocationTargetException |
-                InstantiationException |
-                NoSuchMethodException e) {
-
-                Log.e("AJT", e.toString());
-                return;
-            }
-
-            mFragments.put(key, fragment);
-            Log.v("AJT", "Fragment created and added to the navigator registry");
-
-            // Only add non-dialog fragments to the manager
-            if (!(fragment instanceof DialogFragment)) {
-                mFragmentManager
-                    .beginTransaction()
-                    .add(mContentLayoutId, fragment)
-                    .hide(fragment)
-                    .commit();
-
-                Log.v("AJT", "Fragment added to the fragment manager");
-            }
-        } else {
-            Log.w("AJT", "Fragment already existing");
-        }
+        mFragmentClasses.put(key, fragmentType);
+        mFragmentConstructorArgs.put(key, constructorArguments);
     }
 
     // TODO: find automatically the fragment type from its instance.
@@ -178,8 +136,10 @@ public class Navigator {
         Fragment fragmentToShow = mFragments.get(key);
 
         if (fragmentToShow == null) {
-            Log.w("AJT", "No registered fragment to show for the key: " + key);
-            return;
+            Log.w("AJT", "Creating fragment for the key: " + key);
+
+            createFragment(key);
+            fragmentToShow = getFragment(key);
         }
 
         if (mShownFragment != null) {
@@ -265,6 +225,66 @@ public class Navigator {
             tabFragment.enableTabSwiping();
         } else {
             tabFragment.disableTabSwiping();
+        }
+    }
+
+    private void createFragment(String key) {
+        if (key.equals("")) {
+            return;
+        }
+
+        final Class<?> fragmentType = mFragmentClasses.get(key);
+        final FragmentArgument[] constructorArguments = mFragmentConstructorArgs.get(key);
+
+        if (fragmentType == null) {
+            return;
+        }
+
+        if (!mFragments.containsKey(key)) {
+            Log.v("AJT", "Try to create a navigable fragment with the key: " + key);
+
+            // Split argument struct data
+            final var argumentTypes = new ArrayList<Class<?>>();
+            final var argumentValues = new ArrayList<>();
+
+            for (int i = 0; i < constructorArguments.length; i++) {
+                var argument= constructorArguments[i];
+                argumentTypes.add(argument.mType);
+                argumentValues.add(argument.mValue);
+            }
+
+            Fragment fragment;
+
+            try {
+                // Create fragment instance
+                Constructor<?> fragmentConstructor = fragmentType
+                    .getConstructor(argumentTypes.toArray(new Class<?>[0]));
+
+                fragment = (Fragment)fragmentConstructor.newInstance(argumentValues.toArray());
+            } catch (IllegalAccessException |
+                 InvocationTargetException |
+                 InstantiationException |
+                 NoSuchMethodException e) {
+
+                Log.e("AJT", e.toString());
+                return;
+            }
+
+            mFragments.put(key, fragment);
+            Log.v("AJT", "Fragment created and added to the navigator registry");
+
+            // Only add non-dialog fragments to the manager
+            if (!(fragment instanceof DialogFragment)) {
+                mFragmentManager
+                    .beginTransaction()
+                    .add(mContentLayoutId, fragment)
+                    .hide(fragment)
+                    .commit();
+
+                Log.v("AJT", "Fragment added to the fragment manager");
+            }
+        } else {
+            Log.w("AJT", "Fragment already existing");
         }
     }
 
