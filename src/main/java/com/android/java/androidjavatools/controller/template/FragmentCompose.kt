@@ -35,11 +35,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
 import com.android.java.androidjavatools.Helpers
 import com.android.java.androidjavatools.controller.template.Navigator.NavigatorManager
 
-abstract class FragmentCompose : Fragment() {
+abstract class FragmentCompose : FragmentWithStart() {
     protected var mActivity : Activity? = null
     protected var mNavigatorManager: NavigatorManager? = null
 

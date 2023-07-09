@@ -46,13 +46,20 @@ import com.android.java.androidjavatools.Helpers
 import com.android.java.androidjavatools.controller.template.FragmentCompose
 import com.android.java.androidjavatools.controller.template.backButton
 import com.android.java.androidjavatools.controller.template.buttonWithText
+import com.android.java.androidjavatools.model.TaskCompletionManager
 import com.android.java.androidjavatools.model.user.AppUser
 import com.android.java.androidjavatools.model.user.AuthManager
-import com.android.java.androidjavatools.model.TaskCompletionManager
 import com.android.java.androidjavatools.model.user.UserInfoDBEntry
 import com.google.firebase.firestore.FirebaseFirestore
 
 abstract class FragmentProductDetail : FragmentCompose() {
+    companion object {
+        @JvmField var sSelectedTitle : String = ""
+        @JvmField var sSelectedSubtitle : String = ""
+        @JvmField var sSelectedKey : String = ""
+        @JvmField var sSelectedImage : Array<Byte> = emptyArray()
+    }
+
     protected val mDatabase = FirebaseFirestore.getInstance()
     protected open val mUserInfoDBEntry = UserInfoDBEntry(mDatabase, AppUser.getInstance().id)
 
@@ -60,6 +67,15 @@ abstract class FragmentProductDetail : FragmentCompose() {
     private var mImage: MutableState<Array<Byte>> = mutableStateOf(emptyArray())
     private var mTitle: MutableState<String> = mutableStateOf("")
     private var mSubtitle: MutableState<String> = mutableStateOf("")
+
+    override fun onStart() {
+        super.onStart()
+
+        setImage(sSelectedImage)
+        setTitle(sSelectedTitle)
+        setSubtitle(sSelectedSubtitle)
+        setKey(sSelectedKey)
+    }
 
     @Composable
     override fun contentView() {

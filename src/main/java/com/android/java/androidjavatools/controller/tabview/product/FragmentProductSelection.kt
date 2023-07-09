@@ -219,12 +219,12 @@ open class FragmentProductSelection : FragmentComposeWithSearch() {
 
         Card(
             onClick = {
-                val productDetailFragment
-                    = mNavigatorManager.navigator().getFragment("product") as FragmentProductDetail
-                productDetailFragment.setImage(image)
-                productDetailFragment.setTitle(title)
-                productDetailFragment.setSubtitle(description)
-                productDetailFragment.setKey(key)
+                // Temporarily save the data as static members
+                // TODO: avoid using static members
+                FragmentProductDetail.sSelectedTitle = title
+                FragmentProductDetail.sSelectedSubtitle = description
+                FragmentProductDetail.sSelectedImage = image
+                FragmentProductDetail.sSelectedKey = key
 
                 mNavigatorManager.navigator().showFragment("product")
             }

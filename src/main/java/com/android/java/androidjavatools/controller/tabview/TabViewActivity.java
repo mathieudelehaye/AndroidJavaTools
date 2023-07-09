@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.android.java.androidjavatools.Helpers;
+import com.android.java.androidjavatools.controller.tabview.product.FragmentProductDetail;
 import com.android.java.androidjavatools.controller.tabview.product.FragmentProductSelection;
 import com.android.java.androidjavatools.controller.tabview.result.FragmentResult;
 import com.android.java.androidjavatools.controller.tabview.result.detail.FragmentResultDetail;
@@ -235,6 +236,22 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                     case "tab":
                         // Update the product list
                         ((FragmentProductSelection)navigator().getFragment("products")).launchSearch();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case "product":
+                switch (orig) {
+                    case "products":
+
+                        final var productDetailFragment = (FragmentProductDetail)navigator().getFragment("product");
+                        if (productDetailFragment.isStarted()) {
+                            productDetailFragment.setImage(FragmentProductDetail.sSelectedImage);
+                            productDetailFragment.setTitle(FragmentProductDetail.sSelectedTitle);
+                            productDetailFragment.setSubtitle(FragmentProductDetail.sSelectedSubtitle);
+                            productDetailFragment.setKey(FragmentProductDetail.sSelectedKey);
+                        }
                         break;
                     default:
                         break;
