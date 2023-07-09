@@ -34,15 +34,15 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import com.android.java.androidjavatools.Helpers;
+import com.android.java.androidjavatools.controller.template.FragmentWithStart;
 import com.android.java.androidjavatools.controller.template.Navigator;
 import com.android.java.androidjavatools.controller.template.ResultProvider;
 import com.android.java.androidjavatools.databinding.FragmentResultDetailBinding;
 import com.android.java.androidjavatools.model.result.ResultItemInfo;
 import com.android.java.androidjavatools.R;
 
-public abstract class FragmentResultDetail extends Fragment {
+public abstract class FragmentResultDetail extends FragmentWithStart {
     class DetailDataSetObserver extends DataSetObserver {
         @Override
         public void onChanged() {
@@ -117,22 +117,22 @@ public abstract class FragmentResultDetail extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        final var resultProvider = (ResultProvider)requireActivity();
+        final var itemAdapter = resultProvider.getSelectedItemAdapter();
+        setAdapter(itemAdapter);
+        updateDetails();
+        updateSavedButton();
+    }
+
+    @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
             Log.d("AJT", "Result detail view becomes visible");
-
-            // Set the adapter passed by the Result list
-            ResultDetailAdapter adapter = mResultProvider.getSelectedItemAdapter();
-            if (adapter != null) {
-                mAdapter = adapter;
-            } else {
-                Log.e("AJT", "Result detail view shown but no detail adapter available");
-            }
-
-            updateDetails();
-            updateSavedButton();
         }
     }
 
@@ -171,7 +171,7 @@ public abstract class FragmentResultDetail extends Fragment {
     }
 
     @SuppressLint("SetTextI18n")
-    private void updateDetails() {
+    public void updateDetails() {
         mSelectedItem = (ResultItemInfo) (mResultProvider.getSelectedItemAdapter().getItem(0));
 
         mSelectedItemKey = mSelectedItem.getKey();
@@ -189,7 +189,7 @@ public abstract class FragmentResultDetail extends Fragment {
     }
 
     @SuppressLint("UseCompatTextViewDrawableApis")
-    private void updateSavedButton() {
+    public void updateSavedButton() {
         mIsSaved = mResultProvider.isSavedResult(mSelectedItemKey);
 
         final int icon = mIsSaved ? R.drawable.heart : R.drawable.heart_outline;

@@ -30,7 +30,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import com.android.java.androidjavatools.controller.tabview.result.detail.ResultDetailAdapter;
 import com.android.java.androidjavatools.controller.tabview.result.list.FragmentResultList;
 import com.android.java.androidjavatools.R;
@@ -39,7 +38,7 @@ import com.android.java.androidjavatools.model.result.ResultItemInfo;
 import com.google.firebase.firestore.FirebaseFirestore;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class FragmentWithSearch extends Fragment {
+public abstract class FragmentWithSearch extends FragmentWithStart {
     protected FirebaseFirestore mDatabase;
     protected SharedPreferences mSharedPref;
     protected Context mContext;

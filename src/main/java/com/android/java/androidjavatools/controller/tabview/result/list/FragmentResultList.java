@@ -98,6 +98,13 @@ public abstract class FragmentResultList extends FragmentResult {
         mBinding = null;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        updateSearchResults();
+    }
+
     public void updateList() {
         var resultList = (ListView) getView().findViewById(R.id.result_list_view);
 
@@ -156,7 +163,7 @@ public abstract class FragmentResultList extends FragmentResult {
 
         if (mIsViewVisible && mSharedPref != null) {
             if (!Boolean.parseBoolean(mSharedPref.getString("list_help_displayed", "false"))) {
-                mSharedPref.edit().putString("list_help_displayed", "true").commit();
+                mSharedPref.edit().putString("list_help_displayed", "true").apply();
                 var dialogFragment = new FragmentHelpDialog(getString(R.string.list_help),
                     () -> null);
                 dialogFragment.show(getChildFragmentManager(), "List help dialog");

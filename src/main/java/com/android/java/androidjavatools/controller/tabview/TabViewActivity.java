@@ -268,7 +268,10 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                         Helpers.toggleKeyboard(this, false);
 
                         // Update the results
-                        ((FragmentResult)navigator().getFragment("list")).updateSearchResults();
+                        final var listFragment = ((FragmentResult)navigator().getFragment("list"));
+                        if (listFragment.isStarted()) {
+                            listFragment.updateSearchResults();
+                        }
                         break;
                     case "map":
                         // Copy the search
@@ -337,8 +340,13 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                         // so the latter can be updated by an observer
                         final var detailFragment =
                             ((FragmentResultDetail)(navigator().getFragment("detail")));
-                        final var itemAdapter = getSelectedItemAdapter();
-                        detailFragment.setAdapter(itemAdapter);
+
+                        if (detailFragment.isStarted()) {
+                            final var itemAdapter = getSelectedItemAdapter();
+                            detailFragment.setAdapter(itemAdapter);
+                            detailFragment.updateDetails();
+                            detailFragment.updateSavedButton();
+                        }
                     default:
                         break;
                 }
