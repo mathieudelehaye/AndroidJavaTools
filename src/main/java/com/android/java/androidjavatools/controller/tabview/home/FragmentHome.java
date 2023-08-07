@@ -56,7 +56,7 @@ public abstract class FragmentHome extends FragmentWithSearch {
 
         mBinding = FragmentHomeBinding.inflate(inflater, container, false);
 
-        var contentView = new ProductBrowserView(getActivity(), this, mBinding, mResultProvider, mSearchBox);
+        var contentView = getProductBrowserView();
         contentView.show();
 
         return mBinding.getRoot();
@@ -161,5 +161,9 @@ public abstract class FragmentHome extends FragmentWithSearch {
                 historyButton.setVisibility(View.GONE);
             }
         }
+    }
+
+    protected ProductBrowserView getProductBrowserView() {
+        return new ProductBrowserView(getActivity(), this, mBinding, mResultProvider, mSearchBox);
     }
 }

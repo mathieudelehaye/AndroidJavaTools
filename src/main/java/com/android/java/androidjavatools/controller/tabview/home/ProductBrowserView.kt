@@ -46,13 +46,13 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
-class ProductBrowserView {
+open class ProductBrowserView {
+    protected val mNavigatorManager: Navigator.NavigatorManager?
+    protected val mSearchBox: SearchBox
     private val mActivity: Activity?
     private val mContainer: FragmentWithSearch?
     private val mBinding: FragmentHomeBinding?
-    private val mNavigatorManager: Navigator.NavigatorManager?
     private val mResultProvider: ResultProvider
-    private val mSearchBox: SearchBox
 
     constructor(activity: Activity, container: FragmentWithSearch, binding: FragmentHomeBinding,
         provider : ResultProvider, search : SearchBox) {
@@ -77,7 +77,7 @@ class ProductBrowserView {
     }
 
     @Composable
-    fun browserView(
+    open fun browserView(
     ) {
         val images = intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
             R.drawable.product04, R.drawable.product05)
