@@ -101,7 +101,7 @@ class ProductBrowserView {
                 FragmentProductSelection.setFilterField("sustainable")
                 mNavigatorManager!!.navigator().showFragment("products")
             }
-            browserPager("Popular on ECOBEAUTY", images) {
+            browserPager("Popular products", images) {
                 FragmentProductSelection.setFilterField("popular")
                 mNavigatorManager!!.navigator().showFragment("products")
             }
