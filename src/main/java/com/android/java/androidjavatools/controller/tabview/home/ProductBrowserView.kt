@@ -97,11 +97,11 @@ open class ProductBrowserView {
             }
 
             Spacer(modifier = Modifier.height(5.dp))
-            browserPager("Sustainable Brands", images) {
+            browserPager("Sustainable Brands", images, ContentScale.FillHeight) {
                 FragmentProductSelection.setFilterField("sustainable")
                 mNavigatorManager!!.navigator().showFragment("products")
             }
-            browserPager("Popular products", images) {
+            browserPager("Popular products", images, ContentScale.FillHeight) {
                 FragmentProductSelection.setFilterField("popular")
                 mNavigatorManager!!.navigator().showFragment("products")
             }
@@ -118,6 +118,7 @@ open class ProductBrowserView {
     fun browserPager(
         title: String
         , images: IntArray
+        , scaleType: ContentScale
         , onClick: () -> Unit
     ) {
         Column {
@@ -133,7 +134,7 @@ open class ProductBrowserView {
                     , style = MaterialTheme.typography.h1
                 )
             }
-            infinitePager(images) {
+            infinitePager(images, scaleType) {
                 onClick()
             }
             Spacer(modifier = Modifier.height(10.dp))
@@ -146,13 +147,14 @@ open class ProductBrowserView {
     fun previewBrowserPager() {
         val images = intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
             R.drawable.product04, R.drawable.product05)
-        browserPager("Browse by Functions", images) {}
+        browserPager("Browse by Functions", images, ContentScale.FillHeight) {}
     }
 
     @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
     @Composable
     fun infinitePager(
         images: IntArray,
+        scaleType : ContentScale,
         onClick: () -> Unit
     ) {
         // Add padding around our message
@@ -174,8 +176,8 @@ open class ProductBrowserView {
             ) {
                 Image(
                     contentDescription = "Contact profile picture"
-                    , painter = painterResource(images[page % 5])
-                    , contentScale = ContentScale.FillHeight
+                    , painter = painterResource(images[page % images.size])
+                    , contentScale = scaleType
                 )
             }
         }
