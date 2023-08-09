@@ -31,7 +31,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class SearchSuggestionProvider extends ContentProvider {
+abstract public class SearchSuggestionProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
