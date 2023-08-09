@@ -1,5 +1,5 @@
 //
-//  ProductItemInfo.kt
+//  ItemWithImage.kt
 //
 //  Created by Mathieu Delehaye on 30/06/2023.
 //
@@ -19,41 +19,27 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.model.product
+package com.android.java.androidjavatools.model
 
-import com.android.java.androidjavatools.model.ItemWithImage
+open abstract class ItemWithImage {
+    private var mImage: Array<Byte> = emptyArray()
+    private var mImageShownInDetails = false
 
-class ProductItemInfo (
-    key : String,
-    title : String,
-    subtitle : String,
-    description : String,
-    displayBrand : Boolean
-) : ItemWithImage() {
-
-    private val mKey: String? = key
-    private var mTitle: String? = title
-    private val mSubtitle: String? = subtitle
-    private var mDescription: String? = description
-    private val mContentAllowed = displayBrand
-
-    fun getKey(): String? {
-        return mKey
+    fun getImage(): Array<Byte> {
+        return mImage
     }
 
-    fun getTitle(): String? {
-        return mTitle
+    fun setImage(image: Array<Byte>) {
+        mImage = image
     }
 
-    fun getSubtitle(): String? {
-        return mSubtitle
-    }
-
-    fun getDescription(): String? {
-        return mDescription
-    }
-
-    fun isContentAllowed(): Boolean {
-        return mContentAllowed
+    open fun mustShowImage(): Boolean {
+        val res = mImage != null &&
+            mImage.isNotEmpty() &&
+            !mImageShownInDetails
+        if (res) {
+            mImageShownInDetails = true
+        }
+        return res
     }
 }
