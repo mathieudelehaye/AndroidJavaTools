@@ -124,7 +124,9 @@ open class ProductBrowserView {
         Column {
             Spacer(modifier = Modifier.height(5.dp))
             Row {
-                Spacer(modifier = Modifier.width(25.dp))
+                Spacer(modifier = Modifier
+                    .width(16.dp)
+                )
                 Text(
                     text = title
                     , fontSize = 20.sp
@@ -138,7 +140,6 @@ open class ProductBrowserView {
                 onClick()
             }
             Spacer(modifier = Modifier.height(10.dp))
-            Divider(color = Color.LightGray, thickness = 2.dp)
         }
     }
 
