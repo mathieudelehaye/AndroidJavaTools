@@ -25,7 +25,7 @@ import com.android.java.androidjavatools.controller.template.ItemWithImage;
 import org.osmdroid.util.GeoPoint;
 
 public class ResultItemInfo extends ItemWithImage {
-    private final String mKey;
+    public final String mKey;
     private String mTitle;
     private String mDescription;
     private GeoPoint mLocation;
