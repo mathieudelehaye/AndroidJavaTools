@@ -31,7 +31,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-abstract public class SearchSuggestionProvider extends ContentProvider {
+public class SearchSuggestionProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
@@ -44,13 +44,20 @@ abstract public class SearchSuggestionProvider extends ContentProvider {
         final String userInput = selectionArgs[0];
         Log.v("AJT", "Received the query: " + userInput);
 
+        String[] suggestions = findSuggestions(userInput);
+
         String[] columns = {"_ID", SearchManager.SUGGEST_COLUMN_TEXT_1};
         var cursor = new MatrixCursor(columns);
 
         cursor.addRow(new Object[] {0, "Around current location"});
         //cursor.addRow(new Object[] {1, userInput});
-        cursor.addRow(new Object[] {1, "Partick"});
-        cursor.addRow(new Object[] {2, "G37EE"});
+
+        int suggestionIndex = 1;
+
+        for (String suggestion : suggestions) {
+            cursor.addRow(new Object[] {suggestionIndex, suggestion});
+            suggestionIndex++;
+        }
 
         return cursor;
     }
@@ -73,7 +80,14 @@ abstract public class SearchSuggestionProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
+    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s,
+        @Nullable String[] strings) {
+
         return 0;
+    }
+
+    private String[] findSuggestions(String query) {
+        final String[] output = { "Partick", "G37EE" };
+        return output;
     }
 }
