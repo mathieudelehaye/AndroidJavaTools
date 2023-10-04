@@ -31,13 +31,17 @@ import android.os.Build;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.android.java.androidjavatools.model.result.suggestion.AutocompleteResult;
 import com.android.java.androidjavatools.model.result.suggestion.AutocompleteResults;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class SearchSuggestionProvider extends ContentProvider {
 
@@ -94,14 +98,30 @@ public class SearchSuggestionProvider extends ContentProvider {
         return 0;
     }
 
+    private URL getSuggestionURL(String query) {
+        try {
+            return new URL("https://api.foursquare.com/v3/autocomplete?query=" + query);
+        } catch (MalformedURLException mue) {
+            Log.e("AJT", "Cannot get the URL for suggestion from the query: " + query);
+            return null;
+        }
+    }
+
     private String[] findSuggestions(String query) {
         String[] output = { "Partick", "G37EE" };
 
         final var client = new OkHttpClient();
 
+        final URL suggestionURL = getSuggestionURL(query);
+        if (suggestionURL == null) {
+            return new String[]{};
+        }
+
+        Log.v("AJT", "Suggestion URL: " + suggestionURL + " formed from the query: " + query);
+
         // TODO: do not commit the API key to the repo
         final var request = new Request.Builder()
-            .url("https://api.foursquare.com/v3/autocomplete?query=empire%20state")
+            .url(suggestionURL)
             .get()
             .addHeader("accept", "application/json")
             .addHeader("Authorization", "fsq35loOQWuCcNPy6qWmJI3PQvSqoyYw5NN0z6zqilnTtc4=")
@@ -109,7 +129,6 @@ public class SearchSuggestionProvider extends ContentProvider {
 
         try {
             // TODO: change the call to make it asynchronous
-
             final Response response = client.newCall(request).execute();
 
             if (response.isSuccessful()) {
@@ -118,21 +137,29 @@ public class SearchSuggestionProvider extends ContentProvider {
 
                     final String jsonResponse = responseBody.string();
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-                        if (!jsonResponse.isEmpty()) {
-                            Log.v("AJT", "JSON response received from GET: jsonResponse = "
-                                + jsonResponse);
+                    if (!jsonResponse.isEmpty()) {
+                        Log.v("AJT", "JSON response received from GET: jsonResponse = "
+                            + jsonResponse);
 
-                            final var mapper = new ObjectMapper();
+                        final var mapper = new ObjectMapper();
 
-                            final var results = mapper.readValue(jsonResponse,
-                                AutocompleteResults.class);
+                        // The mapper doesn't fail on a JSON field not defined as class property
+                        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-                            Log.d("AJT", "Parsed response: results = "
-                                + results.getInfo());
-                        } else {
-                            Log.d("AJT", "JSON Response is empty.");
+                        final var results = mapper.readValue(jsonResponse,
+                            AutocompleteResults.class);
+
+                        Log.d("AJT", "Parsed response: results = "
+                            + results.getInfo());
+
+                        for (AutocompleteResult result : results.getResults()) {
+                            if (result.getType().equals("geo")) {
+                                final String suggestion = result.getText().getPrimary();
+                                Log.d("AJT", "Received suggestion: " + suggestion);
+                            }
                         }
+                    } else {
+                        Log.d("AJT", "JSON Response is empty.");
                     }
                 } else {
                     Log.d("AJT", "Response body is null.");
