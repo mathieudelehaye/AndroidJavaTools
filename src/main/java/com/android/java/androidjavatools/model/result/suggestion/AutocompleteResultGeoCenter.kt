@@ -1,9 +1,9 @@
 //
-//  ResultCategories.java
+//  AutocompleteResultCenter.kt
 //
-//  Created by Mathieu Delehaye on 9/08/2023.
+//  Created by Mathieu Delehaye on 4/10/2023.
 //
-//  AndroidJavaTools: A framework to develop Android apps with Java Technologies.
+//  AndroidDemo: A demo mobile app to rent an accommodation, re-using the AndroidJavaTools library.
 //
 //  Copyright © 2023 Mathieu Delehaye. All rights reserved.
 //
@@ -19,14 +19,16 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
+package com.android.java.androidjavatools.model.result.suggestion
 
-package com.android.java.androidjavatools.model.result
+class AutocompleteResultGeoCenter {
+    var latitude: Float? = null
+    var longitude: Float? = null
 
-import com.android.java.androidjavatools.model.DBCollectionAccessor
-import com.google.firebase.firestore.FirebaseFirestore
-
-class ResultCategories : DBCollectionAccessor {
-    constructor(database : FirebaseFirestore) : super (database) {
-        mData = ArrayList<Map<String, String>>()
+    fun getInfo() : String {
+        return "{" +
+            "  \"latitude\": \"$latitude\", " +
+            "  \"longitude\": \"$longitude\""
+        "}"
     }
 }

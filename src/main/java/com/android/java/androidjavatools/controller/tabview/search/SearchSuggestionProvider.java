@@ -27,9 +27,17 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.android.java.androidjavatools.model.result.suggestion.AutocompleteResults;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+import com.squareup.okhttp.ResponseBody;
+import java.io.IOException;
 
 public class SearchSuggestionProvider extends ContentProvider {
 
@@ -87,7 +95,55 @@ public class SearchSuggestionProvider extends ContentProvider {
     }
 
     private String[] findSuggestions(String query) {
-        final String[] output = { "Partick", "G37EE" };
+        String[] output = { "Partick", "G37EE" };
+
+        final var client = new OkHttpClient();
+
+        // TODO: do not commit the API key to the repo
+        final var request = new Request.Builder()
+            .url("https://api.foursquare.com/v3/autocomplete?query=empire%20state")
+            .get()
+            .addHeader("accept", "application/json")
+            .addHeader("Authorization", "fsq35loOQWuCcNPy6qWmJI3PQvSqoyYw5NN0z6zqilnTtc4=")
+            .build();
+
+        try {
+            // TODO: change the call to make it asynchronous
+
+            final Response response = client.newCall(request).execute();
+
+            if (response.isSuccessful()) {
+                final ResponseBody responseBody = response.body();
+                if (responseBody != null) {
+
+                    final String jsonResponse = responseBody.string();
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                        if (!jsonResponse.isEmpty()) {
+                            Log.v("AJT", "JSON response received from GET: jsonResponse = "
+                                + jsonResponse);
+
+                            final var mapper = new ObjectMapper();
+
+                            final var results = mapper.readValue(jsonResponse,
+                                AutocompleteResults.class);
+
+                            Log.d("AJT", "Parsed response: results = "
+                                + results.getInfo());
+                        } else {
+                            Log.d("AJT", "JSON Response is empty.");
+                        }
+                    }
+                } else {
+                    Log.d("AJT", "Response body is null.");
+                }
+            } else {
+                Log.e("AJT", "Response was not successful: " + response.code() + " " + response.message());
+            }
+        } catch (IOException ioe) {
+            Log.e("AJT", "Suggestion provider API call threw an exception: " + ioe.getMessage());
+        }
+
         return output;
     }
 }
