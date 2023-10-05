@@ -27,7 +27,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
-import android.os.Build;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,6 +41,8 @@ import com.squareup.okhttp.ResponseBody;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SearchSuggestionProvider extends ContentProvider {
 
@@ -108,7 +109,7 @@ public class SearchSuggestionProvider extends ContentProvider {
     }
 
     private String[] findSuggestions(String query) {
-        String[] output = { "Partick", "G37EE" };
+        List<String> output = new ArrayList<>();
 
         final var client = new OkHttpClient();
 
@@ -156,6 +157,7 @@ public class SearchSuggestionProvider extends ContentProvider {
                             if (result.getType().equals("geo")) {
                                 final String suggestion = result.getText().getPrimary();
                                 Log.d("AJT", "Received suggestion: " + suggestion);
+                                output.add(suggestion);
                             }
                         }
                     } else {
@@ -171,6 +173,6 @@ public class SearchSuggestionProvider extends ContentProvider {
             Log.e("AJT", "Suggestion provider API call threw an exception: " + ioe.getMessage());
         }
 
-        return output;
+        return output.toArray(new String[0]);
     }
 }
