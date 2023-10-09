@@ -142,6 +142,18 @@ public class Navigator {
             fragmentToShow = getFragment(key);
         }
 
+        if (fragmentToShow instanceof DialogFragment) {
+            // Dialog fragment
+            DialogFragment dialog = (DialogFragment)fragmentToShow;
+            dialog.show(mFragmentManager, "FragmentStartDialog");
+        } else {
+            // Other fragment
+            mFragmentManager
+                .beginTransaction()
+                .show(fragmentToShow)
+                .commit();
+        }
+
         if (mShownFragment != null) {
             mManager.onNavigation(key, mShownFragment);
             mFragments.get(mShownFragment).setUserVisibleHint(false);
@@ -153,18 +165,6 @@ public class Navigator {
             }
 
             hideFragment(mShownFragment);
-        }
-
-        if (fragmentToShow instanceof DialogFragment) {
-            // Dialog fragment
-            DialogFragment dialog = (DialogFragment)fragmentToShow;
-            dialog.show(mFragmentManager, "FragmentStartDialog");
-        } else {
-            // Other fragment
-            mFragmentManager
-                .beginTransaction()
-                .show(fragmentToShow)
-                .commit();
         }
 
         mShownFragment = key;

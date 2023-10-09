@@ -285,7 +285,8 @@ abstract public class TabViewActivity extends AppCompatActivity implements Activ
                         Helpers.toggleKeyboard(this, false);
 
                         // Update the results
-                        final var listFragment = ((FragmentResult)navigator().getFragment("list"));
+                        final var listFragment = ((FragmentResultList)navigator()
+                            .getFragment("list"));
                         if (listFragment.isStarted()) {
                             listFragment.updateSearchResults();
                         }
