@@ -85,6 +85,8 @@ public abstract class FragmentResult extends FragmentWithSearch {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        Log.v("AJT", "View created for the result list fragment");
+
         super.onViewCreated(view, savedInstanceState);
 
         mGeocoder = new Geocoder(requireContext(), Locale.getDefault());

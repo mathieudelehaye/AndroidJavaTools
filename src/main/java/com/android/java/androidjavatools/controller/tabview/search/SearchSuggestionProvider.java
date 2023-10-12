@@ -120,7 +120,6 @@ public class SearchSuggestionProvider extends ContentProvider {
 
         Log.v("AJT", "Suggestion URL: " + suggestionURL + " formed from the query: " + query);
 
-        // TODO: do not commit the API key to the repo
         final var request = new Request.Builder()
             .url(suggestionURL)
             .get()
@@ -129,7 +128,6 @@ public class SearchSuggestionProvider extends ContentProvider {
             .build();
 
         try {
-            // TODO: change the call to make it asynchronous
             final Response response = client.newCall(request).execute();
 
             if (response.isSuccessful()) {
