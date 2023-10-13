@@ -24,7 +24,8 @@ package com.android.java.androidjavatools.controller.template
 import androidx.fragment.app.Fragment
 
 open class FragmentWithStart : Fragment() {
-    private var mFragmentStarted = false
+    // TODO: authenticate before starting the tab view fragment
+    private var mFragmentStarted = true
     private val mFragmentStartLock = Any()
 
     override fun onStart() {

@@ -164,7 +164,8 @@ public abstract class AuthManager implements AuthenticateDialogListener {
         AppUser.getInstance().authenticate(_uid, _userType);
 
         // Read the saved results for the user
-        ((TabViewActivity)(mActivity)).readSavedResults();
+        // TODO: uncomment the next line after fixing the read
+        //((TabViewActivity)(mActivity)).readSavedResults();
 
         mNavigatorManager.navigator().showFragment(mAppFirstFragment);
     }
@@ -221,7 +222,10 @@ public abstract class AuthManager implements AuthenticateDialogListener {
 
                             onSignin(emailText);
 
-                            dialog.dismiss();
+                            if (dialog != null) {
+                                dialog.dismiss();
+                            }
+
                             startAppWithUser(emailText, AppUser.AuthenticationType.REGISTERED);
                         } else {
                             Log.e("AJT", "Email is not verified");
