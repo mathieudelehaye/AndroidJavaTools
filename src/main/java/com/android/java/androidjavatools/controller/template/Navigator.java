@@ -86,6 +86,11 @@ public class Navigator {
         mFragmentConstructorArgs.put(key, constructorArguments);
     }
 
+    public void declareAndCreateFragment(String key, Class<?> fragmentType, FragmentArgument... constructorArguments) {
+        declareFragment(key, fragmentType, constructorArguments);
+        createFragment(key);
+    }
+
     // TODO: find automatically the fragment type from its instance.
     public void updateFragment(String key, Fragment newFragment) {
         if (key.equals("")) {
@@ -135,11 +140,23 @@ public class Navigator {
 
         Fragment fragmentToShow = mFragments.get(key);
 
-        if (fragmentToShow == null) {
+         if (fragmentToShow == null) {
             Log.w("AJT", "Creating fragment for the key: " + key);
 
             createFragment(key);
             fragmentToShow = getFragment(key);
+        }
+
+        if (fragmentToShow instanceof DialogFragment) {
+            // Dialog fragment
+            DialogFragment dialog = (DialogFragment)fragmentToShow;
+            dialog.show(mFragmentManager, "FragmentStartDialog");
+        } else {
+            // Other fragment
+            mFragmentManager
+                .beginTransaction()
+                .show(fragmentToShow)
+                .commit();
         }
 
         if (mShownFragment != null) {
@@ -153,18 +170,6 @@ public class Navigator {
             }
 
             hideFragment(mShownFragment);
-        }
-
-        if (fragmentToShow instanceof DialogFragment) {
-            // Dialog fragment
-            DialogFragment dialog = (DialogFragment)fragmentToShow;
-            dialog.show(mFragmentManager, "FragmentStartDialog");
-        } else {
-            // Other fragment
-            mFragmentManager
-                .beginTransaction()
-                .show(fragmentToShow)
-                .commit();
         }
 
         mShownFragment = key;
@@ -266,7 +271,7 @@ public class Navigator {
                  InstantiationException |
                  NoSuchMethodException e) {
 
-                Log.e("AJT", e.toString());
+                Log.e("AJT", e.getMessage());
                 return;
             }
 

@@ -21,6 +21,7 @@
 
 package com.android.java.androidjavatools.controller.template
 
+import com.android.java.androidjavatools.model.ItemWithImage
 import com.android.java.androidjavatools.model.TaskCompletionManager
 import java.util.HashMap
 

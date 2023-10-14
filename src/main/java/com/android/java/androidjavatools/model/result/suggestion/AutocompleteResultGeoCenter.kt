@@ -1,9 +1,9 @@
 //
-//  ItemWithImage.kt
+//  AutocompleteResultCenter.kt
 //
-//  Created by Mathieu Delehaye on 30/06/2023.
+//  Created by Mathieu Delehaye on 4/10/2023.
 //
-//  AndroidJavaTools: A framework to develop Android apps with Java Technologies.
+//  AndroidDemo: A demo mobile app to rent an accommodation, re-using the AndroidJavaTools library.
 //
 //  Copyright © 2023 Mathieu Delehaye. All rights reserved.
 //
@@ -19,27 +19,16 @@
 //  You should have received a copy of the GNU Affero General Public License along with this program. If not, see
 //  <https://www.gnu.org/licenses/>.
 
-package com.android.java.androidjavatools.controller.template
+package com.android.java.androidjavatools.model.result.suggestion
 
-open abstract class ItemWithImage {
-    private var mImage: Array<Byte> = emptyArray()
-    private var mImageShownInDetails = false
+class AutocompleteResultGeoCenter {
+    var latitude: Float? = null
+    var longitude: Float? = null
 
-    fun getImage(): Array<Byte> {
-        return mImage
-    }
-
-    fun setImage(image: Array<Byte>) {
-        mImage = image
-    }
-
-    open fun mustShowImage(): Boolean {
-        val res = mImage != null &&
-            mImage.isNotEmpty() &&
-            !mImageShownInDetails
-        if (res) {
-            mImageShownInDetails = true
-        }
-        return res
+    fun getInfo() : String {
+        return "{" +
+            "  \"latitude\": \"$latitude\", " +
+            "  \"longitude\": \"$longitude\""
+        "}"
     }
 }

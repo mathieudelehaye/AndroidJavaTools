@@ -30,6 +30,19 @@ import android.net.Uri;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.android.java.androidjavatools.model.result.suggestion.AutocompleteResult;
+import com.android.java.androidjavatools.model.result.suggestion.AutocompleteResults;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+import com.squareup.okhttp.ResponseBody;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SearchSuggestionProvider extends ContentProvider {
 
@@ -44,13 +57,20 @@ public class SearchSuggestionProvider extends ContentProvider {
         final String userInput = selectionArgs[0];
         Log.v("AJT", "Received the query: " + userInput);
 
+        String[] suggestions = findSuggestions(userInput);
+
         String[] columns = {"_ID", SearchManager.SUGGEST_COLUMN_TEXT_1};
         var cursor = new MatrixCursor(columns);
 
         cursor.addRow(new Object[] {0, "Around current location"});
         //cursor.addRow(new Object[] {1, userInput});
-        cursor.addRow(new Object[] {1, "Partick"});
-        cursor.addRow(new Object[] {2, "G37EE"});
+
+        int suggestionIndex = 1;
+
+        for (String suggestion : suggestions) {
+            cursor.addRow(new Object[] {suggestionIndex, suggestion});
+            suggestionIndex++;
+        }
 
         return cursor;
     }
@@ -73,7 +93,84 @@ public class SearchSuggestionProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
+    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s,
+        @Nullable String[] strings) {
+
         return 0;
+    }
+
+    private URL getSuggestionURL(String query) {
+        try {
+            return new URL("https://api.foursquare.com/v3/autocomplete?query=" + query);
+        } catch (MalformedURLException mue) {
+            Log.e("AJT", "Cannot get the URL for suggestion from the query: " + query);
+            return null;
+        }
+    }
+
+    private String[] findSuggestions(String query) {
+        List<String> output = new ArrayList<>();
+
+        final var client = new OkHttpClient();
+
+        final URL suggestionURL = getSuggestionURL(query);
+        if (suggestionURL == null) {
+            return new String[]{};
+        }
+
+        Log.v("AJT", "Suggestion URL: " + suggestionURL + " formed from the query: " + query);
+
+        final var request = new Request.Builder()
+            .url(suggestionURL)
+            .get()
+            .addHeader("accept", "application/json")
+            .addHeader("Authorization", "fsq35loOQWuCcNPy6qWmJI3PQvSqoyYw5NN0z6zqilnTtc4=")
+            .build();
+
+        try {
+            final Response response = client.newCall(request).execute();
+
+            if (response.isSuccessful()) {
+                final ResponseBody responseBody = response.body();
+                if (responseBody != null) {
+
+                    final String jsonResponse = responseBody.string();
+
+                    if (!jsonResponse.isEmpty()) {
+                        Log.v("AJT", "JSON response received from GET: jsonResponse = "
+                            + jsonResponse);
+
+                        final var mapper = new ObjectMapper();
+
+                        // The mapper doesn't fail on a JSON field not defined as class property
+                        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+                        final var results = mapper.readValue(jsonResponse,
+                            AutocompleteResults.class);
+
+                        Log.d("AJT", "Parsed response: results = "
+                            + results.getInfo());
+
+                        for (AutocompleteResult result : results.getResults()) {
+                            if (result.getType().equals("geo")) {
+                                final String suggestion = result.getText().getPrimary();
+                                Log.d("AJT", "Received suggestion: " + suggestion);
+                                output.add(suggestion);
+                            }
+                        }
+                    } else {
+                        Log.d("AJT", "JSON Response is empty.");
+                    }
+                } else {
+                    Log.d("AJT", "Response body is null.");
+                }
+            } else {
+                Log.e("AJT", "Response was not successful: " + response.code() + " " + response.message());
+            }
+        } catch (IOException ioe) {
+            Log.e("AJT", "Suggestion provider API call threw an exception: " + ioe.getMessage());
+        }
+
+        return output.toArray(new String[0]);
     }
 }

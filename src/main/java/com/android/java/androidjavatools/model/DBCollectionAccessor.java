@@ -357,7 +357,7 @@ public class DBCollectionAccessor {
     private boolean filterDocument(QueryDocumentSnapshot document, SearchFilter filter) {
         // The filter item at index 0 has been used for the query
         switch(filter.getType()) {
-            case VALUE:
+            case RANGE:
                 for(int i = 1; i < filter.getRanges(); i++) {
                     final var fieldValue = (double)document.getData().get(filter.getFieldAtIndex(i));
 
@@ -366,7 +366,7 @@ public class DBCollectionAccessor {
                     }
                 }
                 break;
-            case RANGE:
+            case VALUE:
             default:
                 for(int i = 1; i < filter.getValues(); i++) {
                     final var fieldValue = String.valueOf(document.getData().get(filter.getFieldAtIndex(i)));

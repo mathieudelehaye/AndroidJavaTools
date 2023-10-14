@@ -24,7 +24,6 @@ package com.android.java.androidjavatools.model;
 import android.util.Log;
 import com.android.java.androidjavatools.Helpers;
 import com.android.java.androidjavatools.controller.template.ImageDownloaderThread;
-import com.android.java.androidjavatools.controller.template.ItemWithImage;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import java.util.*;

@@ -21,7 +21,7 @@
 
 package com.android.java.androidjavatools.model.result;
 
-import com.android.java.androidjavatools.controller.template.ItemWithImage;
+import com.android.java.androidjavatools.model.ItemWithImage;
 import org.osmdroid.util.GeoPoint;
 
 public class ResultItemInfo extends ItemWithImage {

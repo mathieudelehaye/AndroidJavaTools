@@ -37,8 +37,8 @@ abstract public class CollectionPagerAdapter extends FragmentStatePagerAdapter {
     protected ResultProvider mResultProvider;
     protected SearchProvider mSearchProvider;
     // current page of the app ViewPager
+    protected FragmentActivity mActivity;
     private static int mCurrentPage = 0;
-    private FragmentActivity mActivity;
 
     public CollectionPagerAdapter(FragmentManager fm, FragmentActivity fa,
                                   ResultProvider rProvider,

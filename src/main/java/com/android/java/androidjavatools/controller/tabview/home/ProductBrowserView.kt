@@ -46,13 +46,13 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
-class ProductBrowserView {
+open class ProductBrowserView {
+    protected val mNavigatorManager: Navigator.NavigatorManager?
+    protected val mSearchBox: SearchBox
     private val mActivity: Activity?
     private val mContainer: FragmentWithSearch?
     private val mBinding: FragmentHomeBinding?
-    private val mNavigatorManager: Navigator.NavigatorManager?
     private val mResultProvider: ResultProvider
-    private val mSearchBox: SearchBox
 
     constructor(activity: Activity, container: FragmentWithSearch, binding: FragmentHomeBinding,
         provider : ResultProvider, search : SearchBox) {
@@ -77,7 +77,7 @@ class ProductBrowserView {
     }
 
     @Composable
-    fun browserView(
+    open fun browserView(
     ) {
         val images = intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
             R.drawable.product04, R.drawable.product05)
@@ -97,11 +97,11 @@ class ProductBrowserView {
             }
 
             Spacer(modifier = Modifier.height(5.dp))
-            browserPager("Sustainable Brands", images) {
+            browserPager("Sustainable Brands", images, ContentScale.FillHeight) {
                 FragmentProductSelection.setFilterField("sustainable")
                 mNavigatorManager!!.navigator().showFragment("products")
             }
-            browserPager("Popular products", images) {
+            browserPager("Popular products", images, ContentScale.FillHeight) {
                 FragmentProductSelection.setFilterField("popular")
                 mNavigatorManager!!.navigator().showFragment("products")
             }
@@ -118,12 +118,15 @@ class ProductBrowserView {
     fun browserPager(
         title: String
         , images: IntArray
+        , scaleType: ContentScale
         , onClick: () -> Unit
     ) {
         Column {
             Spacer(modifier = Modifier.height(5.dp))
             Row {
-                Spacer(modifier = Modifier.width(25.dp))
+                Spacer(modifier = Modifier
+                    .width(16.dp)
+                )
                 Text(
                     text = title
                     , fontSize = 20.sp
@@ -133,11 +136,10 @@ class ProductBrowserView {
                     , style = MaterialTheme.typography.h1
                 )
             }
-            infinitePager(images) {
+            infinitePager(images, scaleType) {
                 onClick()
             }
             Spacer(modifier = Modifier.height(10.dp))
-            Divider(color = Color.LightGray, thickness = 2.dp)
         }
     }
 
@@ -146,13 +148,14 @@ class ProductBrowserView {
     fun previewBrowserPager() {
         val images = intArrayOf(R.drawable.product01, R.drawable.product02, R.drawable.product03,
             R.drawable.product04, R.drawable.product05)
-        browserPager("Browse by Functions", images) {}
+        browserPager("Browse by Functions", images, ContentScale.FillHeight) {}
     }
 
     @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
     @Composable
     fun infinitePager(
         images: IntArray,
+        scaleType : ContentScale,
         onClick: () -> Unit
     ) {
         // Add padding around our message
@@ -174,8 +177,8 @@ class ProductBrowserView {
             ) {
                 Image(
                     contentDescription = "Contact profile picture"
-                    , painter = painterResource(images[page % 5])
-                    , contentScale = ContentScale.FillHeight
+                    , painter = painterResource(images[page % images.size])
+                    , contentScale = scaleType
                 )
             }
         }

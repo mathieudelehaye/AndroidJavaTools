@@ -21,9 +21,12 @@
 
 package com.android.java.androidjavatools.controller.tabview.result.list;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -37,6 +40,20 @@ import com.android.java.androidjavatools.model.SetWithImages;
 public class ResultListAdapter extends BaseAdapter {
     private Context mContext;
     private SetWithImages mResultItems;
+
+    static private String description1 =
+        "Lorem ipsum dolor sit amet,\n" +
+        " consectetur adipiscing elit.\n" +
+        "Sed do eiusmod tempor\n" +
+        "incididunt.";
+    static private String description2 =
+        "Quis autem vel eum iure \n" +
+        "reprehenderit qui in ea \n" +
+        "voluptate velit esse quam.\n";
+    static private String description3 =
+        "At vero eos et accusamus et \n" +
+        "iusto odio dignissimos ducimus \n" +
+        "qui blanditiis praesentium.";
 
     public ResultListAdapter(Context context, SetWithImages result) {
         mContext = context;
@@ -58,20 +75,20 @@ public class ResultListAdapter extends BaseAdapter {
         return 0;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
         View view = View.inflate(mContext, R.layout.result_list_item,null);
-        TextView textView = view.findViewById(R.id.result_list_item_text);
         ImageView imageView = view.findViewById(R.id.result_list_item_image);
+        TextView textViewTitle = view.findViewById(R.id.result_list_item_text_title);
+        TextView textViewDescription = view.findViewById(R.id.result_list_item_text_description);
 
         var itemInfo=(ResultItemInfo) getItem(position);
-
-        final byte[] imageByte = Helpers.toPrimitives(itemInfo.getImage());
         final boolean showImage = itemInfo.isContentAllowed();
 
-        textView.setText(showImage ? (itemInfo.getTitle()) : "Lorem ipsum dolor sit");
-
+        // Image
+        final byte[] imageByte = Helpers.toPrimitives(itemInfo.getImage());
         if (imageByte != null && showImage) {
             Bitmap bmp = BitmapFactory.decodeByteArray(imageByte, 0, imageByte.length);
             imageView.setImageBitmap(bmp);
@@ -79,7 +96,22 @@ public class ResultListAdapter extends BaseAdapter {
             // Use a placeholder if the image has not been set
             imageView.setImageResource(R.drawable.camera);
         }
-        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+        // Title
+        textViewTitle.setText(showImage ? (itemInfo.getTitle()) : "Lorem ipsum dolor sit");
+        final var currentTypeface = textViewTitle.getTypeface();
+        textViewTitle.setTypeface(currentTypeface, Typeface.BOLD);
+        textViewTitle.setTextColor(Color.BLACK);
+        textViewTitle.setTextSize(16);
+
+        // Description
+        final int randomValue = (int) (Math.random() * 3);
+        final String descriptionText = (randomValue == 0) ?
+            description1 : (randomValue == 1) ?
+            description2 : (randomValue == 2) ?
+            description3 : "";
+        textViewDescription.setText(descriptionText);
 
         return view;
     }

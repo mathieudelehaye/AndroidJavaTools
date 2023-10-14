@@ -85,6 +85,8 @@ public abstract class FragmentResult extends FragmentWithSearch {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        Log.v("AJT", "View created for the result list fragment");
+
         super.onViewCreated(view, savedInstanceState);
 
         mGeocoder = new Geocoder(requireContext(), Locale.getDefault());
@@ -194,6 +196,12 @@ public abstract class FragmentResult extends FragmentWithSearch {
     }
 
     protected boolean readCachedUserLocation() {
+        if (mSharedPref == null || !mSharedPref.contains("user_latitude")
+            || !mSharedPref.contains("user_longitude")) {
+
+            return false;
+        }
+
         final double cacheLatitude = Location.convert(mSharedPref.getString("user_latitude", ""));
         final double cacheLongitude = Location.convert(mSharedPref.getString("user_longitude", ""));
 
@@ -297,6 +305,11 @@ public abstract class FragmentResult extends FragmentWithSearch {
     }
 
     private void setSearchStart(Location value) {
+        if (value == null) {
+            Log.w("AJT", "Cannot set search start to a null value");
+            return;
+        }
+
         Log.v("AJT", "Search start set to: " + value);
         mSearchStart = new GeoPosition(value);
     }
