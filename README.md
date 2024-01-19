@@ -5,7 +5,7 @@ The framework is mainly written in Kotlin and Java for Android.
 
 The views which are managed:
 - OpenStreetMap map view: src/main/java/com/android/java/androidjavatools/controller/tabview/result/map
-- Camera: src/main/java/com/android/java/androidjavatools/controller/tabview/camera
+- camera: src/main/java/com/android/java/androidjavatools/controller/tabview/camera
 - onboarding screen: src/main/java/com/android/java/androidjavatools/controller/onboard
 - search suggestions: src/main/java/com/android/java/androidjavatools/controller/tabview/search
 - profile management: src/main/java/com/android/java/androidjavatools/controller/tabview/profile
