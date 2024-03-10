@@ -18,11 +18,20 @@ The following views are managed by the framework:
 For an integration example with this framework, check out: https://github.com/mathieudelehaye/AndroidBooking 
 
 <p float="left">
-  <img src="screenshots/screenshot03-openstreetmap.png" height ="628" width="300" hspace="10" />
-  <img src="screenshots/screenshot02-onboarding.png" height ="628" width="300" hspace="10" />
+  <img src="screenshots/screenshot03.png" height ="628" width="300" hspace="10" />
+  <img src="screenshots/screenshot02.png" height ="628" width="300" hspace="10" />
 </p>
 
 <p float="left">
-  <img src="screenshots/screenshot01-suggestions.png" height ="628" width="300" hspace="10" />
-  <img src="screenshots/screenshot00-profile.png" height ="628" width="300" hspace="10" />
+  <img src="screenshots/screenshot01.png" height ="628" width="300" hspace="10" />
+  <img src="screenshots/screenshot00.png" height ="628" width="300" hspace="10" />
+</p>
+
+<p float="left">
+  <img src="screenshots/screenshot04.png" height ="628" width="300" hspace="10" />
+  <img src="screenshots/screenshot05.png" height ="628" width="300" hspace="10" />
+</p>
+
+<p float="left">
+  <img src="screenshots/screenshot06.png" height ="628" width="300" hspace="10" />
 </p>
