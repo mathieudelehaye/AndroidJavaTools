@@ -12,7 +12,7 @@ The following views are managed by the framework:
 - list view: src/main/java/com/android/java/androidjavatools/controller/tabview/result/list
 - login and signup: src/main/java/com/android/java/androidjavatools/controller/tabview/auth
 
-For an integration example with this framework, check out: https://github.com/mathieudelehaye/AndroidBooking 
+For an integration example with this framework, check out: https://github.com/mathieudelehaye/BeautyAndroid and https://github.com/mathieudelehaye/AndroidBooking 
 
 <p float="left">
   <img src="screenshots/screenshot03.png" height ="628" width="300" hspace="10" />
